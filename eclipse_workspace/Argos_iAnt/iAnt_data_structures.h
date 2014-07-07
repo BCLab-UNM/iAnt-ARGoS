@@ -85,9 +85,10 @@ private:
 		CVector2         pheromonePosition;  // current position of any pheromone known by this robot
 		size_t           resourceCount;      // the number of resources found around pheromonePosition
 		vector<CVector2> foodPositions;      // list of all food positions within the arena
+		Real             foodRadiusSquared;  // radius of food items on the arena floor
 
-		food();      // constructor function
-		void Init(); // initialization function
+		food();                              // constructor function
+		void Init(TConfigurationNode& node); // initialization function
 
 	} food;
 

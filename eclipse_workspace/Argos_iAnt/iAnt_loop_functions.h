@@ -15,21 +15,10 @@ class iAnt_loop_functions : public CLoopFunctions {
 
 private:
 
-    CFloorEntity  *floorEntity;       // object for the floor graphics
-	CRandom::CRNG *RNG;               // random number generator
-	//bool           foodItemReset;     // true or false: Are new food items created once old ones are found?
-	//Real           foodRadiusSquared; // r^2, used for determining proximity to a food item based on positions
-
-	// contains default initialization values for iAntData used in the controllers
-	iAnt_data_structures   iAntData;
-
-	// analyzes controllers and updates CPFA variables
-	iAnt_genetic_algorithm iAntDataAnalysis;
-
-	struct simulation_settings {
-		bool foodItemReset;     // true or false: Are new food items created once old ones are found?
-		Real foodRadiusSquared; // r^2, used for determining proximity to a food item based on positions
-	} simulation_settings;
+    CFloorEntity          *floorEntity;      // object for the floor graphics
+	CRandom::CRNG         *RNG;              // random number generator
+	iAnt_data_structures   iAntData;         // data structure interface used with all controllers (robots)
+	iAnt_genetic_algorithm iAntDataAnalysis; // analyzes controllers and updates CPFA
 
 public:
 

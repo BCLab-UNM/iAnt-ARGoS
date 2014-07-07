@@ -9,21 +9,16 @@ iAnt_loop_functions::iAnt_loop_functions() :
 {}
 
 void iAnt_loop_functions::Init(TConfigurationNode& node) {
+	// initialize iAntData to values set in the XML configuration file
 	iAntData.Init(node);
 
-	// floor object where food and nest objects are drawn
+	// initialize floor object where food and nest objects are drawn
     floorEntity = &GetSpace().GetFloorEntity();
 
-    // use to initialize class objects and variables
-    UInt32 foodItemCount;
+    size_t foodItemCount;
 
     // set XML parameters to variables
 	GetNodeAttribute(GetNode(node, "simulation_settings"), "foodItemCount", foodItemCount);
-    GetNodeAttribute(GetNode(node, "simulation_settings"), "foodRadius", simulation_settings.foodRadiusSquared);
-    GetNodeAttribute(GetNode(node, "simulation_settings"), "foodItemReset", simulation_settings.foodItemReset);
-
-    // do this here so the user doesn't have to pre-calculate in the XML file
-    simulation_settings.foodRadiusSquared *= simulation_settings.foodRadiusSquared;
 
     // create a random number generator for random food item placement
     RNG = CRandom::CreateRNG("argos");
@@ -43,12 +38,9 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
         iAnt_controller& controller = dynamic_cast<iAnt_controller&>(footBot.GetControllableEntity().GetController());
 
         controller.iAntData.Init(node);
-        // implement this later -> controller.iAntData = iAntData;
-        controller.iAntData.navigation.nestPosition = iAntData.navigation.nestPosition;
-        controller.iAntData.navigation.arenaSize = iAntData.navigation.arenaSize;
-        controller.iAntData.navigation.forageRangeX = iAntData.navigation.forageRangeX;
-        controller.iAntData.navigation.forageRangeY = iAntData.navigation.forageRangeY;
         controller.iAntData.food.foodPositions = iAntData.food.foodPositions;
+
+        // implement this later -> controller.iAntData = iAntData;
     }
 }
 
@@ -66,7 +58,7 @@ CColor iAnt_loop_functions::GetFloorColor(const CVector2& position) {
     // check the positions of all food items
     for(UInt32 i = 0; i < iAntData.food.foodPositions.size(); ++i) {
         // if we are in the bounds of a food item, paint it black
-		if((position - iAntData.food.foodPositions[i]).SquareLength() < simulation_settings.foodRadiusSquared) {
+		if((position - iAntData.food.foodPositions[i]).SquareLength() < iAntData.food.foodRadiusSquared) {
 			return CColor::BLACK;
 		}
 	}
@@ -97,15 +89,6 @@ void iAnt_loop_functions::PreStep() {
 		controller.iAntData.navigation.position.Set(footBot.GetEmbodiedEntity().GetPosition().GetX(),
 				                                    footBot.GetEmbodiedEntity().GetPosition().GetY());
 
-		/*
-		LOG << endl << controller.GetId() << endl
-			<< controller.iAntData.navigation.arenaSize << endl
-			<< controller.iAntData.navigation.angleTolerance << endl
-			<< controller.iAntData.navigation.distanceTolerance << endl
-			<< controller.iAntData.CPFA.state << endl
-			<< controller.iAntData.CPFA.siteFidelityRate << endl;
-			*/
-
 		if(controller.hasFoundFood() && !controller.iAntData.food.isHoldingFoodItem) {
 			bool done = false;
 			vector<CVector2>::iterator i;
@@ -113,12 +96,8 @@ void iAnt_loop_functions::PreStep() {
 			// check each food item position to see if the foot-bot found food
             for(i = iAntData.food.foodPositions.begin(); i != iAntData.food.foodPositions.end() && !done; i++) {
                 // if the foot-bot is within range of a food item
-                if((controller.iAntData.navigation.position - *i).SquareLength() < simulation_settings.foodRadiusSquared) {
+                if((controller.iAntData.navigation.position - *i).SquareLength() < iAntData.food.foodRadiusSquared) {
         	    	controller.iAntData.food.isHoldingFoodItem = true;
-                    if(simulation_settings.foodItemReset) {
-                        // move to a new place!
-                        i->Set(RNG->Uniform(iAntData.navigation.forageRangeX), RNG->Uniform(iAntData.navigation.forageRangeY));
-                    }
 
                     // pick up the food item and update foodData variables
                     floorEntity->SetChanged();
@@ -126,8 +105,8 @@ void iAnt_loop_functions::PreStep() {
                 }
             }
 
-            // erase the foodPosition from the vector if it's no longer needed
-            if(done && !simulation_settings.foodItemReset) {
+            // erase the foodPosition from the vector, it's no longer needed
+            if(done) {
             	iAntData.food.foodPositions.erase(--i); // remember that the for loop applies i++ ONCE too far! go back!!!
             }
 

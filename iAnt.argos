@@ -18,7 +18,6 @@
                 <footbot_proximity implementation="default" show_rays="false"/>
                 <footbot_motor_ground implementation="rot_z_only"/>
                 <footbot_light implementation="rot_z_only" show_rays="false" />
-                <colored_blob_omnidirectional_camera implementation="rot_z_only" medium="leds" show_rays="false" />
             </sensors>
 
             <params/>
@@ -27,16 +26,14 @@
     </controllers>
 
     <loop_functions library="eclipse_workspace/Argos_iAnt/Debug/libArgos_iAnt.so" label="iAnt_loop_functions">
-        <simulation_settings foodItemCount="10"
-                             foodRadius="0.05"
-                             foodItemReset="false"/>
+        <simulation_settings foodItemCount="10"/>
                        <CPFA travelProbability="0.001"
                              searchProbability="0.001"
                              uninformedSearchCorrelation="45"
                              informedSearchDecay="0.01"
                              siteFidelityRate="0.1"
                              pheromoneRate="0.01"
-                             pheromoneDecayRate="0.01"/>
+                             pheromoneDecayRate="0.05"/>
                  <navigation distanceTolerance="0.1"
                              angleTolerance="10"
                              arenaSize="10.0, 10.0"
@@ -47,6 +44,7 @@
                              searchStepSize="1.0"
                              searchRadius="1.0"
                              max_speed="10"/>
+                       <food foodRadius="0.05"/>
     </loop_functions>
 
     <arena size="10, 10, 1" center="0, 0, 0.5">

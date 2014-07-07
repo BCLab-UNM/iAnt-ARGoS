@@ -10,7 +10,7 @@
 void iAnt_data_structures::Init(TConfigurationNode& node) {
 	CPFA.Init(GetNode(node, "CPFA"));
 	navigation.Init(GetNode(node, "navigation"));
-	food.Init();
+	food.Init(GetNode(node, "food"));
 }
 
 iAnt_data_structures::CPFA::CPFA():
@@ -91,13 +91,16 @@ void iAnt_data_structures::navigation::Init(TConfigurationNode& node) {
 iAnt_data_structures::food::food() :
 	isHoldingFoodItem(false),
 	hasActivePheromone(false),
-	resourceCount(0)
+	resourceCount(0),
+	foodRadiusSquared(0.0)
 {}
 
-void iAnt_data_structures::food::Init() {
+void iAnt_data_structures::food::Init(TConfigurationNode& node) {
 	isHoldingFoodItem = false;
 	hasActivePheromone = false;
 	resourceCount = 0;
-}
 
-// REGISTER_LOOP_FUNCTIONS(iAnt_data_structures, "iAnt_data_structures")
+	GetNodeAttribute(node, "foodRadius", foodRadiusSquared);
+
+	foodRadiusSquared *= foodRadiusSquared;
+}
