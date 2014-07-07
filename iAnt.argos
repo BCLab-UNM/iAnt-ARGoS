@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<argos-configuration>
+
+    <framework>
+        <system threads="0"/>
+        <experiment length="0"
+                    ticks_per_second="10"
+                    random_seed="1337"/>
+    </framework>
+
+    <controllers>
+        <iAnt_controller id="iAnt_c" library="eclipse_workspace/Argos_iAnt/Debug/libArgos_iAnt.so">
+            <actuators>
+                <differential_steering implementation="default"/>
+            </actuators>
+
+            <sensors>
+                <footbot_proximity implementation="default" show_rays="false"/>
+                <footbot_motor_ground implementation="rot_z_only"/>
+                <footbot_light implementation="rot_z_only" show_rays="false" />
+                <colored_blob_omnidirectional_camera implementation="rot_z_only" medium="leds" show_rays="false" />
+            </sensors>
+
+            <params/>
+
+        </iAnt_controller>
+    </controllers>
+
+    <loop_functions library="eclipse_workspace/Argos_iAnt/Debug/libArgos_iAnt.so" label="iAnt_loop_functions">
+        <simulation_settings foodItemCount="10"
+                             foodRadius="0.05"
+                             foodItemReset="false"/>
+                       <CPFA travelProbability="0.001"
+                             searchProbability="0.001"
+                             uninformedSearchCorrelation="45"
+                             informedSearchDecay="0.01"
+                             siteFidelityRate="0.1"
+                             pheromoneRate="0.01"
+                             pheromoneDecayRate="0.01"/>
+                 <navigation distanceTolerance="0.1"
+                             angleTolerance="10"
+                             arenaSize="10.0, 10.0"
+                             forageRangeX="-4.9, 4.9"
+                             forageRangeY="-4.9, 4.9"
+                             nestPosition="0.0, 0.0"
+                             nestRadius="0.5"
+                             searchStepSize="1.0"
+                             searchRadius="1.0"
+                             max_speed="10"/>
+    </loop_functions>
+
+    <arena size="10, 10, 1" center="0, 0, 0.5">
+        <floor id="floor"
+               source="loop_functions"
+               pixels_per_meter="50"/>
+
+    	<box id="wall_north" size="10, 0.1, 0.5" movable="false">
+            <body position="0, 5.1, 0" orientation="0, 0, 0"/>
+        </box>
+        <box id="wall_south" size="10, 0.1, 0.5" movable="false">
+            <body position="0, -5.1, 0" orientation="0, 0, 0"/>
+        </box>
+        <box id="wall_east" size="0.1, 10, 0.5" movable="false">
+            <body position="5.1, 0, 0" orientation="0, 0, 0"/>
+        </box>
+        <box id="wall_west" size="0.1, 10, 0.5" movable="false">
+            <body position="-5.1, 0, 0" orientation="0, 0, 0"/>
+        </box>
+
+        <light id="nest_light"
+               position="0.0, 0.0, 0.5"
+               orientation="0, 0, 0"
+               color="white"
+               intensity="100.0"
+               medium="leds"/>
+        <cylinder id="nest_c" height="0.4" radius="0.1" mass="1.0" movable="false">
+            <body position="0.0, 0.0, 0" orientation="0, 0, 0"/>
+        </cylinder>
+
+        <distribute>
+            <position method="uniform" min="-2, -2, 0" max="2, 2, 0"/>
+            <orientation method="gaussian" mean="0, 0, 0" std_dev="360, 0, 0"/>
+            <entity quantity="1" max_trials="100">
+                <foot-bot id="fb">
+                    <controller config="iAnt_c"/>
+                </foot-bot>
+            </entity>
+        </distribute>
+    </arena>
+
+    <physics_engines>
+        <dynamics2d id="dyn2d"/>
+    </physics_engines>
+
+    <media>
+        <led id="leds"/>
+    </media>
+
+    <visualization>
+        <qt-opengl>
+            <camera>
+                <placement idx="0"
+                           position="0, 0, 9"
+                           look_at="0, 0, 0"
+                           lens_focal_length="20"/>
+            </camera>
+            <user_functions label="iAnt_qt_user_functions"/>
+        </qt-opengl>
+    </visualization>
+
+</argos-configuration>
