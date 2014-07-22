@@ -17,6 +17,7 @@ private:
 
     CFloorEntity          *floorEntity;      // object for the floor graphics
 	CRandom::CRNG         *RNG;              // random number generator
+
 	iAnt_data_structures   iAntData;         // data structure interface used with all controllers (robots)
 	iAnt_genetic_algorithm iAntDataAnalysis; // analyzes controllers and updates CPFA
 

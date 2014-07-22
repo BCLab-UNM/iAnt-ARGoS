@@ -3,9 +3,7 @@
 // (constructor) initialize class variables, Init() function contains further setup
 iAnt_loop_functions::iAnt_loop_functions() :
 	floorEntity(NULL),
-	RNG(NULL)//,
-	//foodItemReset(false)//,
-	//foodRadiusSquared(0.0)
+	RNG(NULL)
 {}
 
 void iAnt_loop_functions::Init(TConfigurationNode& node) {
@@ -23,6 +21,11 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
     // create a random number generator for random food item placement
     RNG = CRandom::CreateRNG("argos");
 
+    /*
+     * TODO
+     * Implement various other ways to distribute food onto the arena floor, e.g. power law, etc.
+     *
+     */
     // set the positions for all food items to be drawn later
     for(UInt32 i = 0; i < foodItemCount; ++i) {
     	iAntData.food.foodPositions.push_back(CVector2(RNG->Uniform(iAntData.navigation.forageRangeX),

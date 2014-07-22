@@ -26,7 +26,7 @@
     </controllers>
 
     <loop_functions library="eclipse_workspace/Argos_iAnt/Debug/libArgos_iAnt.so" label="iAnt_loop_functions">
-        <simulation_settings foodItemCount="10"/>
+        <simulation_settings foodItemCount="25"/>
                        <CPFA travelProbability="0.001"
                              searchProbability="0.001"
                              uninformedSearchCorrelation="45"

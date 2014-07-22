@@ -370,11 +370,15 @@ void iAnt_controller::performUninformedWalk() {
 	}
 
 	else if((iAntData.navigation.position - iAntData.navigation.target).SquareLength() < iAntData.navigation.distanceTolerance) {
+		/* Get a random rotation angle and then add it to the getVectorToLight angle. This serves the functionality
+		 * of a compass and causes the rotation to be relative to the robot's current direction. */
    		CRadians rotation(RNG->Gaussian(iAntData.CPFA.uninformedSearchCorrelation.GetValue())),
     			 angle(getVectorToLight().Angle().SignedNormalize() + rotation);
 
+   		/* Move from the current position "searchStepSize" distance away after turning "angle" degrees/radians etc. */
    		iAntData.navigation.target = (CVector2(iAntData.navigation.searchStepSize, angle) + iAntData.navigation.position);
 
+   		/* Bounds check: make sure the new position is not outside of the available arena space if the robot is near the edge. */
     	if(iAntData.navigation.target.GetX() > iAntData.navigation.forageRangeX.GetMax()) {
     		iAntData.navigation.target.SetX(iAntData.navigation.forageRangeX.GetMax());
     	} else if(iAntData.navigation.target.GetX() < iAntData.navigation.forageRangeX.GetMin()) {
@@ -401,6 +405,8 @@ void iAnt_controller::performUninformedWalk() {
  */
 void iAnt_controller::senseLocalResourceDensity()
 {
+	// This may be inaccurate, would potentially need to make this set only if the resourceCount is higher
+	// then a certain threshold...
 	iAntData.food.pheromonePosition = iAntData.navigation.position;
 	iAntData.food.resourceCount = -1; // DON'T count the food item robot just found
 
