@@ -1,7 +1,0 @@
-#include "CPFA.h"
-
-CPFA::CPFA() {
-}
-
-CPFA::~CPFA() {
-}

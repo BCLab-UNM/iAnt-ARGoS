@@ -1,3 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">&#x0A;<refactoring comment="Delete resource &apos;Argos_iAnt/iAntgeneticalgorithm.h&apos;" deleteContents="false" description="Delete resource &apos;Argos_iAnt/iAntgeneticalgorithm.h&apos;" element1="/Argos_iAnt/iAntgeneticalgorithm.h" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1404158244587"/>&#x0A;<refactoring comment="Delete resource &apos;Argos_iAnt/iAntgeneticalgorithm.cpp&apos;" deleteContents="false" description="Delete resource &apos;Argos_iAnt/iAntgeneticalgorithm.cpp&apos;" element1="/Argos_iAnt/iAntgeneticalgorithm.cpp" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1404158250500"/>
-</session>

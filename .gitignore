@@ -5,4 +5,6 @@
 # *.[oa]
 # *~
 
-iAnt/eclipse_workspace/debug/
+eclipse_workspace/Argos_iAnt/debug/
+
+eclipse_workspace/.metadata
