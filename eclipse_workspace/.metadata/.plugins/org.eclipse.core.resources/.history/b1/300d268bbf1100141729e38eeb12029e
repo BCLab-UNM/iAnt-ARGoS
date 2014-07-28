@@ -1,0 +1,17 @@
+/*
+ * PheromoneWaypoint.h
+ *
+ *  Created on: Jul 22, 2014
+ *      Author: antonio
+ */
+
+#ifndef PHEROMONEWAYPOINT_H_
+#define PHEROMONEWAYPOINT_H_
+
+class PheromoneWaypoint {
+public:
+	PheromoneWaypoint();
+	~PheromoneWaypoint();
+};
+
+#endif /* PHEROMONEWAYPOINT_H_ */

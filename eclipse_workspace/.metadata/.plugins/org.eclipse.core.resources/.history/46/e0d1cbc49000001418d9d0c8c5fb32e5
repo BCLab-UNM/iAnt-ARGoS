@@ -1,0 +1,13 @@
+/*
+ * iAntgeneticalgorithm.cpp
+ *
+ *  Created on: Jun 30, 2014
+ *      Author: antonio
+ */
+
+#include "iAntgeneticalgorithm.h"
+
+iAnt_genetic_algorithm::iAnt_genetic_algorithm() {
+	// TODO Auto-generated constructor stub
+}
+

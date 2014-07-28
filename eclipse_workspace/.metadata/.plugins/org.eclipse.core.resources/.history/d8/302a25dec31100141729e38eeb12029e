@@ -1,0 +1,30 @@
+#ifndef PHEROMONEWAYPOINT_H_
+#define PHEROMONEWAYPOINT_H_
+
+#include <argos3/core/utility/datatypes/datatypes.h>
+#include <argos3/core/utility/math/vector2.h>
+
+using namespace argos;
+
+class PheromoneWaypoint {
+
+private:
+
+	CVector2 location;
+	size_t lastUpdate;
+	Real decay;
+	Real weight;
+
+	Real exponentialDecay(Real quantity, Real time, Real lambda);
+
+public:
+
+	PheromoneWaypoint(CVector2 location, size_t time, Real decay, Real weight = 1);
+	~PheromoneWaypoint();
+
+	bool update(size_t time);
+	CVector2 getLocation();
+
+};
+
+#endif /* PHEROMONEWAYPOINT_H_ */

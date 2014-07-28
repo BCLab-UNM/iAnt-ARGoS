@@ -1,0 +1,33 @@
+#ifndef CONTROLLER_H_
+#define CONTROLLER_H_
+
+/* base class for controller objects */
+#include <argos3/core/control_interface/ci_controller.h>
+/* updates the motors' speed settings */
+#include <argos3/plugins/robots/generic/control_interface/ci_differential_steering_actuator.h>
+/* collision detection sensors */
+#include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_proximity_sensor.h>
+/* detect color changes on the ground, used for food & nest detection */
+#include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_motor_ground_sensor.h>
+/* used in navigation to locate targets, light is fixed at the nest */
+#include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_light_sensor.h>
+/* class for random number generator objects */
+#include <argos3/core/utility/math/rng.h>
+/* 2D vector definition */
+#include <argos3/core/utility/math/vector2.h>
+/* provide LOG and LOGERR print out capability to the Argos GUI screen */
+#include <argos3/core/utility/logging/argos_log.h>
+
+/* access to Argos3 classes and objects */
+using namespace argos;
+/* access to std::endl and std::vector, etc. */
+using namespace std;
+
+/* Controller Class for iAnt robots. The "brain" for individual robot behavior which implements the iAnt CPFA. */
+class Controller : public CCI_Controller {
+public:
+	Controller();
+	~Controller();
+};
+
+#endif /* CONTROLLER_H_ */

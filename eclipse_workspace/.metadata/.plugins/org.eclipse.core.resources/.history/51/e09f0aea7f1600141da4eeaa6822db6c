@@ -1,0 +1,14 @@
+#include "CPFA.h"
+
+CPFA::CPFA() {
+}
+
+CPFA::~CPFA() {
+}
+
+void CPFA::setSearchLocation() {}
+void CPFA::travelToSearchSite() {}
+void CPFA::performInformedWalk() {}
+void CPFA::performUninformedWalk() {}
+void CPFA::senseLocalResourceDensity() {}
+void CPFA::travelToNest() {}

@@ -1,0 +1,21 @@
+#include "PheromoneWaypoint.h"
+
+Real PheromoneWaypoint::exponentialDecay(Real quantity, Real time, Real lambda) {
+	return (quantity * exp(-lambda * time));
+}
+
+PheromoneWaypoint::PheromoneWaypoint(CVector2 location, size_t time, Real decay, Real weight) {
+	this->location = location;
+	this->lastUpdate = time;
+	this->decay = decay;
+	this->weight = weight;
+}
+
+bool PheromoneWaypoint::update(size_t time) {
+	this->weight = exponentialDecay(this->weight, (time - this->lastUpdate), this->decay);
+	return (this->weight < 0.001) ? (false) : (true);
+}
+
+CVector2 PheromoneWaypoint::getLocation() {
+	return this->location;
+}

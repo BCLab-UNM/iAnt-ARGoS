@@ -1,0 +1,16 @@
+/*
+ * iAntgeneticalgorithm.h
+ *
+ *  Created on: Jun 30, 2014
+ *      Author: antonio
+ */
+
+#ifndef IANTGENETICALGORITHM_H_
+#define IANTGENETICALGORITHM_H_
+
+class iAnt_genetic_algorithm {
+public:
+	iAnt_genetic_algorithm();
+};
+
+#endif /* IANTGENETICALGORITHM_H_ */

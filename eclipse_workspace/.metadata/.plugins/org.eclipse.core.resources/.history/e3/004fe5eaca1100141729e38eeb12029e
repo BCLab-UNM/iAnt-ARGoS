@@ -1,0 +1,37 @@
+#ifndef PHEROMONEWAYPOINT_H_
+#define PHEROMONEWAYPOINT_H_
+
+/* Make use of ARGoS cross platform representation of primitive data types. */
+#include <argos3/core/utility/datatypes/datatypes.h>
+/* ARGoS implementation of 2D vector and Cartesian coordinates. */
+#include <argos3/core/utility/math/vector2.h>
+
+using namespace argos;
+
+/* This class represents a Cartesian coordinate that is marked by an iAnt robot as a prime search
+ * location to search for food. In accordance with the iAnt CPFA model, a given pheromone waypoint
+ * will fade over time at an exponential rate of decay. */
+class PheromoneWaypoint {
+
+private:
+
+	CVector2 location;
+	size_t lastUpdate;
+	Real decayRate;
+	Real weight;
+	Real weightThreshold;
+
+	Real exponentialDecay(Real time);
+
+public:
+
+	PheromoneWaypoint(CVector2 location, size_t time, Real decayRate = 0.01, Real weight = 1.0, Real weightThreshold = 0.001);
+	~PheromoneWaypoint() {}
+
+	bool update(size_t time);
+	bool status();
+	CVector2 getLocation();
+
+};
+
+#endif /* PHEROMONEWAYPOINT_H_ */

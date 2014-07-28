@@ -1,0 +1,9 @@
+#include "PheromoneWaypoint.h"
+
+PheromoneWaypoint::PheromoneWaypoint() {
+	// TODO Auto-generated constructor stub
+}
+
+PheromoneWaypoint::~PheromoneWaypoint() {
+	// TODO Auto-generated destructor stub
+}

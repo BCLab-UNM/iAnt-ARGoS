@@ -1,0 +1,376 @@
+/****************************************
+ *
+ * Version 2.0 beta
+ *
+ */
+
+
+#include "iAnt_controller.h"
+
+iAnt_controller::navigation::navigation() :
+    turningMechanism(),
+    collisionAngleTolerance(0.0f),
+    collisionDistanceTolerance(0.0f),
+    goStraightAngleRange(-ToRadians(collisionAngleTolerance), ToRadians(collisionAngleTolerance)),
+    foragingArenaSideX(-4.75, 4.75),
+    foragingArenaSideY(-4.75, 4.75),
+    turnThreshold(0.0f),
+    maxSpeed(0.0)
+{}
+
+void iAnt_controller::navigation::Init(TConfigurationNode& t_node) {
+    CDegrees angle;
+
+    GetNodeAttribute(t_node, "collisionAngleTolerance", collisionAngleTolerance);
+    GetNodeAttribute(t_node, "collisionDistanceTolerance", collisionDistanceTolerance);
+    GetNodeAttribute(t_node, "turnThreshold", angle);
+    GetNodeAttribute(t_node, "max_speed", maxSpeed);
+
+    goStraightAngleRange.Set(-ToRadians(collisionAngleTolerance), ToRadians(collisionAngleTolerance));
+    turnThreshold = ToRadians(angle);
+}
+
+iAnt_controller::iAnt_controller() :
+	steeringActuator(NULL),
+	proximitySensor(NULL),
+	groundSensor(NULL),
+	lightSensor(NULL),
+	RNG(NULL),
+	foragingAttempts(0),
+	travelProbability(0.0f),
+	searchProbability(0.0f),
+	uninformedSearchCorrelation(0.0f),
+	informedSearchDecay(0.0f),
+	siteFidelityRate(0.0f),
+	pheromoneRate(0.0f),
+	pheromoneDecay(0.0f),
+	isHoldingFoodItem(false),
+	isForaging(true),
+	isTargetSeeking(false),
+	isSimulationOver(false)
+{}
+
+void iAnt_controller::Init(TConfigurationNode& t_node) {
+	steeringActuator = GetActuator<CCI_DifferentialSteeringActuator>("differential_steering");
+	proximitySensor  = GetSensor<CCI_FootBotProximitySensor>("footbot_proximity");
+	groundSensor     = GetSensor<CCI_FootBotMotorGroundSensor>("footbot_motor_ground");
+	lightSensor      = GetSensor<CCI_FootBotLightSensor>("footbot_light");
+
+	GetNodeAttribute(t_node, "travelProbability", travelProbability);
+	GetNodeAttribute(t_node, "searchProbability", searchProbability);
+	GetNodeAttribute(t_node, "uninformedSearchCorrelation", uninformedSearchCorrelation);
+	GetNodeAttribute(t_node, "informedSearchDecay", informedSearchDecay);
+	GetNodeAttribute(t_node, "siteFidelityRate", siteFidelityRate);
+	GetNodeAttribute(t_node, "pheromoneRate", pheromoneRate);
+	GetNodeAttribute(t_node, "pheromoneDecay", pheromoneDecay);
+
+	navControls.Init(GetNode(t_node, "navigation"));
+    RNG = CRandom::CreateRNG("argos");
+}
+
+void iAnt_controller::ControlStep() {
+    if(!collisionDetection()) {
+        if(isSimulationOver) {
+            if(inTheNest()) {
+                steeringActuator->SetLinearVelocity(0.0, 0.0);
+            } else {
+                goToNest();
+            }
+        } else if(isHoldingFoodItem) {
+	        goToNest();
+	    } else if(isTargetSeeking) {
+            goToTarget();
+        } else if(isForaging) {
+            goForaging();
+		}
+	}
+}
+
+void iAnt_controller::Reset() {
+	travelProbability = 0.0f;
+	searchProbability = 0.0f;
+	uninformedSearchCorrelation = 0.0f;
+	informedSearchDecay = 0.0f;
+	siteFidelityRate = 0.0f;
+	pheromoneRate = 0.0f;
+	pheromoneDecay = 0.0f;
+	isHoldingFoodItem = false;
+	isSimulationOver = false;
+}
+
+bool iAnt_controller::collisionDetection() {
+	const CCI_FootBotProximitySensor::TReadings& proximityReadings = proximitySensor->GetReadings();
+	CVector2 accumulator;
+
+	for(size_t i = 0; i < proximityReadings.size(); ++i) {
+		accumulator += CVector2(proximityReadings[i].Value, proximityReadings[i].Angle);
+	}
+
+	accumulator /= proximityReadings.size();
+	CRadians angle = accumulator.Angle();
+
+	if(navControls.goStraightAngleRange.WithinMinBoundIncludedMaxBoundIncluded(angle) &&
+		accumulator.Length() < navControls.collisionDistanceTolerance) {
+		steeringActuator->SetLinearVelocity(navControls.maxSpeed, navControls.maxSpeed);
+		return false; // collision not detected
+	} else {
+		if(angle.GetValue() > 0.0f) {
+			steeringActuator->SetLinearVelocity(navControls.maxSpeed, 0.0/*-navControls.maxSpeed*/);
+		} else {
+			steeringActuator->SetLinearVelocity(0.0 /*-navControls.maxSpeed*/, navControls.maxSpeed);
+		}
+		return true; // collision detected
+	}
+}
+
+CRadians iAnt_controller::lawOfCosines(CVector2& A, CVector2& B, CVector2& C) {
+    // the length of each side of the calculated triangle
+    Real a(sqrt(((B.GetX() - A.GetX()) * (B.GetX() - A.GetX())) + ((B.GetY() - A.GetY()) * (B.GetY() - A.GetY())))),
+         b(sqrt(((B.GetX() - C.GetX()) * (B.GetX() - C.GetX())) + ((B.GetY() - C.GetY()) * (B.GetY() - C.GetY())))),
+         c(sqrt(((A.GetX() - C.GetX()) * (A.GetX() - C.GetX())) + ((A.GetY() - C.GetY()) * (A.GetY() - C.GetY()))));
+
+    // determine whether we must add or subtract the rotation angle
+    Real sign(getSignOfRotationAngle(A, B, C));
+
+    // formula for the law of cosines
+    return CRadians(sign * acos(((a * a) + (b * b) - (c * c)) / (2.0 * a * b)));
+}
+
+Real iAnt_controller::getSignOfRotationAngle(CVector2& A, CVector2& B, CVector2& C) {
+    // returned as is for positive rotation, -1.0 for negative rotation
+    Real result(1.0);
+
+    // create a reference point midway between B and C
+    CVector2 referencePoint(((B.GetX() + C.GetX())/2.0), ((B.GetY() + C.GetY())/2.0));
+
+    // slope of the line created by the points B and C
+    Real rise(B.GetY() - C.GetY()), run(B.GetX() - C.GetX());
+
+    // avoid division by 0
+    if(run == 0.0) { run += 0.001; }
+    // and calculate the slope of the line created by points B and C
+    Real slope(rise / run);
+
+    // Is the nest above or below the line created by B and C?
+    // we are using the point-slope formula for a line in this calculation
+    bool nestIsAboveTheLine(A.GetY() > ((slope * (A.GetX() - referencePoint.GetX())) + referencePoint.GetY()));
+
+    // Is the foot-bot to the left or right of the target?
+    bool B_is_left_of_C(B.GetX() < C.GetX());
+
+    if(nestIsAboveTheLine) {
+        if(B_is_left_of_C) {
+            result *= -1.0;
+        }
+    } else {
+        if(!B_is_left_of_C) {
+            result *= -1.0;
+        }
+    }
+
+    return result;
+}
+
+CVector2 iAnt_controller::getVectorToLight() {
+	const CCI_FootBotLightSensor::TReadings& readings = lightSensor->GetReadings();
+	CVector2 accumulator;
+
+	for(size_t i = 0; i < readings.size(); ++i) {
+	    accumulator += CVector2(readings[i].Value, readings[i].Angle);
+	}
+
+	return accumulator;
+}
+
+CVector2 iAnt_controller::getVectorToPosition(const CVector2& targetPosition) {
+    const CCI_FootBotLightSensor::TReadings& readings = lightSensor->GetReadings();
+    CVector2 accumulator;
+    // we will construct a triangle using these points: A, B, C
+    CVector2 A(navControls.nestPosition), B(navControls.botPosition), C(targetPosition);
+    CRadians rotationTowardsTarget(lawOfCosines(A, B, C));
+
+    for(size_t i = 0; i < readings.size(); ++i) {
+        accumulator += CVector2(readings[i].Value, readings[i].Angle + rotationTowardsTarget);
+    }
+
+    return accumulator;
+}
+
+void iAnt_controller::setWheelSpeed(const CVector2& heading) {
+   CRadians headingAngle = heading.Angle().SignedNormalize();
+
+   if(Abs(headingAngle) <= navControls.turnThreshold) {
+	   navControls.turningMechanism = navigation::NO_TURN;
+   } else if(Abs(headingAngle) > navControls.turnThreshold) {
+	   navControls.turningMechanism = navigation::TURN;
+   }
+
+   /* Wheel speeds based on current turning state */
+   Real speed1, speed2;
+
+   switch(navControls.turningMechanism) {
+      case navigation::NO_TURN: {
+         /* Just go straight */
+         speed1 = navControls.maxSpeed;
+         speed2 = navControls.maxSpeed;
+         break;
+      }
+      case navigation::TURN: {
+         /* Opposite wheel speeds */
+         speed1 = -navControls.maxSpeed;
+         speed2 =  navControls.maxSpeed;
+         break;
+      }
+   }
+
+   Real leftWheelSpeed, rightWheelSpeed;
+
+   if(headingAngle > CRadians::ZERO) {
+      /* Turn Left */
+      leftWheelSpeed  = speed1;
+      rightWheelSpeed = speed2;
+   } else {
+      /* Turn Right */
+      leftWheelSpeed  = speed2;
+      rightWheelSpeed = speed1;
+   }
+
+   steeringActuator->SetLinearVelocity(leftWheelSpeed, rightWheelSpeed);
+}
+
+bool iAnt_controller::inTheNest() {
+	const CCI_FootBotMotorGroundSensor::TReadings& groundReadings = groundSensor->GetReadings();
+
+    // values range from 0 to 1, with 0 being black and 1 being white
+    // the ground sensor has 4 components, [2] and [3] are rear sensors, [0] and [1] front sensors
+	// we only care if the back wheels are in the nest (which guarantees the front wheels are too)
+	if(groundReadings[2].Value > 0.50f && // .25
+       groundReadings[2].Value < 0.80f && // .75
+       groundReadings[3].Value > 0.50f && // .25
+       groundReadings[3].Value < 0.80f) { // .75
+
+	   /*
+       LOG << endl
+           << "In The Nest!" << endl
+           << groundReadings << endl;
+           */
+
+	    return true;
+	}
+
+	return false;
+}
+
+bool iAnt_controller::hasFoundFood() {
+	const CCI_FootBotMotorGroundSensor::TReadings& groundReadings = groundSensor->GetReadings();
+
+	// values range from 0 to 1, with 0 being black and 1 being white
+    // the ground sensor has 4 components, [2] and [3] are rear sensors, [0] and [1] front sensors
+	if((groundReadings[0].Value >= 0.00f &&
+        groundReadings[0].Value <= 0.25f) ||
+       (groundReadings[1].Value >= 0.00f &&
+        groundReadings[1].Value <= 0.25f) ||
+       (groundReadings[2].Value >= 0.00f &&
+        groundReadings[2].Value <= 0.25f) ||
+       (groundReadings[3].Value >= 0.00f &&
+        groundReadings[3].Value <= 0.25f)) {
+
+	    /*
+	    LOG << endl
+	        << "Found Food!" << endl
+	        << groundReadings << endl;
+	        */
+
+	    return true;
+	}
+
+	return false;
+}
+
+bool iAnt_controller::hasFoodItem() {
+    return isHoldingFoodItem;
+}
+
+bool iAnt_controller::isNowForaging() {
+    return isForaging;
+}
+
+void iAnt_controller::goToNest() {
+	setWheelSpeed(getVectorToLight());
+}
+
+void iAnt_controller::goToTarget() {
+    setWheelSpeed(getVectorToPosition(navControls.botTarget));
+}
+
+void iAnt_controller::goForaging() {
+    if(((navControls.botPosition - navControls.foragingTarget).SquareLength() < (0.1 * 0.1)) ||
+       foragingAttempts > 150) {
+        foragingAttempts = 0;
+        CRange<Real> foragingSideX, foragingSideY;
+        Real forageXplus  = (navControls.botPosition.GetX() + 2.0);
+        Real forageXminus = (navControls.botPosition.GetX() - 2.0);
+        Real forageYplus  = (navControls.botPosition.GetY() + 2.0);
+        Real forageYminus = (navControls.botPosition.GetY() - 2.0);
+
+        foragingSideX.Set(forageXminus, forageXplus);
+        foragingSideY.Set(forageYminus, forageYplus);
+
+        Real forageX = RNG->Uniform(foragingSideX);
+        Real forageY = RNG->Uniform(foragingSideY);
+
+        if(forageX > navControls.foragingArenaSideX.GetMax()) {
+            forageX = navControls.foragingArenaSideX.GetMax();
+        } else if(forageX < navControls.foragingArenaSideX.GetMin()) {
+            forageX = navControls.foragingArenaSideX.GetMin();
+        }
+
+        if(forageY > navControls.foragingArenaSideY.GetMax()) {
+            forageY = navControls.foragingArenaSideY.GetMax();
+        } else if(forageY < navControls.foragingArenaSideY.GetMin()) {
+            forageY = navControls.foragingArenaSideY.GetMin();
+        }
+
+        navControls.foragingTarget.Set(forageX, forageY);
+    } else {
+        foragingAttempts++;
+        setWheelSpeed(getVectorToPosition(navControls.foragingTarget));
+    }
+
+    // LOG << this->GetId() << " : " << foragingAttempts << endl;
+}
+
+void iAnt_controller::setFoodItemStatus(bool newStatus) {
+    isHoldingFoodItem = newStatus;
+}
+
+void iAnt_controller::setForagingStatus(bool newStatus) {
+    isForaging = newStatus;
+}
+
+void iAnt_controller::setTargetingStatus(bool newStatus) {
+    isTargetSeeking = newStatus;
+}
+
+void iAnt_controller::setSimulationStatus(bool newStatus) {
+    isSimulationOver = newStatus;
+}
+
+
+void iAnt_controller::setFootBotPosition(CVector2& newPosition) {
+    navControls.botPosition = newPosition;
+}
+
+void iAnt_controller::setFootBotTarget(CVector2& newPosition) {
+    navControls.botTarget = newPosition;
+}
+
+void iAnt_controller::setForagingTarget(CVector2& newPosition) {
+    navControls.foragingTarget = newPosition;
+}
+
+void iAnt_controller::setNestPosition(CVector2& newPosition) {
+    navControls.nestPosition = newPosition;
+}
+
+REGISTER_CONTROLLER(iAnt_controller, "iAnt_controller")

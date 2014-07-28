@@ -1,0 +1,17 @@
+/*
+ * PheromoneList.h
+ *
+ *  Created on: Jul 22, 2014
+ *      Author: antonio
+ */
+
+#ifndef PHEROMONELIST_H_
+#define PHEROMONELIST_H_
+
+class PheromoneList {
+public:
+	PheromoneList();
+	~PheromoneList();
+};
+
+#endif /* PHEROMONELIST_H_ */

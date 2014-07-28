@@ -1,0 +1,19 @@
+#include "Controller.h"
+
+Controller::Controller() {
+}
+
+Controller::~Controller() {
+}
+
+void Controller::Init(TConfigurationNode& node) {
+}
+
+void Controller::ControlStep() {
+}
+
+void Controller::Reset() {
+}
+
+void Controller::Destroy() {
+}

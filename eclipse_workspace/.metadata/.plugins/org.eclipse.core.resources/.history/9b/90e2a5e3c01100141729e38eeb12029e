@@ -1,0 +1,13 @@
+#include "PheromoneWaypoint.h"
+
+PheromoneWaypoint::PheromoneWaypoint() {
+	// TODO Auto-generated constructor stub
+}
+
+PheromoneWaypoint::~PheromoneWaypoint() {
+	// TODO Auto-generated destructor stub
+}
+
+bool PheromoneWaypoint::update(size_t time) {
+	return false;
+}

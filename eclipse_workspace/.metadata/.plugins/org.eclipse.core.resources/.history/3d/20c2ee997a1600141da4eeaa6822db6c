@@ -1,0 +1,27 @@
+#ifndef CPFA_H_
+#define CPFA_H_
+
+/* Make use of ARGoS cross platform representation of primitive data types. */
+#include <argos3/core/utility/datatypes/datatypes.h>
+/* ARGoS implementation of 2D vector and Cartesian coordinates. */
+#include <argos3/core/utility/math/vector2.h>
+
+class CPFA {
+
+public:
+
+	enum CPFA_state {
+        SET_SEARCH_LOCATION = 0,
+        TRAVEL_TO_SEARCH_SITE,
+        PERFORM_INFORMED_WALK,
+        PERFORM_UNINFORMED_WALK,
+        SENSE_LOCAL_RESOURCE_DENSITY,
+        TRAVEL_TO_NEST
+	};
+
+	CPFA();
+	~CPFA();
+
+};
+
+#endif /* CPFA_H_ */

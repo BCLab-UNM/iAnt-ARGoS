@@ -1,0 +1,10 @@
+#include "Controller.h"
+
+Controller::Controller() {
+}
+
+Controller::~Controller() {
+}
+
+void Controller::Init(TConfigurationNode& node) {}
+

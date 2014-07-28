@@ -1,0 +1,40 @@
+#include "PheromoneWaypoint.h"
+
+/* Perform exponential decay on "weight" at a rate of "decayRate" over
+ * a period of simulation frames equivalent to the "time" variable. */
+Real PheromoneWaypoint::exponentialDecay(Real time) {
+	return (this->weight * exp(-this->decayRate * time));
+}
+
+/* Construct a new pheromone waypoint. The location and time created are required. Time is measured
+ * in simulation frames where a certain number of frames equals 1.0 seconds (this is set in the .XML
+ * configuration file under "ticks_per_second"). The decayRate and weight have default values of 0.01
+ * and 1.0 respectively. decayRate should be defined in the .XML and passed to this constructor.
+ * weightThreshold shouldn't need to be set differently than its default, but the option is included. */
+PheromoneWaypoint::PheromoneWaypoint(CVector2 location, size_t time, Real decayRate, Real weight, Real weightThreshold) {
+	this->location = location;
+	this->lastUpdate = time;
+	this->decayRate = decayRate;
+	this->weight = weight;
+	this->weightThreshold = weightThreshold;
+}
+
+/* Update the pheromone and return its status. Return "true" if the pheromone is
+ * still viable and return "false" if the pheromone has faded below the threshold. */
+bool PheromoneWaypoint::update(size_t time) {
+	this->weight = exponentialDecay(time - this->lastUpdate);
+	this->lastUpdate = time;
+
+	return status();
+}
+
+/* Return "true" if the pheromone is still viable and return
+ * "false" if the pheromone has faded below the threshold. */
+bool PheromoneWaypoint::isActive() {
+	return (this->weight < this->weightThreshold) ? (false) : (true);
+}
+
+/* Public getter function. Return the pheromone's location. */
+CVector2 PheromoneWaypoint::getLocation() {
+	return this->location;
+}

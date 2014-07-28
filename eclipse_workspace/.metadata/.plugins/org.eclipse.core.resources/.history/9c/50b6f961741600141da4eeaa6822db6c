@@ -1,0 +1,17 @@
+/*
+ * CPFA.h
+ *
+ *  Created on: Jul 28, 2014
+ *      Author: antonio
+ */
+
+#ifndef CPFA_H_
+#define CPFA_H_
+
+class CPFA {
+public:
+	CPFA();
+	~CPFA();
+};
+
+#endif /* CPFA_H_ */
