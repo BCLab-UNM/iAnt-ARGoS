@@ -1,8 +1,7 @@
 #ifndef CONTROLLER_H_
 #define CONTROLLER_H_
 
-/* iAnt Class Library: Custom objects implementing the iAnt CPFA algorithms. (extension/modularization) */
-#include "CPFA.h"
+/* iAnt Library: objects implementing the iAnt CPFA algorithms. (extension/modularization) */
 #include "NavigationData.h"
 #include "FoodData.h"
 
@@ -14,6 +13,9 @@
 #include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_proximity_sensor.h>
 #include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_motor_ground_sensor.h>
 #include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_light_sensor.h>
+
+/* Argos3 libray: random number generator, log printout to Argos GUI, etc. (plug-ins)*/
+#include <argos3/core/utility/math/rng.h>
 #include <argos3/core/utility/logging/argos_log.h>
 
 /* Access the Argos3 classes/objects and save some typing. */
@@ -33,19 +35,30 @@ private:
 
 	/* TODO make sure that each of these custom objects has an Init() function
 	 * that will tie them into the ARGoS framework. */
-	/* get rid of CPFA */ CPFA              CPFA_data; // CPFA data container.
 	NavigationData    navData;   // Navigation data container object.
-	FoodData          foodData;  // Food source data container.
+	/* TODO move foodData into the navigationData object.. maybe.. think about it.. */
+	FoodData          foodData;  // Food source data container object.
+
+	/* CPFA variables,
+     * NOTE: until my understanding improves, below comments may not be accurate. */
+	Real           travelProbability;           // %-chance of traveling, from [0.0, 1.0]
+	Real           searchProbability;           // %-chance of searching, from [0.0, 1.0]
+	CRadians       uninformedSearchCorrelation; // radian angle turned during searching [0.0, 4.0PI]
+	Real           informedSearchDecay;         // %-rate that informed search decays [0.0, 5.0]
+	Real           siteFidelityRate;            // %-chance that robot remembers a site [0.0, 20.0]
+	Real           pheromoneRate;               // %-chance of laying a pheromone [0.0, 20.0]
+	Real           pheromoneDecayRate;          // %-rate that pheromones decay [0.0, 10.0]
+	CRandom::CRNG *RNG;                         // random number generator used for random walking, etc.
 
 	/* Primary state definitions for the CPFA. */
-	enum STATE {
+	enum state {
         SET_SEARCH_LOCATION = 0,
         TRAVEL_TO_SEARCH_SITE,
         PERFORM_INFORMED_WALK,
         PERFORM_UNINFORMED_WALK,
         SENSE_LOCAL_RESOURCE_DENSITY,
         TRAVEL_TO_NEST
-	};
+	} state;
 
 public:
 
@@ -78,6 +91,17 @@ public:
      * @see Init()
      * @see Reset() */
     void Destroy();
+
+    /* Just a thought, but you may make these private and add
+	 * a function "changeState()" which calls the appropriate
+	 * function from the list below... */
+	/* CPFA state machine implementation functions */
+	void SetSearchLocation();
+	void TravelToSearchSite();
+	void PerformInformedWalk();
+	void PerformUninformedWalk();
+	void SenseLocalResourceDensity();
+	void TravelToNest();
 
 }; /* Controller */
 

@@ -12,7 +12,9 @@ class FoodData {
 
 private:
 
-	PheromoneWaypoint pheromone; // Food source location tracking.
+	bool              hasFood;            // Currently holding food? yes = true
+	size_t            totalFoodCollected; // Count of total food collected.
+	PheromoneWaypoint pheromone;          // Food source location tracking.
 
 public:
 
