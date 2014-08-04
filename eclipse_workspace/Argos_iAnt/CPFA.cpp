@@ -8,13 +8,20 @@ CPFA::CPFA() :
 	siteFidelityRate(0.0),
 	pheromoneRate(0.0),
 	pheromoneDecayRate(0.0),
-	state(SET_SEARCH_LOCATION)
+	state(SET_SEARCH_LOCATION),
+	RNG(NULL)
 {}
 
 CPFA::~CPFA() {
 }
 
 void CPFA::Init(TConfigurationNode& node) {
+}
+
+void CPFA::Run(NavigationData& navData, FoodData& foodData) {
+}
+
+void CPFA::Reset() {
 }
 
 /***

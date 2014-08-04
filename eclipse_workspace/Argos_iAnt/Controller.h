@@ -1,38 +1,26 @@
 #ifndef CONTROLLER_H_
 #define CONTROLLER_H_
 
-/* Central Place Foraging Algorithm: state-not-state machine. */
+/* iAnt Class Library: Custom objects implementing the iAnt CPFA algorithms. (extension/modularization) */
 #include "CPFA.h"
-/* Implements navigation data container object. */
 #include "NavigationData.h"
-/* Implements food data container object. */
 #include "FoodData.h"
-/* Implements food source location tracking. */
-#include "PheromoneWaypoint.h"
-/* Base class for controller objects. */
+
+/* Base class for Argos3 controller objects. (inheritance) */
 #include <argos3/core/control_interface/ci_controller.h>
-/* Updates the motor speed settings. */
+
+/* Argos3 objects for robot components: actuators and sensors. (plug-ins) */
 #include <argos3/plugins/robots/generic/control_interface/ci_differential_steering_actuator.h>
-/* Collision detection sensors. */
 #include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_proximity_sensor.h>
-/* Detect color changes on the ground for food & nest detection. */
 #include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_motor_ground_sensor.h>
-/* Used in navigation to locate targets, light is fixed at the nest. */
 #include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_light_sensor.h>
-/* Class for random number generator objects. */
-#include <argos3/core/utility/math/rng.h>
-/* The 2D vector definition used in ARGoS. */
-#include <argos3/core/utility/math/vector2.h>
-/* Provides LOG and LOGERR print out capability to the ARGoS GUI screen. */
 #include <argos3/core/utility/logging/argos_log.h>
 
-/* Provide access to ARGoS 3 classes and objects. */
+/* Access the Argos3 classes/objects and save some typing. */
 using namespace argos;
-/* Provide access to std::endl and std::vector, etc. */
-using namespace std;
 
 /* The controller class for iAnt robots. This is the "brain" for individual robot behavior,
- * and it implements the iAnt CPFA. */
+ * and it implements the iAnt CPFA using the iAnt class library. */
 class Controller : public CCI_Controller {
 
 private:
@@ -43,18 +31,21 @@ private:
 	CCI_FootBotMotorGroundSensor     *groundSensor;     // detects food items & nest (color changes)
 	CCI_FootBotLightSensor           *lightSensor;      // detects nest-light for navigation control
 
-	/* TODO note: you may need to move RNG to the "NavigationData"
-	 * or the "CPFA" class to make this class less cluttered. */
-	/* random number generator used for random walking, etc. */
-	CRandom::CRNG *RNG;
-
-	CPFA              CPFA_data; // CPFA data container.
+	/* TODO make sure that each of these custom objects has an Init() function
+	 * that will tie them into the ARGoS framework. */
+	/* get rid of CPFA */ CPFA              CPFA_data; // CPFA data container.
 	NavigationData    navData;   // Navigation data container object.
 	FoodData          foodData;  // Food source data container.
 
-	/* TODO note: you may want to move this pheromone object into the
-	 * "foodData" or "navdata objects... */
-	PheromoneWaypoint pheromone; // Food source location tracking.
+	/* Primary state definitions for the CPFA. */
+	enum STATE {
+        SET_SEARCH_LOCATION = 0,
+        TRAVEL_TO_SEARCH_SITE,
+        PERFORM_INFORMED_WALK,
+        PERFORM_UNINFORMED_WALK,
+        SENSE_LOCAL_RESOURCE_DENSITY,
+        TRAVEL_TO_NEST
+	};
 
 public:
 
@@ -67,7 +58,7 @@ public:
     /* Initializes the controller.
      * You should always perform all your memory allocation and configuration in this method,
      * and not in the constructor.
-     * @param t_node The XML tree associated to this controller.
+     * @param node The XML tree associated to this controller.
      * @see Reset()
      * @see Destroy() */
 	void Init(TConfigurationNode& node);
@@ -88,6 +79,6 @@ public:
      * @see Reset() */
     void Destroy();
 
-};
+}; /* Controller */
 
 #endif /* CONTROLLER_H_ */

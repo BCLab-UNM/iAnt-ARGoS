@@ -1,12 +1,17 @@
 #ifndef CPFA_H_
 #define CPFA_H_
 
+/* iAnt Class Library: Custom objects implementing the iAnt CPFA algorithms. (extension/modularization) */
+#include "NavigationData.h"
+#include "FoodData.h"
 /* Make use of ARGoS cross platform representation of primitive data types. */
 #include <argos3/core/utility/datatypes/datatypes.h>
 /* ARGoS implementation of 2D vector and Cartesian coordinates. */
 #include <argos3/core/utility/math/vector2.h>
 /* Access XML loading functionality. */
 #include <argos3/core/utility/configuration/argos_configuration.h>
+/* Definitions for random number generation */
+#include <argos3/core/utility/math/rng.h>
 
 /* access to Argos3 classes and objects */
 using namespace argos;
@@ -33,6 +38,8 @@ public:
 
 	/* XML configuration initializer. */
 	void Init(TConfigurationNode& node);
+	void Run(NavigationData& navData, FoodData& foodData);
+	void Reset();
 
 	/* Just a thought, but you may make these private and add
 	 * a function "changeState()" which calls the appropriate
@@ -48,14 +55,15 @@ public:
 private:
 
     /* NOTE: until my understanding improves, below comments may not be accurate */
-	Real     travelProbability;           // %-chance of traveling, from [0.0, 1.0]
-	Real     searchProbability;           // %-chance of searching, from [0.0, 1.0]
-	CRadians uninformedSearchCorrelation; // radian angle turned during searching [0.0, 4.0PI]
-	Real     informedSearchDecay;         // %-rate that informed search decays [0.0, 5.0]
-	Real     siteFidelityRate;            // %-chance that robot remembers a site [0.0, 20.0]
-	Real     pheromoneRate;               // %-chance of laying a pheromone [0.0, 20.0]
-	Real     pheromoneDecayRate;          // %-rate that pheromones decay [0.0, 10.0]
-	STATE    state;                       // the current state of the state-not-state machine
+	Real           travelProbability;           // %-chance of traveling, from [0.0, 1.0]
+	Real           searchProbability;           // %-chance of searching, from [0.0, 1.0]
+	CRadians       uninformedSearchCorrelation; // radian angle turned during searching [0.0, 4.0PI]
+	Real           informedSearchDecay;         // %-rate that informed search decays [0.0, 5.0]
+	Real           siteFidelityRate;            // %-chance that robot remembers a site [0.0, 20.0]
+	Real           pheromoneRate;               // %-chance of laying a pheromone [0.0, 20.0]
+	Real           pheromoneDecayRate;          // %-rate that pheromones decay [0.0, 10.0]
+	STATE          state;                       // the current state of the state-not-state machine
+	CRandom::CRNG *RNG;                         // random number generator used for random walking, etc.
 
 };
 
