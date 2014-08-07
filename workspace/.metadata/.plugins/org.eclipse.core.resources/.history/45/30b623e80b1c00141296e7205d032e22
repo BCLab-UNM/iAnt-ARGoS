@@ -1,0 +1,45 @@
+#include "NavigationData.h"
+
+NavigationData::NavigationData() :
+	distanceTolerance(0.0),
+	angleTolerance(-CRadians::ZERO, CRadians::ZERO),
+	arenaSize(0.0, 0.0),
+	forageRangeX(-0.0, 0.0),
+	forageRangeY(-0.0, 0.0),
+	position(0.0, 0.0),
+	target(0.0, 0.0),
+	nestPosition(0.0, 0.0),
+	nestRadiusSquared(0.0),
+	searchStepSize(0.0),
+	searchRadiusSquared(0.0),
+	maxSpeed(0.0)
+{}
+
+NavigationData::~NavigationData() {
+	// TODO Auto-generated destructor stub
+}
+
+bool NavigationData::CollisionDetection(const CCI_FootBotProximitySensor::TReadings& proximityReadings,
+		                                      CCI_DifferentialSteeringActuator& steeringActuator) {
+	CVector2 accumulator;
+
+	for(size_t i = 0; i < proximityReadings.size(); ++i) {
+        accumulator += CVector2(proximityReadings[i].Value, proximityReadings[i].Angle);
+	}
+
+	accumulator /= proximityReadings.size();
+	CRadians angle = accumulator.Angle();
+
+	if(angleTolerance.WithinMinBoundIncludedMaxBoundIncluded(angle) &&
+	   accumulator.Length() < distanceTolerance) {
+		steeringActuator.SetLinearVelocity(maxSpeed, maxSpeed);
+		return false; // collision not detected
+	} else {
+		if(angle.GetValue() > 0.0) {
+			steeringActuator.SetLinearVelocity(maxSpeed, 0.0);
+		} else {
+			steeringActuator.SetLinearVelocity(0.0, maxSpeed);
+		}
+		return true; // collision detected
+	}
+}

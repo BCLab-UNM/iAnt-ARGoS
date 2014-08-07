@@ -1,0 +1,22 @@
+#ifndef FOODDATA_H_
+#define FOODDATA_H_
+
+/* Implements food source location tracking. */
+#include "PheromoneWaypoint.h"
+
+class FoodData {
+
+private:
+
+	PheromoneWaypoint pheromone; // Food source location tracking.
+
+public:
+
+	FoodData();
+	~FoodData();
+
+	void Init(TConfigurationNode& node) {}
+
+};
+
+#endif /* FOODDATA_H_ */

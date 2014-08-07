@@ -1,0 +1,31 @@
+#include "Controller.h"
+
+/* Construct a controller object and set all default values to NULL.
+ * Variables will be initialized by the Init() function. */
+Controller::Controller() :
+	steeringActuator(NULL),
+	proximitySensor(NULL),
+	groundSensor(NULL),
+	lightSensor(NULL)
+{}
+
+/* Currently not necessary and included for future expansion. */
+Controller::~Controller() {
+	// does nothing... for now
+}
+
+/* Inherited function of the CCI_Controller class. */
+void Controller::Init(TConfigurationNode& node) {
+}
+
+/* Inherited function of the CCI_Controller class. */
+void Controller::ControlStep() {
+}
+
+/* Inherited function of the CCI_Controller class. */
+void Controller::Reset() {
+}
+
+/* Inherited function of the CCI_Controller class. */
+void Controller::Destroy() {
+}
