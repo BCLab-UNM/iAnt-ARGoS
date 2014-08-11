@@ -5,6 +5,7 @@ NavigationData::NavigationData() :
 	proximitySensor(NULL),  // detects nearby objects to prevent collision
 	groundSensor(NULL),     // detects food items & nest (color changes)
 	lightSensor(NULL),      // detects nest-light for navigation control
+	RNG(NULL),
 	distanceTolerance(0.0),
 	angleTolerance(-CRadians::ZERO, CRadians::ZERO),
 	arenaSize(0.0, 0.0),
@@ -32,6 +33,27 @@ void NavigationData::SetSensorsAndActuators(CCI_DifferentialSteeringActuator *st
 	this->lightSensor      = lightSensor;
 }
 
+void NavigationData::SetRandomTarget() {
+	/* Set the target vector to a length that will always reach outside of the arena bounds.
+	 *
+	 * Recall that the arena's coordinate domain is [-arenaSize.GetX()/2.0, arenaSize.GetX()/2.0]
+	 * and that its coordinate range is [-arenaSize.GetY()/2.0, arenaSize.GetY()/2.0].
+	 *
+	 * In other words, head straight out until we run into the wall OR the CPFA's search
+	 * probability causes the robot to change its direction and search a location for food. */
+	Real length(arenaSize.Length());
+
+	/* Obtain a heading angle from a uniform distribution between 0 and 2 PI. */
+	CRadians angle(RNG->Uniform(CRange<CRadians>(CRadians::ZERO, CRadians::TWO_PI)));
+
+	/* Set the navigation target to the position given by the length and angle parameters
+	 * and do so in relation to the robot's position and NOT the origin of the arena. */
+	target = GetVectorToPosition(CVector2(length, angle) + position);
+}
+
+void NavigationData::SetPheromoneTarget(FoodData &fd) {
+	target = fd.GetPheromone();
+}
 
 bool NavigationData::CollisionDetection() {
 	const CCI_FootBotProximitySensor::TReadings& proximityReadings = proximitySensor->GetReadings();

@@ -24,6 +24,10 @@ public:
 	void Init(TConfigurationNode& node) {}
 	void Reset() {}
 
+	bool HasFood();
+	bool HasPheromone();
+	CVector2 GetPheromone();
+
 };
 
 #endif /* FOODDATA_H_ */

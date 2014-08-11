@@ -14,7 +14,7 @@ Controller::Controller() :
 	siteFidelityRate(0.0),
 	pheromoneRate(0.0),
 	pheromoneDecayRate(0.0),
-	RNG(NULL),
+	// RNG(NULL),
 	state(SET_SEARCH_LOCATION)
 {}
 
@@ -112,6 +112,17 @@ void Controller::Destroy() {
  *
  */
 void Controller::SetSearchLocation() {
+	if(foodData.HasFood()) {
+		state = SENSE_LOCAL_RESOURCE_DENSITY;
+	} else {
+		/* TODO add check/logic for pheromone and site fidelity */
+		if(foodData.HasPheromone()) {
+			navData.SetPheromoneTarget(foodData);
+		} else {
+			navData.SetRandomTarget();
+		}
+		state = TRAVEL_TO_SEARCH_SITE;
+	}
 }
 
 void Controller::TravelToSearchSite() {

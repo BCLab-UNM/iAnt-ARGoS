@@ -12,7 +12,19 @@ FoodData::FoodData() :
 	totalFoodCollected(0)
 {}
 
-FoodData::~FoodData() {
-	// TODO Auto-generated destructor stub
+FoodData::~FoodData()
+{}
+
+bool FoodData::HasFood() {
+	return hasFood;
 }
 
+bool FoodData::HasPheromone() {
+	return pheromone.isActive();
+}
+
+CVector2 FoodData::GetPheromone() {
+	/* TODO change "1" to actual/correct time update */
+	pheromone.update(1);
+	return pheromone.getLocation();
+}

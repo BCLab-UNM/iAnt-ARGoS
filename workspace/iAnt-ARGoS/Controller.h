@@ -2,6 +2,7 @@
 #define CONTROLLER_H_
 
 /* iAnt Library: objects implementing the iAnt CPFA algorithms. (extension/modularization) */
+#include "CPFA.h"
 #include "NavigationData.h"
 #include "FoodData.h"
 
@@ -27,20 +28,23 @@ class Controller : public CCI_Controller {
 
 private:
 
-	/* robot actuator and sensor components */
+	CPFA iAnt_CPFA;
+
+	// robot actuator and sensor components
 	CCI_DifferentialSteeringActuator *steeringActuator; // controls the robot's motor speeds
 	CCI_FootBotProximitySensor       *proximitySensor;  // detects nearby objects to prevent collision
 	CCI_FootBotMotorGroundSensor     *groundSensor;     // detects food items & nest (color changes)
 	CCI_FootBotLightSensor           *lightSensor;      // detects nest-light for navigation control
 
-	/* TODO make sure that each of these custom objects has an Init() function
-	 * that will tie them into the ARGoS framework. */
+/*************************
+	// TODO make sure that each of these custom objects has an Init() function
+	// that will tie them into the ARGoS framework.
 	NavigationData    navData;   // Navigation data container object.
-	/* TODO move foodData into the navigationData object.. maybe.. think about it.. */
+	// TODO move foodData into the navigationData object.. maybe.. think about it..
 	FoodData          foodData;  // Food source data container object.
 
-	/* CPFA variables,
-     * NOTE: until my understanding improves, below comments may not be accurate. */
+	// CPFA variables,
+    // NOTE: until my understanding improves, below comments may not be accurate.
 	Real           travelProbability;           // %-chance of traveling, from [0.0, 1.0]
 	Real           searchProbability;           // %-chance of searching, from [0.0, 1.0]
 	CRadians       uninformedSearchCorrelation; // radian angle turned during searching [0.0, 4.0PI]
@@ -48,9 +52,9 @@ private:
 	Real           siteFidelityRate;            // %-chance that robot remembers a site [0.0, 20.0]
 	Real           pheromoneRate;               // %-chance of laying a pheromone [0.0, 20.0]
 	Real           pheromoneDecayRate;          // %-rate that pheromones decay [0.0, 10.0]
-	CRandom::CRNG *RNG;                         // random number generator used for random walking, etc.
+	// CRandom::CRNG *RNG;                         // random number generator used for random walking, etc.
 
-	/* Primary state definitions for the CPFA. */
+	// Primary state definitions for the CPFA.
 	enum state {
         SET_SEARCH_LOCATION = 0,
         TRAVEL_TO_SEARCH_SITE,
@@ -59,6 +63,7 @@ private:
         SENSE_LOCAL_RESOURCE_DENSITY,
         TRAVEL_TO_NEST
 	} state;
+*************************/
 
 public:
 

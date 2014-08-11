@@ -7,12 +7,4 @@
 
 #include "LoopFunctions.h"
 
-LoopFunctions::LoopFunctions() {
-	// TODO Auto-generated constructor stub
-
-}
-
-LoopFunctions::~LoopFunctions() {
-	// TODO Auto-generated destructor stub
-}
-
+/* functions moved here at some point, for now check *.h file */

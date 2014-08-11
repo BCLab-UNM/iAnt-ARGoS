@@ -1,12 +1,16 @@
 #ifndef NAVIGATIONDATA_H_
 #define NAVIGATIONDATA_H_
 
+#include "FoodData.h"
 /* Access XML loading functionality. */
 #include <argos3/core/utility/configuration/argos_configuration.h>
 /* ARGoS 2D vector class. */
 #include <argos3/core/utility/math/vector2.h>
 /* ARGOS angle definition class. */
 #include <argos3/core/utility/math/angles.h>
+/* class for random number generator objects */
+#include <argos3/core/utility/math/rng.h>
+
 
 /* Argos3 objects for robot components: actuators and sensors. (plug-ins) */
 #include <argos3/plugins/robots/generic/control_interface/ci_differential_steering_actuator.h>
@@ -25,6 +29,9 @@ private:
 	CCI_FootBotProximitySensor       *proximitySensor;  // detects nearby objects to prevent collision
 	CCI_FootBotMotorGroundSensor     *groundSensor;     // detects food items & nest (color changes)
 	CCI_FootBotLightSensor           *lightSensor;      // detects nest-light for navigation control
+
+	/* random number generator */
+	CRandom::CRNG *RNG;
 
 	Real             distanceTolerance;   // distance to trigger collision detection
     CRange<CRadians> angleTolerance;      // angle tolerance range to go straight
@@ -51,6 +58,11 @@ public:
 			                        CCI_FootBotProximitySensor       *proximitySensor,
 			                    	CCI_FootBotMotorGroundSensor     *groundSensor,
 			                    	CCI_FootBotLightSensor           *lightSensor);
+
+	void SetRandomTarget();
+	void SetPheromoneTarget(FoodData &fd);
+
+	/* TODO make these private... */
 	bool     CollisionDetection();
 	CRadians LawOfCosines(CVector2& A, CVector2& B, CVector2& C);
 	Real     GetSignOfRotationAngle(CVector2& A, CVector2& B, CVector2& C);
