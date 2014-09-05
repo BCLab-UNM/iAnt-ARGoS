@@ -9,7 +9,7 @@
     </framework>
 
     <controllers>
-        <iAnt_controller id="iAnt_c" library="eclipse_workspace/Argos_iAnt/Debug/libArgos_iAnt.so">
+        <iAnt_controller id="iAnt_c" library="workspace/iAnt-ARGoS/Debug/libiAnt-ARGoS.so">
             <actuators>
                 <differential_steering implementation="default"/>
             </actuators>
@@ -29,8 +29,8 @@
         </iAnt_controller>
     </controllers>
 
-    <loop_functions library="eclipse_workspace/Argos_iAnt/Debug/libArgos_iAnt.so" label="iAnt_loop_functions">
-        <simulation_settings foodItemCount="40"/>
+    <loop_functions library="workspace/iAnt-ARGoS/Debug/libiAnt-ARGoS.so" label="iAnt_loop_functions">
+        <simulation_settings foodItemCount="10"/>
                        <CPFA travelProbability="0.001"
                              searchProbability="0.001"
                              uninformedSearchCorrelation="45"
@@ -82,7 +82,7 @@
         <distribute>
             <position method="uniform" min="-2, -2, 0" max="2, 2, 0"/>
             <orientation method="gaussian" mean="0, 0, 0" std_dev="360, 0, 0"/>
-            <entity quantity="20" max_trials="100">
+            <entity quantity="10" max_trials="100">
                 <foot-bot id="fb">
                     <controller config="iAnt_c"/>
                 </foot-bot>

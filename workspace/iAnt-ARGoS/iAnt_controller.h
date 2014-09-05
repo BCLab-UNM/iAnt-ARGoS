@@ -2,7 +2,7 @@
 #define IANT_CONTROLLER_H_
 
 /* contains several structs which encapsulates data variables for the controller */
-#include "_iAnt_data_structures.h"
+#include "iAnt_data_structures.h"
 /* base class for controller objects */
 #include <argos3/core/control_interface/ci_controller.h>
 /* updates the motors' speed settings */

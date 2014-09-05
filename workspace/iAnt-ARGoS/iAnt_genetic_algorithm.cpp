@@ -5,7 +5,7 @@
  *      Author: antonio
  */
 
-#include "_iAnt_genetic_algorithm.h"
+#include "iAnt_genetic_algorithm.h"
 
 iAnt_genetic_algorithm::iAnt_genetic_algorithm() {
 	// TODO Auto-generated constructor stub
