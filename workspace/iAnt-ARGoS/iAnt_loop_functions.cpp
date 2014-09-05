@@ -3,7 +3,8 @@
 // (constructor) initialize class variables, Init() function contains further setup
 iAnt_loop_functions::iAnt_loop_functions() :
 	floorEntity(NULL),
-	RNG(NULL)
+	RNG(NULL),
+	tick(0)
 {}
 
 void iAnt_loop_functions::Init(TConfigurationNode& node) {
@@ -78,7 +79,9 @@ CColor iAnt_loop_functions::GetFloorColor(const CVector2& position) {
 
 // this function is called BEFORE the ControlStep() function in the controller class
 void iAnt_loop_functions::PreStep() {
-    // container for all available foot-bot controller objects
+	++tick; // increment the frame variable
+
+	// container for all available foot-bot controller objects
     CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
 
     // loop through all of the foot-bot controller objects
@@ -128,6 +131,8 @@ void iAnt_loop_functions::Reset() {
 	for(UInt32 i = 0; i < iAntData.food.foodPositions.size(); ++i) {
 		iAntData.food.foodPositions[i].Set(RNG->Uniform(iAntData.navigation.forageRangeX), RNG->Uniform(iAntData.navigation.forageRangeY));
 	}
+
+	tick = 0;
 }
 
 REGISTER_LOOP_FUNCTIONS(iAnt_loop_functions, "iAnt_loop_functions")

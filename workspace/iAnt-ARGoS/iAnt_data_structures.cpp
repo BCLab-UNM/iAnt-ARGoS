@@ -21,7 +21,9 @@ iAnt_data_structures::CPFA::CPFA():
 	informedSearchDecay(0.01),
 	siteFidelityRate(0.15),
 	pheromoneRate(0.15),
-	pheromoneDecayRate(0.01)
+	pheromoneDecayRate(0.01),
+	informed(false),
+	searchTime(0)
 {}
 
 void iAnt_data_structures::CPFA::Init(TConfigurationNode& node) {
@@ -40,6 +42,19 @@ void iAnt_data_structures::CPFA::Init(TConfigurationNode& node) {
     /* Convert the input from angleInDegrees to Radians. */
     uninformedSearchCorrelation = ToRadians(angleInDegrees);
 }
+
+/*iAnt_data_structures::*/pheromoneWaypoint::pheromoneWaypoint() :
+		location(CVector2()),
+		weight(0),
+		lastUpdated(0)
+{}
+
+/*iAnt_data_structures::*/pheromoneWaypoint::pheromoneWaypoint(CVector2 loc, double w, int tick) :
+		location(loc),
+		weight(w),
+		lastUpdated(tick)
+{}
+
 
 iAnt_data_structures::navigation::navigation() :
     distanceTolerance(0.0),
@@ -91,14 +106,14 @@ void iAnt_data_structures::navigation::Init(TConfigurationNode& node) {
 iAnt_data_structures::food::food() :
 	isHoldingFoodItem(false),
 	hasActivePheromone(false),
-	resourceCount(0),
+	resourcesCollected(0),
 	foodRadiusSquared(0.0)
 {}
 
 void iAnt_data_structures::food::Init(TConfigurationNode& node) {
 	isHoldingFoodItem = false;
 	hasActivePheromone = false;
-	resourceCount = 0;
+	resourcesCollected = 0;
 
 	GetNodeAttribute(node, "foodRadius", foodRadiusSquared);
 

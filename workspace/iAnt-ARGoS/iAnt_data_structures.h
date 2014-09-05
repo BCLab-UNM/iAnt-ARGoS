@@ -50,11 +50,13 @@ private:
 		Real     pheromoneRate;               // %-chance of laying a pheromone [0.0, 20.0]
 		Real     pheromoneDecayRate;          // %-rate that pheromones decay [0.0, 10.0]
 
+		bool informed;
+		int  searchTime;
+
 		CPFA();                              // constructor function
 		void Init(TConfigurationNode& node); // XML configuration initialization
 
 	} CPFA;
-
 
 	/* robot navigation control variables */
 	struct navigation {
@@ -82,8 +84,7 @@ private:
 
 		bool             isHoldingFoodItem;  // true or false: Is the robot carrying a food item?
 		bool             hasActivePheromone; // true or false: Is the robot aware of an active pheromone?
-		CVector2         pheromonePosition;  // current position of any pheromone known by this robot
-		size_t           resourceCount;      // the number of resources found around pheromonePosition
+		size_t           resourcesCollected;      // the number of resources found
 		vector<CVector2> foodPositions;      // list of all food positions within the arena
 		Real             foodRadiusSquared;  // radius of food items on the arena floor
 
@@ -93,5 +94,19 @@ private:
 	} food;
 
 };
+
+/* pheromone waypoint left by high concentrations of food, declare this outside of the class so
+ * users can create multiple pheromones to place into vectors, lists, etc. */
+struct pheromoneWaypoint {
+
+	CVector2 location; // Cartesian coordinates of the waypoint
+    double weight; // pheromone strength
+    int lastUpdated; // tick (i.e., frame) of last update
+
+    /* constructors */
+    pheromoneWaypoint();
+    pheromoneWaypoint(CVector2 loc, double w, int tick);
+
+}; // don't declare here, we will make multiple pheromones in the controller and/or loop_functions
 
 #endif /* IANT_DATA_STRUCTURES_H_ */

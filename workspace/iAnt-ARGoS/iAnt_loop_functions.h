@@ -21,6 +21,8 @@ private:
 	iAnt_data_structures   iAntData;         // data structure interface used with all controllers (robots)
 	iAnt_genetic_algorithm iAntDataAnalysis; // analyzes controllers and updates CPFA
 
+	long tick; // a counter for frames of simulation in ARGoS, TODO: find the official ARGoS way to access this
+
 public:
 
 	iAnt_loop_functions();

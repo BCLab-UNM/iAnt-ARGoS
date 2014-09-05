@@ -69,6 +69,8 @@ private:
 
 	/* data variables for controller: CPFA, navigation, food */
 	iAnt_data_structures iAntData;
+	vector<pheromoneWaypoint> pheromoneLocations; // pheromone list
+	map<UInt8,pheromoneWaypoint> pendingWaypointList; // pending pheromone list
 
 	/* CPFA state machine implementation functions */
 	void setSearchLocation();

@@ -1,6 +1,49 @@
 /* Find the class definition here. */
 #include "iAnt_controller.h"
 
+/* inline functions and constants */
+
+static const CVector2 NullVector = CVector2(-1, -1);
+static const double m_fWheelVelocity = 16;
+static const double m_fWheelVelocityAligning = 5;
+
+/*
+ * Provides bound on value by rolling over a la modulo
+ */
+static inline double bound(double x, double min, double max) {
+    double offset = Abs(min) + Abs(max);
+    while (x < min) {
+        x += offset;
+    }
+    while (x > max) {
+        x -= offset;
+    }
+    return x;
+}
+
+/*
+ * Returns decay of quantity at time given rate of change lambda
+ */
+static inline double exponentialDecay(double quantity, double time, double lambda) {
+    return (quantity * exp(-lambda * time));
+}
+
+/*
+ * Returns Poisson cumulative probability at a given k and lambda
+ */
+static inline float poissonCDF(float k, float lambda) {
+    float sumAccumulator = 1;
+    float factorialAccumulator = 1;
+
+    for (int i = 1; i <= floor(k); i++) {
+        factorialAccumulator *= i;
+        sumAccumulator += pow(lambda, i) / factorialAccumulator;
+    }
+
+    return (exp(-lambda) * sumAccumulator);
+}
+
+
 /****************************************************************************************************/
 /* constructor, destructor, and initialization functions required for the iAnt_controller           */
 /****************************************************************************************************/
@@ -407,6 +450,8 @@ void iAnt_controller::senseLocalResourceDensity()
 {
 	// This may be inaccurate, would potentially need to make this set only if the resourceCount is higher
 	// then a certain threshold...
+
+	/* currently broken, need to readjust for changing variables and variable names and locations in code
 	iAntData.food.pheromonePosition = iAntData.navigation.position;
 	iAntData.food.resourceCount = -1; // DON'T count the food item robot just found
 
@@ -415,6 +460,7 @@ void iAnt_controller::senseLocalResourceDensity()
 			iAntData.food.resourceCount++;
 		}
 	}
+    */
 
 	iAntData.CPFA.state = iAnt_data_structures::CPFA::TRAVEL_TO_NEST;
 }
