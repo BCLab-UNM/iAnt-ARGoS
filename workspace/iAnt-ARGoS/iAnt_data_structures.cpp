@@ -1,10 +1,3 @@
-/*
- * iAnt_data_structures.cpp
- *
- *  Created on: Jun 27, 2014
- *      Author: antonio
- */
-
 #include "iAnt_data_structures.h"
 
 void iAnt_data_structures::Init(TConfigurationNode& node) {

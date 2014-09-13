@@ -12,7 +12,7 @@ void iAnt_qt_user_functions::Draw(CFootBotEntity& entity) {
     iAnt_controller& controller = dynamic_cast<iAnt_controller&>(entity.GetControllableEntity().GetController());
 
     // if the foot-bot has a food item, draw it on top of the foot-bot
-    if(controller.isHoldingFood()) {
+    if(controller.IsHoldingFood()) {
         // these hard-wired values are valid for the foot-bot only,
         // and must be changed if different robot graphics are used
         DrawCylinder(0.1f, 0.05f, CVector3(0.0f, 0.0f, 0.3f), CColor::BLACK);

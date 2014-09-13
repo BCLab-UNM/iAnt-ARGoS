@@ -84,15 +84,13 @@ private:
 
 		bool             isHoldingFoodItem;  // true or false: Is the robot carrying a food item?
 		bool             hasActivePheromone; // true or false: Is the robot aware of an active pheromone?
-		size_t           resourcesCollected;      // the number of resources found
+		size_t           resourcesCollected; // the number of resources found
 		vector<CVector2> foodPositions;      // list of all food positions within the arena
 		Real             foodRadiusSquared;  // radius of food items on the arena floor
 
 		food();                              // constructor function
 		void Init(TConfigurationNode& node); // initialization function
-
 	} food;
-
 };
 
 /* pheromone waypoint left by high concentrations of food, declare this outside of the class so

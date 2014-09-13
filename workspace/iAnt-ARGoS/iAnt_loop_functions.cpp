@@ -4,33 +4,39 @@
 iAnt_loop_functions::iAnt_loop_functions() :
 	floorEntity(NULL),
 	RNG(NULL),
-	tick(0)
+	tick(0),
+	foodItemCount(0),
+	foodRadiusSquared(0.0),
+	nestRadiusSquared(0.0)
 {}
 
 void iAnt_loop_functions::Init(TConfigurationNode& node) {
-	// initialize iAntData to values set in the XML configuration file
-	iAntData.Init(node);
-
 	// initialize floor object where food and nest objects are drawn
     floorEntity = &GetSpace().GetFloorEntity();
 
-    size_t foodItemCount;
+    // used to build forageRangeX and forageRangeY
+    CVector2 rangeX, rangeY;
 
     // set XML parameters to variables
-	GetNodeAttribute(GetNode(node, "simulation_settings"), "foodItemCount", foodItemCount);
+	GetNodeAttribute(GetNode(node, "simulation_settings"), "foodItemCount", foodItemCount    );
+	GetNodeAttribute(GetNode(node, "navigation")         , "forageRangeX" , rangeX           );
+	GetNodeAttribute(GetNode(node, "navigation")         , "forageRangeY" , rangeY           );
+	GetNodeAttribute(GetNode(node, "navigation")         , "nestPosition" , nestPosition     );
+	GetNodeAttribute(GetNode(node, "navigation")         , "nestRadius"   , nestRadiusSquared);
+	GetNodeAttribute(GetNode(node, "food")               , "foodRadius"   , foodRadiusSquared);
+
+	nestRadiusSquared *= nestRadiusSquared;
+	foodRadiusSquared *= foodRadiusSquared;
+    forageRangeX.Set(rangeX.GetX(), rangeX.GetY());
+    forageRangeY.Set(rangeY.GetX(), rangeY.GetY());
 
     // create a random number generator for random food item placement
     RNG = CRandom::CreateRNG("argos");
 
-    /*
-     * TODO
-     * Implement various other ways to distribute food onto the arena floor, e.g. power law, etc.
-     *
-     */
+    // TODO Implement various other ways to distribute food onto the arena floor, e.g. power law, etc.
     // set the positions for all food items to be drawn later
     for(UInt32 i = 0; i < foodItemCount; ++i) {
-    	iAntData.food.foodPositions.push_back(CVector2(RNG->Uniform(iAntData.navigation.forageRangeX),
-    			                                       RNG->Uniform(iAntData.navigation.forageRangeY)));
+    	foodPositions.push_back(CVector2(RNG->Uniform(forageRangeX), RNG->Uniform(forageRangeY)));
     }
 
     // get the footbot entities
@@ -39,17 +45,15 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
     // and set the footbot's nest location and search target values
     for(CSpace::TMapPerType::iterator it = footbots.begin(); it != footbots.end(); ++it) {
         CFootBotEntity& footBot = *any_cast<CFootBotEntity*>(it->second);
-        iAnt_controller& controller = dynamic_cast<iAnt_controller&>(footBot.GetControllableEntity().GetController());
+        iAnt_controller& c = dynamic_cast<iAnt_controller&>(footBot.GetControllableEntity().GetController());
 
-        controller.iAntData.Init(node);
-        controller.iAntData.food.foodPositions = iAntData.food.foodPositions;
-
-        // implement this later -> controller.iAntData = iAntData;
+        c.UpdateFoodList(foodPositions);
     }
 }
 
 CColor iAnt_loop_functions::GetFloorColor(const CVector2& position) {
-    // set the pheromone marker
+    // TODO add color coding for pheromone location,
+	// currently removed because the for-loop lookup method is too inefficient
 	/*
 	if(targetSeeking) {
         if((position - searchTarget).SquareLength() < foodRadiusSquared) {
@@ -58,18 +62,19 @@ CColor iAnt_loop_functions::GetFloorColor(const CVector2& position) {
     }
     */
 
+	// TODO enhance the efficiency of this code!
     // food items are black discs with radius set in XML
     // check the positions of all food items
-    for(UInt32 i = 0; i < iAntData.food.foodPositions.size(); ++i) {
+    for(UInt32 i = 0; i < foodPositions.size(); i++) {
         // if we are in the bounds of a food item, paint it black
-		if((position - iAntData.food.foodPositions[i]).SquareLength() < iAntData.food.foodRadiusSquared) {
+		if((position - foodPositions[i]).SquareLength() < foodRadiusSquared) {
 			return CColor::BLACK;
 		}
 	}
 
 	// nest area is grey disc with radius set in XML
     // if we are in the bounds of the nest, paint it grey
-    if((position - iAntData.navigation.nestPosition).SquareLength() < iAntData.navigation.nestRadiusSquared) {
+    if((position - nestPosition).SquareLength() < nestRadiusSquared) {
         return CColor::GRAY80;
     }
 
@@ -79,7 +84,7 @@ CColor iAnt_loop_functions::GetFloorColor(const CVector2& position) {
 
 // this function is called BEFORE the ControlStep() function in the controller class
 void iAnt_loop_functions::PreStep() {
-	++tick; // increment the frame variable
+	tick++; // increment the frame variable
 
 	// container for all available foot-bot controller objects
     CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
@@ -89,47 +94,59 @@ void iAnt_loop_functions::PreStep() {
 	    // variable for the current foot-bot
 	    CFootBotEntity& footBot = *any_cast<CFootBotEntity*>(it->second);
 	    // variable for the current foot-bot's controller object
-		iAnt_controller& controller = dynamic_cast<iAnt_controller&>(footBot.GetControllableEntity().GetController());
-
+		iAnt_controller& c = dynamic_cast<iAnt_controller&>(footBot.GetControllableEntity().GetController());
 		// set the current foot-bot's position (used in controller class for positioning)
-		controller.iAntData.navigation.position.Set(footBot.GetEmbodiedEntity().GetPosition().GetX(),
-				                                    footBot.GetEmbodiedEntity().GetPosition().GetY());
+		c.UpdatePosition(CVector2(footBot.GetEmbodiedEntity().GetPosition().GetX(),
+				                  footBot.GetEmbodiedEntity().GetPosition().GetY()));
+		c.UpdateTime(tick);
 
-		if(controller.hasFoundFood() && !controller.iAntData.food.isHoldingFoodItem) {
+		// if the robot has found food and isn't already holding food
+		if(c.IsFindingFood() && !c.IsHoldingFood()) {
 			bool done = false;
 			vector<CVector2>::iterator i;
 
 			// check each food item position to see if the foot-bot found food
-            for(i = iAntData.food.foodPositions.begin(); i != iAntData.food.foodPositions.end() && !done; i++) {
+            for(i = foodPositions.begin(); i != foodPositions.end() && !done; i++) {
                 // if the foot-bot is within range of a food item
-                if((controller.iAntData.navigation.position - *i).SquareLength() < iAntData.food.foodRadiusSquared) {
-        	    	controller.iAntData.food.isHoldingFoodItem = true;
-
+                if((c.Position() - *i).SquareLength() < foodRadiusSquared) {
                     // pick up the food item and update foodData variables
-                    floorEntity->SetChanged();
+        	    	c.PickupFood();
+        	    	floorEntity->SetChanged();
                     done = true;
                 }
             }
 
             // erase the foodPosition from the vector, it's no longer needed
             if(done) {
-            	iAntData.food.foodPositions.erase(--i); // remember that the for loop applies i++ ONCE too far! go back!!!
+            	foodPositions.erase(--i); // remember that the for loop applies i++ ONCE too far! go back!!!
             }
 
-            controller.iAntData.food.foodPositions = iAntData.food.foodPositions;
-	    } else if(controller.isInTheNest() && controller.iAntData.food.isHoldingFoodItem) {
-	    	controller.iAntData.food.isHoldingFoodItem = false;
+            c.UpdateFoodList(foodPositions);
+	    } else if(c.IsInTheNest() && c.IsHoldingFood()) {
+	    	c.DropOffFood();
+
+	    	double maxStrength = 0.0;
+
+	    	for(unsigned int i = 0; i < pheromoneList.size(); i++) {
+	    		if(pheromoneList[i].IsActive() && (pheromoneList[i].Strength() > maxStrength)) {
+	    			pendingPheromone = pheromoneList[i];
+	    		}
+	    	}
+
+	    	if(pendingPheromone.IsActive()) c.targetPheromone.Set(pendingPheromone);
 	    }
 	}
 }
 
 void iAnt_loop_functions::PostStep() {
-    // nothing... yet.
+    // nothing... yet
 }
 
 void iAnt_loop_functions::Reset() {
-	for(UInt32 i = 0; i < iAntData.food.foodPositions.size(); ++i) {
-		iAntData.food.foodPositions[i].Set(RNG->Uniform(iAntData.navigation.forageRangeX), RNG->Uniform(iAntData.navigation.forageRangeY));
+	foodPositions.clear();
+
+	for(UInt32 i = 0; i < foodItemCount; ++i) {
+		foodPositions[i].Set(RNG->Uniform(forageRangeX), RNG->Uniform(forageRangeY));
 	}
 
 	tick = 0;
