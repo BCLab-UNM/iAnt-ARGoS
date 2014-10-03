@@ -4,7 +4,7 @@
     <framework>
         <system threads="0"/>
         <experiment length="0"
-                    ticks_per_second="10"
+                    ticks_per_second="16"
                     random_seed="100"/>
     </framework>
 
@@ -21,14 +21,16 @@
             </sensors>
 
             <params>
-                      <CPFA pheromoneDecayRate="0.05"
-                            travelProbability="0.01"/>
+                <CPFA       pheromoneRate="0.10"
+                            pheromoneDecayRate="0.001"
+                            travelProbability="0.001"
+                            siteFidelityRate="0.01"/>
                 <navigation searchRadius="1.0"
-                            searchStepSize="0.5"
+                            searchStepSize="0.75"
                             arenaSize="5.0, 5.0"
                             nestPosition="0.0, 0.0"
                             distanceTolerance="0.1"
-                            searchProbability="0.01"
+                            searchProbability="0.001"
                             angleTolerance="10"
                             maxSpeed="15.0"
                             uninformedSearchCorrelation="45"/>
@@ -40,12 +42,12 @@
 
     <loop_functions library="workspace/iAnt-ARGoS/Debug/libiAnt-ARGoS.so" label="iAnt_loop_functions">
         <simulation_settings foodItemCount="30"/>
-                       <CPFA travelProbability="0.01"
-                             searchProbability="0.01"
+                       <CPFA travelProbability="0.001"
+                             searchProbability="0.001"
                              uninformedSearchCorrelation="45"
                              informedSearchDecay="0.01"
                              siteFidelityRate="0.1"
-                             pheromoneRate="0.01"
+                             pheromoneRate="0.10"
                              pheromoneDecayRate="0.05"/>
                  <navigation distanceTolerance="0.1"
                              angleTolerance="10"
@@ -54,7 +56,7 @@
                              forageRangeY="-2.4, 2.4"
                              nestPosition="0.0, 0.0"
                              nestRadius="0.5"
-                             searchStepSize="0.5"
+                             searchStepSize="0.75"
                              searchRadius="1.0"
                              max_speed="10"/>
                        <food foodRadius="0.05"/>
@@ -84,6 +86,7 @@
                color="white"
                intensity="100.0"
                medium="leds"/>
+
         <cylinder id="nest_c" height="0.4" radius="0.1" mass="1.0" movable="false">
             <body position="0.0, 0.0, 0" orientation="0, 0, 0"/>
         </cylinder>

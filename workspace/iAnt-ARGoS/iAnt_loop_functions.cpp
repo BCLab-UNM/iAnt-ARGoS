@@ -52,16 +52,6 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
 }
 
 CColor iAnt_loop_functions::GetFloorColor(const CVector2& position) {
-    // TODO add color coding for pheromone location,
-	// currently removed because the for-loop lookup method is too inefficient
-	/*
-	if(targetSeeking) {
-        if((position - searchTarget).SquareLength() < foodRadiusSquared) {
-            return CColor::GRAY40;
-        }
-    }
-    */
-
 	// TODO enhance the efficiency of this code!
     // food items are black discs with radius set in XML
     // check the positions of all food items
@@ -129,11 +119,11 @@ void iAnt_loop_functions::PreStep() {
 
 	    	for(unsigned int i = 0; i < pheromoneList.size(); i++) {
 	    		if(pheromoneList[i].IsActive() && (pheromoneList[i].Strength() > maxStrength)) {
-	    			pendingPheromone = pheromoneList[i];
+	    			//pendingPheromone = pheromoneList[i];
 	    		}
 	    	}
 
-	    	if(pendingPheromone.IsActive()) c.targetPheromone.Set(pendingPheromone);
+	    	//if(pendingPheromone.IsActive()) c.targetPheromone.Set(pendingPheromone);
 	    }
 	}
 }

@@ -9,21 +9,21 @@ iAnt_pheromone::iAnt_pheromone() :
 {}
 
 iAnt_pheromone::iAnt_pheromone(const iAnt_pheromone &copy) {
-	location = copy.location;
+	location    = copy.location;
 	lastUpdated = copy.lastUpdated;
-	decayRate = copy.decayRate;
-	weight = copy.weight;
-	threshold = copy.threshold;
-	isActive = copy.isActive;
+	decayRate   = copy.decayRate;
+	weight      = copy.weight;
+	threshold   = copy.threshold;
+	isActive    = copy.isActive;
 }
 
 iAnt_pheromone::iAnt_pheromone(CVector2 loc, long int tick, double decay, double w) {
-	location = loc;
-	decayRate = decay;
-	weight = w;
-	threshold = w * 0.001;
+	location    = loc;
+	decayRate   = decay;
+	weight      = w;
+	threshold   = w * 0.001;
 	lastUpdated = tick;
-	isActive = true;
+	isActive    = true;
 }
 
 iAnt_pheromone::~iAnt_pheromone() {
@@ -32,19 +32,19 @@ iAnt_pheromone::~iAnt_pheromone() {
 
 // Returns decay of quantity at time given rate of change lambda
 void iAnt_pheromone::Update(long int time) {
-    weight = weight * exp(-decayRate * (time - lastUpdated));
-    lastUpdated = time;
+    weight      *= exp(-decayRate * (time - lastUpdated));
+    lastUpdated  = time;
 
     if(weight <= threshold) isActive = false;
 }
 
 // reset the pheromone
 void iAnt_pheromone::Reset(CVector2 loc, long int tick, double w) {
-	location = loc;
-	weight = w;
-	threshold = w * 0.001;
+	location    = loc;
+	weight      = w;
+	threshold   = w * 0.001;
 	lastUpdated = tick;
-	isActive = true;
+	isActive    = true;
 }
 
 // change the decay rate
@@ -67,11 +67,12 @@ CVector2 iAnt_pheromone::Location() {
 	return location;
 }
 
+// set this pheromone to another pheromone's values
 void iAnt_pheromone::Set(iAnt_pheromone newPheromone) {
-	location = newPheromone.location;
+	location    = newPheromone.location;
 	lastUpdated = newPheromone.lastUpdated;
-	decayRate = newPheromone.decayRate;
-	weight = newPheromone.weight;
-	threshold = newPheromone.threshold;
-	isActive = newPheromone.isActive;
+	decayRate   = newPheromone.decayRate;
+	weight      = newPheromone.weight;
+	threshold   = newPheromone.threshold;
+	isActive    = newPheromone.isActive;
 }

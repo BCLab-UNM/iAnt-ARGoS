@@ -21,6 +21,7 @@ static inline double bound(double x, double min, double max) {
     }
     return x;
 }
+*/
 
 // Returns Poisson cumulative probability at a given k and lambda
 static inline float poissonCDF(float k, float lambda) {
@@ -34,7 +35,6 @@ static inline float poissonCDF(float k, float lambda) {
 
     return (exp(-lambda) * sumAccumulator);
 }
-*/
 
 // constructor, see iAnt_controller::Init(TConfigurationNode& node);
 iAnt_controller::iAnt_controller() :
@@ -44,7 +44,7 @@ iAnt_controller::iAnt_controller() :
 	lightSensor(NULL),
 	RNG(NULL),
 	holdingFood(false),
-	siteFidelity(false),
+	informed(false),
 	resourceDensity(0),
 	searchRadiusSquared(0.0),
 	distanceTolerance(0.0),
@@ -52,9 +52,12 @@ iAnt_controller::iAnt_controller() :
 	searchProbability(0.0),
 	searchStepSize(0.0),
 	maxSpeed(0.0),
+	siteFidelityRate(0.0),
+	pheromoneRate(0.0),
 	pheromoneDecayRate(0.0),
 	simTime(0),
-	CPFA(TRAVEL_TO_NEST)
+	// CPFA(TRAVEL_TO_NEST)
+	CPFA(INACTIVE)
 {}
 
 // destructor
@@ -83,6 +86,8 @@ void iAnt_controller::Init(TConfigurationNode& node) {
 	GetNodeAttribute(GetNode(node, "navigation"), "searchProbability"  , searchProbability);
 	GetNodeAttribute(GetNode(node, "navigation"), "searchStepSize"     , searchStepSize);
 	GetNodeAttribute(GetNode(node, "navigation"), "maxSpeed"           , maxSpeed);
+	GetNodeAttribute(GetNode(node, "CPFA"      ), "siteFidelityRate"   , siteFidelityRate);
+	GetNodeAttribute(GetNode(node, "CPFA"      ), "pheromoneRate"      , pheromoneRate);
 	GetNodeAttribute(GetNode(node, "CPFA"      ), "pheromoneDecayRate" , pheromoneDecayRate);
 	GetNodeAttribute(GetNode(node, "CPFA"      ), "travelProbability"  , travelProbability);
 
@@ -234,35 +239,23 @@ CVector2 iAnt_controller::Position()
  * state machine do to various modifications.
  */
 void iAnt_controller::ControlStep() {
-	LOG << target << endl;
+	//LOG << "position: " << position << endl;
+	//LOG << "target: " << target << endl << endl;
 
 	// Check for collisions and move out of the way before running the state machine.
 	if(!collisionDetection()) {
-		// Perform actions based on the modified state machine.
 		switch(CPFA) {
-			// The robot will select a location to search for food.
-			case SET_SEARCH_LOCATION:
-				setSearchLocation();
+			case INACTIVE:
+				inactive();
 				break;
-			// The robot will travel to the location it has selected to search from.
-			case TRAVEL_TO_SEARCH_SITE:
-				travelToSearchSite();
+			case DEPARTING:
+				departing();
 				break;
-			// The robot will perform an informed walk while searching for food.
-			case PERFORM_INFORMED_WALK:
-				performInformedWalk();
+			case SEARCHING:
+				searching();
 				break;
-			// The robot will perform an uninformed walk while searching for food.
-			case PERFORM_UNINFORMED_WALK:
-				performUninformedWalk();
-				break;
-			// The robot has found food and is checking the local resource density.
-			case SENSE_LOCAL_RESOURCE_DENSITY:
-				senseLocalResourceDensity();
-				break;
-			// The robot is traveling to the nest after finding food or giving up a search.
-			case TRAVEL_TO_NEST:
-				travelToNest();
+			case RETURNING:
+				returning();
 		}
 	}
 }
@@ -274,8 +267,9 @@ void iAnt_controller::ControlStep() {
  * for the ones in this reset list which are reset to default initialized values.
  */
 void iAnt_controller::Reset() {
+	// todo make sure this reset function is actually resetting "EVERYTHING" it needs to...
 	// Restart the simulation with the CPFA in the REST state.
-	CPFA = SET_SEARCH_LOCATION;
+	CPFA = INACTIVE;
 
 	// Reset food data for this controller.
 	holdingFood = false;
@@ -303,7 +297,7 @@ void iAnt_controller::Destroy() {
 void iAnt_controller::setSearchLocation() {
 	// Always make sure the robot isn't carrying food first.
 	if(IsHoldingFood()) {
-		CPFA = SENSE_LOCAL_RESOURCE_DENSITY;
+		// CPFA = SENSE_LOCAL_RESOURCE_DENSITY;
 	}
 	else {
 		// Set the target vector to a length that will always reach outside of the arena bounds.
@@ -323,19 +317,92 @@ void iAnt_controller::setSearchLocation() {
 		target = getVectorToPosition(CVector2(length, angle) + position);
 
 		// Search location has been set, change to travel state.
-		CPFA = TRAVEL_TO_SEARCH_SITE;
+		// CPFA = TRAVEL_TO_SEARCH_SITE;
 	}
+}
+
+void iAnt_controller::inactive() {
+	setRandomSearchLocation();
+	CPFA = DEPARTING;
+}
+
+void iAnt_controller::departing() {
+	if(IsHoldingFood() == false) {
+		if(informed == false) {
+			if(searchProbability > RNG->Uniform(CRange<Real>(0.0, 1.0))) {
+				CPFA = SEARCHING;
+			}
+		}
+		else if((position - target).SquareLength() < distanceTolerance) {
+			CPFA = SEARCHING;
+			informed = false;
+		}
+
+		setWheelSpeed(getVectorToPosition(target));
+	}
+	else {
+		if(IsFindingFood() == true) senseLocalResourceDensity();
+		target = nestPosition;
+		CPFA = RETURNING;
+	}
+}
+
+void iAnt_controller::searching() {
+	if(IsHoldingFood() == false) {
+		if(travelProbability > RNG->Uniform(CRange<Real>(0.0, 1.0))) {
+			target = nestPosition;
+			CPFA = RETURNING;
+		}
+		else {
+			// Get a random rotation angle and then add it to the getVectorToLight angle. This serves the functionality
+			// of a compass and causes the rotation to be relative to the robot's current direction.
+	   		CRadians rotation(RNG->Gaussian(uninformedSearchCorrelation.GetValue())),
+	    			 angle(getVectorToLight().Angle().SignedNormalize() + rotation);
+
+	   		// Move from the current position "searchStepSize" distance away after turning "angle" degrees/radians etc.
+	   		target = (CVector2(searchStepSize, angle) + position);
+		}
+	}
+	else {
+		if(IsFindingFood() == true) senseLocalResourceDensity();
+		target = nestPosition;
+		CPFA = RETURNING;
+	}
+}
+
+void iAnt_controller::returning() {
+	if((position - target).SquareLength() < 1.0 /*distanceTolerance*/) {
+		if(poissonCDF(resourceDensity, pheromoneRate) > RNG->Uniform(CRange<Real>(0.0, 1.0))) {
+			sharedPheromone.Set(iAnt_pheromone(position, simTime, pheromoneDecayRate));
+		}
+
+		if(poissonCDF(resourceDensity, siteFidelityRate) > RNG->Uniform(CRange<Real>(0.0, 1.0))) {
+			target = fidelityPosition;
+			informed = true;
+		}
+		else if(targetPheromone.IsActive() == true) {
+			target = targetPheromone.Location();
+			informed = true;
+		}
+		else {
+			informed = false;
+			setRandomSearchLocation();
+		}
+
+		CPFA = DEPARTING;
+	}
+	else setWheelSpeed(getVectorToLight());
 }
 
 void iAnt_controller::travelToSearchSite() {
 	if(IsHoldingFood()) {
-		CPFA = SENSE_LOCAL_RESOURCE_DENSITY;
+		//CPFA = SENSE_LOCAL_RESOURCE_DENSITY;
 	}
-	else if(RNG->Uniform(CRange<Real>(0.0, 1.0)) < travelProbability) {
-		CPFA = PERFORM_UNINFORMED_WALK;
+	else if(IsInTheNest() || RNG->Uniform(CRange<Real>(0.0, 1.0)) < travelProbability) {
+		//CPFA = PERFORM_UNINFORMED_WALK;
 	}
-	else if(RNG->Uniform(CRange<Real>(0.0, 1.0)) < searchProbability) {
-		CPFA = PERFORM_INFORMED_WALK;
+	else if(IsInTheNest() || RNG->Uniform(CRange<Real>(0.0, 1.0)) < searchProbability) {
+		//CPFA = PERFORM_INFORMED_WALK;
 	}
 	//else {
 		//CPFA = TRAVEL_TO_NEST;
@@ -344,15 +411,15 @@ void iAnt_controller::travelToSearchSite() {
 
 void iAnt_controller::performInformedWalk() {
 	if(IsHoldingFood()) {
-		CPFA = SENSE_LOCAL_RESOURCE_DENSITY;
+		//CPFA = SENSE_LOCAL_RESOURCE_DENSITY;
+	}
+	else if(informed) {
+		target = fidelityPosition;
+		//LOG << "target = fidelity " << target << endl;//////////////////////////////////////////////////////
 	}
 	else if(targetPheromone.IsActive()) {
-		LOG << "target = pheromone" << endl;//////////////////////////////////////////////////////
 		target = targetPheromone.Location();
-	}
-	else if(siteFidelity){
-		LOG << "target = fidelity" << endl;//////////////////////////////////////////////////////
-		target = fidelityPosition;
+		//LOG << "target = pheromone " << target << endl;//////////////////////////////////////////////////////
 	}
 	else {
 		setWheelSpeed(getVectorToPosition(target));
@@ -361,7 +428,7 @@ void iAnt_controller::performInformedWalk() {
 
 void iAnt_controller::performUninformedWalk() {
 	if(IsHoldingFood()) {
-		CPFA = SENSE_LOCAL_RESOURCE_DENSITY;
+		//CPFA = SENSE_LOCAL_RESOURCE_DENSITY;
 	}
 	else if((position - target).SquareLength() < distanceTolerance) {
 		// Get a random rotation angle and then add it to the getVectorToLight angle. This serves the functionality
@@ -372,7 +439,7 @@ void iAnt_controller::performUninformedWalk() {
    		// Move from the current position "searchStepSize" distance away after turning "angle" degrees/radians etc.
    		target = (CVector2(searchStepSize, angle) + position);
 
-   		LOG << "target = random" << endl;//////////////////////////////////////////////////////
+   		//LOG << "target = random " << target << endl;//////////////////////////////////////////////////////
 
    		// Bounds check: make sure the new position is not outside of the available arena space if the robot is near the edge.
    		// Note To Self: this bounds checking is completely borked... fix it... :'(
@@ -405,27 +472,30 @@ void iAnt_controller::senseLocalResourceDensity()
 		}
 	}
 
-	// TODO Get rid of magic numbers!
-	if(resourceDensity >= 3) {
-		siteFidelity = true;
-		fidelityPosition = position;
-		// if(/* probability logic for setting a pheromone goes here */) {
-			sharedPheromone.Reset(position, simTime);
-		//}
-	}
-
-	CPFA = TRAVEL_TO_NEST;
+	fidelityPosition = position;
+	//LOG << "resource density: " << resourceDensity << endl;
 }
 
 void iAnt_controller::travelToNest() {
 	// If the robot has arrived inside the nest zone, transition to the "start" state.
 	if(IsInTheNest()) {
-		CPFA = SET_SEARCH_LOCATION;
+		//CPFA = SET_SEARCH_LOCATION;
     }
 	// Otherwise, set the robot's heading toward the nest zone and move towards it.
     else {
     	setWheelSpeed(getVectorToLight());
     }
+}
+
+// set target to a random location
+void iAnt_controller::setRandomSearchLocation() {
+	// create x and y point ranges at 90% of max grid size
+	CRange<Real> x(-0.9*arenaSize.GetX()/2.0, 0.9*arenaSize.GetX()/2.0);
+	CRange<Real> y(-0.9*arenaSize.GetY()/2.0, 0.9*arenaSize.GetY()/2.0);
+
+	// randomly set the target somewhere in the arena
+	target.SetX(RNG->Uniform(x));
+	target.SetY(RNG->Uniform(y));
 }
 
 bool iAnt_controller::collisionDetection() {
