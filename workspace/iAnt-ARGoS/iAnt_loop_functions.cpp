@@ -55,10 +55,18 @@ CColor iAnt_loop_functions::GetFloorColor(const CVector2& position) {
 	// TODO enhance the efficiency of this code!
     // food items are black discs with radius set in XML
     // check the positions of all food items
-    for(UInt32 i = 0; i < foodPositions.size(); i++) {
-        // if we are in the bounds of a food item, paint it black
+	for(UInt32 i = 0; i < foodPositions.size(); i++) {
+		// if we are in the bounds of a food item, paint it black
 		if((position - foodPositions[i]).SquareLength() < foodRadiusSquared) {
 			return CColor::BLACK;
+		}
+	}
+
+	// pheromone markers
+	for(UInt32 i = 0; i < markerPositions.size(); i++) {
+		// if we are in the bounds of a food item, paint it black
+		if((position - markerPositions[i]).SquareLength() < foodRadiusSquared) {
+			return CColor::CYAN;
 		}
 	}
 
@@ -74,7 +82,9 @@ CColor iAnt_loop_functions::GetFloorColor(const CVector2& position) {
 
 // this function is called BEFORE the ControlStep() function in the controller class
 void iAnt_loop_functions::PreStep() {
+	bool foodChanged = false;
 	tick++; // increment the frame variable
+	markerPositions.clear();
 
 	// container for all available foot-bot controller objects
     CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
@@ -101,7 +111,6 @@ void iAnt_loop_functions::PreStep() {
                 if((c.Position() - *i).SquareLength() < foodRadiusSquared) {
                     // pick up the food item and update foodData variables
         	    	c.PickupFood();
-        	    	floorEntity->SetChanged();
                     done = true;
                 }
             }
@@ -109,23 +118,37 @@ void iAnt_loop_functions::PreStep() {
             // erase the foodPosition from the vector, it's no longer needed
             if(done) {
             	foodPositions.erase(--i); // remember that the for loop applies i++ ONCE too far! go back!!!
+            	foodChanged = true;
             }
 
             c.UpdateFoodList(foodPositions);
 	    } else if(c.IsInTheNest() && c.IsHoldingFood()) {
 	    	c.DropOffFood();
 
+	    	/* needs to be weighted random selection from pheromone */
 	    	double maxStrength = 0.0;
 
 	    	for(unsigned int i = 0; i < pheromoneList.size(); i++) {
-	    		if(pheromoneList[i].IsActive() && (pheromoneList[i].Strength() > maxStrength)) {
-	    			//pendingPheromone = pheromoneList[i];
-	    		}
+	    		pheromoneList[i].Update(tick);
+
+	    		if(pheromoneList[i].IsActive() == true) maxStrength += pheromoneList[i].Weight();
 	    	}
 
-	    	//if(pendingPheromone.IsActive()) c.targetPheromone.Set(pendingPheromone);
+	    	double randomWeight = RNG->Uniform(CRange<double>(0.0, maxStrength));
+
+	    	for(unsigned int i = 0; i < pheromoneList.size(); i++) {
+	    		if(randomWeight < pheromoneList[i].Weight() && pheromoneList[i].IsActive() == true) {
+	    			c.TargetPheromone(pheromoneList[i]);
+	    			markerPositions.push_back(pheromoneList[i].Location());
+	    			break;
+	    		}
+
+	    		randomWeight -= pheromoneList[i].Weight();
+	    	}
 	    }
 	}
+
+	if(foodChanged == true) floorEntity->SetChanged();
 }
 
 void iAnt_loop_functions::PostStep() {

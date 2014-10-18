@@ -1,5 +1,9 @@
 #include "iAnt_pheromone.h"
 
+static inline float exponentialDecay(float quantity, float time, float lambda) {
+	return (quantity * exp(-lambda * time));
+}
+
 iAnt_pheromone::iAnt_pheromone() :
 	lastUpdated(0),
 	decayRate(0.0),
@@ -21,7 +25,7 @@ iAnt_pheromone::iAnt_pheromone(CVector2 loc, long int tick, double decay, double
 	location    = loc;
 	decayRate   = decay;
 	weight      = w;
-	threshold   = w * 0.001;
+	threshold   = 0.001;
 	lastUpdated = tick;
 	isActive    = true;
 }
@@ -32,8 +36,9 @@ iAnt_pheromone::~iAnt_pheromone() {
 
 // Returns decay of quantity at time given rate of change lambda
 void iAnt_pheromone::Update(long int time) {
-    weight      *= exp(-decayRate * (time - lastUpdated));
-    lastUpdated  = time;
+	// divide by 8 to compensate for 16 frames per second
+    weight      = exponentialDecay(weight, (time - lastUpdated)/8.0, decayRate);
+    lastUpdated = time;
 
     if(weight <= threshold) isActive = false;
 }
@@ -42,7 +47,7 @@ void iAnt_pheromone::Update(long int time) {
 void iAnt_pheromone::Reset(CVector2 loc, long int tick, double w) {
 	location    = loc;
 	weight      = w;
-	threshold   = w * 0.001;
+	threshold   = 0.001;
 	lastUpdated = tick;
 	isActive    = true;
 }
@@ -75,4 +80,8 @@ void iAnt_pheromone::Set(iAnt_pheromone newPheromone) {
 	weight      = newPheromone.weight;
 	threshold   = newPheromone.threshold;
 	isActive    = newPheromone.isActive;
+}
+
+double iAnt_pheromone::Weight() {
+	return weight;
 }

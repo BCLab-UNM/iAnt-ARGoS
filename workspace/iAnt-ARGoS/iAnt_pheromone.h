@@ -19,6 +19,8 @@ class iAnt_pheromone {
 		double   Strength(); // pheromone strength or weight
 		CVector2 Location(); // pheromone location
 		void     Set(iAnt_pheromone newPheromone); // set pheromone = newPheromone
+		double   Weight(); // return weight
+
 	private:
 		CVector2 location;
 		long int lastUpdated;

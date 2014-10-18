@@ -2,7 +2,6 @@
 #define IANT_CONTROLLER_H_
 
 #include "iAnt_pheromone.h"
-#include "iAnt_loop_functions.h"
 #include <argos3/core/control_interface/ci_controller.h>
 #include <argos3/plugins/robots/generic/control_interface/ci_differential_steering_actuator.h>
 #include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_proximity_sensor.h>
@@ -10,13 +9,12 @@
 #include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_light_sensor.h>
 #include <argos3/core/utility/math/rng.h>
 #include <argos3/core/utility/logging/argos_log.h>
+#include <argos3/plugins/robots/generic/control_interface/ci_positioning_sensor.h>
 
 using namespace argos;
 using namespace std;
 
 class iAnt_controller : public CCI_Controller {
-
-friend class iAnt_loop_functions;
 
 	public:
 
@@ -32,6 +30,7 @@ friend class iAnt_loop_functions;
 		void UpdatePosition(CVector2 newPosition); // update iAnt's position
 		void UpdateTime(long int newTime);         // update simulation time
 		CVector2 Position(); // return the robot's position
+		void TargetPheromone(iAnt_pheromone p); // update target pheromone
 
 		/* CCI_Controller inherited functions */
 		void Init(TConfigurationNode& node); // initialize variables based on XML file
@@ -44,7 +43,8 @@ friend class iAnt_loop_functions;
 		CCI_DifferentialSteeringActuator *steeringActuator; // controls the robot's motor speeds
 		CCI_FootBotProximitySensor       *proximitySensor;  // detects nearby objects to prevent collision
 		CCI_FootBotMotorGroundSensor     *groundSensor;     // detects food items & nest (color changes)
-		CCI_FootBotLightSensor           *lightSensor;      // detects nest-light for navigation control
+		//CCI_FootBotLightSensor           *lightSensor;      // detects nest-light for navigation control
+	    CCI_PositioningSensor            *m_pcPositioning;  // used for compass/heading
 
 		CRandom::CRNG *RNG; // random number generator
 
@@ -63,15 +63,17 @@ friend class iAnt_loop_functions;
 
 		Real searchRadiusSquared; // radius of search for resourceDensity
 		Real distanceTolerance; // distance to trigger collision detection
-		Real travelProbability; // %-chance of traveling, from [0.0, 1.0]
-		Real searchProbability; // %-chance of searching, from [0.0, 1.0]
+		Real travelGiveupProbability; // %-chance of traveling, from [0.0, 1.0]
+		Real searchGiveupProbability; // %-chance of searching, from [0.0, 1.0]
 		Real searchStepSize; // vector length for each search "step"
 		Real maxSpeed; // maximum motor speed, configured in XML
+		Real informedSearchDecay;
 		Real siteFidelityRate; // % chance of using site fidelity
 		Real pheromoneRate; // % chance of laying pheromones
 		Real pheromoneDecayRate; // %-rate that pheromones decay [0.0, 10.0]
 
 		long int simTime; // frame count for simulation
+		long int searchTime; // time spent searching
 
 		CRadians uninformedSearchCorrelation; // radian angle turned during searching [0.0, 4.0PI]
 
@@ -94,21 +96,19 @@ friend class iAnt_loop_functions;
 		void searching();
 		void returning();
 
-		// (deprecated) CPFA implementation functions
-		void setSearchLocation();
-		void travelToSearchSite();
-		void performInformedWalk();
-		void performUninformedWalk();
+		// CPFA helper functions
 		void senseLocalResourceDensity();
-		void travelToNest();
+		CVector2 setPositionInBounds(CVector2 rawPosition);
 
 		// private helper functions for motion control and navigation
 		void setRandomSearchLocation(); // set target to a random location
 		bool collisionDetection(); // detect collisions and turn appropriately
 		CRadians lawOfCosines(CVector2& A, CVector2& B, CVector2& C); // helper for getVectorToPosition()
 		Real getSignOfRotationAngle(CVector2& A, CVector2& B, CVector2& C); // helper for lawOfCosines()
+		double getHeading();
 		CVector2 getVectorToLight(); // calculate heading towards the nest-light
 		CVector2 getVectorToPosition(const CVector2& targetPosition); // calculate heading towards robot target
+		void setWheelSpeed(); // set wheel speeds based on heading and target position
 		void setWheelSpeed(const CVector2& heading); // set wheel speeds based on desired heading
 };
 
