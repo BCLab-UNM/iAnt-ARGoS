@@ -66,7 +66,7 @@ CColor iAnt_loop_functions::GetFloorColor(const CVector2& position) {
 	for(UInt32 i = 0; i < markerPositions.size(); i++) {
 		// if we are in the bounds of a food item, paint it black
 		if((position - markerPositions[i]).SquareLength() < foodRadiusSquared) {
-			return CColor::CYAN;
+			return CColor::RED;
 		}
 	}
 
@@ -82,9 +82,8 @@ CColor iAnt_loop_functions::GetFloorColor(const CVector2& position) {
 
 // this function is called BEFORE the ControlStep() function in the controller class
 void iAnt_loop_functions::PreStep() {
-	bool foodChanged = false;
 	tick++; // increment the frame variable
-	markerPositions.clear();
+	vector<CVector2> tempMarkerPositions;
 
 	// container for all available foot-bot controller objects
     CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
@@ -118,7 +117,7 @@ void iAnt_loop_functions::PreStep() {
             // erase the foodPosition from the vector, it's no longer needed
             if(done) {
             	foodPositions.erase(--i); // remember that the for loop applies i++ ONCE too far! go back!!!
-            	foodChanged = true;
+            	floorEntity->SetChanged();
             }
 
             c.UpdateFoodList(foodPositions);
@@ -139,16 +138,17 @@ void iAnt_loop_functions::PreStep() {
 	    	for(unsigned int i = 0; i < pheromoneList.size(); i++) {
 	    		if(randomWeight < pheromoneList[i].Weight() && pheromoneList[i].IsActive() == true) {
 	    			c.TargetPheromone(pheromoneList[i]);
-	    			markerPositions.push_back(pheromoneList[i].Location());
+	    			tempMarkerPositions.push_back(pheromoneList[i].Location());
 	    			break;
 	    		}
 
 	    		randomWeight -= pheromoneList[i].Weight();
 	    	}
+
+	    	markerPositions = tempMarkerPositions;
+	    	floorEntity->SetChanged();
 	    }
 	}
-
-	if(foodChanged == true) floorEntity->SetChanged();
 }
 
 void iAnt_loop_functions::PostStep() {
@@ -159,9 +159,10 @@ void iAnt_loop_functions::Reset() {
 	foodPositions.clear();
 
 	for(UInt32 i = 0; i < foodItemCount; ++i) {
-		foodPositions[i].Set(RNG->Uniform(forageRangeX), RNG->Uniform(forageRangeY));
+    	foodPositions.push_back(CVector2(RNG->Uniform(forageRangeX), RNG->Uniform(forageRangeY)));
 	}
 
+	floorEntity->SetChanged();
 	tick = 0;
 }
 

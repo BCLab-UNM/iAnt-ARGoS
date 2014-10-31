@@ -17,7 +17,6 @@ using namespace std;
 class iAnt_controller : public CCI_Controller {
 
 	public:
-
 		iAnt_controller();
 		~iAnt_controller();
 
@@ -43,7 +42,7 @@ class iAnt_controller : public CCI_Controller {
 		CCI_DifferentialSteeringActuator *steeringActuator; // controls the robot's motor speeds
 		CCI_FootBotProximitySensor       *proximitySensor;  // detects nearby objects to prevent collision
 		CCI_FootBotMotorGroundSensor     *groundSensor;     // detects food items & nest (color changes)
-		//CCI_FootBotLightSensor           *lightSensor;      // detects nest-light for navigation control
+//		CCI_FootBotLightSensor           *lightSensor;      // detects nest-light for navigation control
 	    CCI_PositioningSensor            *m_pcPositioning;  // used for compass/heading
 
 		CRandom::CRNG *RNG; // random number generator
@@ -103,13 +102,14 @@ class iAnt_controller : public CCI_Controller {
 		// private helper functions for motion control and navigation
 		void setRandomSearchLocation(); // set target to a random location
 		bool collisionDetection(); // detect collisions and turn appropriately
-		CRadians lawOfCosines(CVector2& A, CVector2& B, CVector2& C); // helper for getVectorToPosition()
-		Real getSignOfRotationAngle(CVector2& A, CVector2& B, CVector2& C); // helper for lawOfCosines()
-		double getHeading();
-		CVector2 getVectorToLight(); // calculate heading towards the nest-light
-		CVector2 getVectorToPosition(const CVector2& targetPosition); // calculate heading towards robot target
+//		CRadians lawOfCosines(CVector2& A, CVector2& B, CVector2& C); // helper for getVectorToPosition()
+//		Real getSignOfRotationAngle(CVector2& A, CVector2& B, CVector2& C); // helper for lawOfCosines()
+		CRadians RobotHeading();
+//		int GetQuadrant(CVector2 coordinates);
+//		CVector2 getVectorToLight(); // calculate heading towards the nest-light
+//		CVector2 getVectorToPosition(const CVector2& targetPosition); // calculate heading towards robot target
 		void setWheelSpeed(); // set wheel speeds based on heading and target position
-		void setWheelSpeed(const CVector2& heading); // set wheel speeds based on desired heading
+//		void setWheelSpeed(const CVector2& heading); // set wheel speeds based on desired heading
 };
 
 #endif /* IANT_CONTROLLER_H_ */

@@ -1,4 +1,5 @@
 #include "iAnt_controller.h"
+const int DEBUG_iAnt = 0;
 
 /* inline functions and constants */
 /* TODO verify necessity of these constants */
@@ -254,23 +255,21 @@ void iAnt_controller::TargetPheromone(iAnt_pheromone p)
  * state machine do to various modifications.
  */
 void iAnt_controller::ControlStep() {
-	// LOG << "T: " << target << endl << "P: " << position << endl << CRadians(getHeading()) << endl << (target - position).Angle() << endl << endl;
+	//if(simTime % 250 == 0) LOG << "T: " << target << endl << "P: " << position << endl << CRadians(getHeading()) << endl << (target - position).Angle() << endl << endl;
 
 	// Check for collisions and move out of the way before running the state machine.
-	if(!collisionDetection()) {
-		switch(CPFA) {
-			case INACTIVE:
-				inactive();
-				break;
-			case DEPARTING:
-				departing();
-				break;
-			case SEARCHING:
-				searching();
-				break;
-			case RETURNING:
-				returning();
-		}
+	switch(CPFA) {
+		case INACTIVE:
+			inactive();
+			break;
+		case DEPARTING:
+			departing();
+			break;
+		case SEARCHING:
+			searching();
+			break;
+		case RETURNING:
+			returning();
 	}
 }
 
@@ -320,7 +319,7 @@ void iAnt_controller::departing() {
 		informed = false;
 	}
 
-	setWheelSpeed(); //setWheelSpeed(getVectorToPosition(target));
+	setWheelSpeed(); /*setWheelSpeed(getVectorToPosition(target));*/
 }
 
 void iAnt_controller::searching() {
@@ -329,22 +328,19 @@ void iAnt_controller::searching() {
 			target = setPositionInBounds(nestPosition);
 			CPFA = RETURNING;
 		}
-		else /*if((position - target).SquareLength() < distanceTolerance)*/ {
+		else if((simTime % 8 == 0) && (position - target).SquareLength() < distanceTolerance) {
 			if(informed == false) {
 				// Get a random rotation angle and then add it to the getVectorToLight angle. This serves the functionality
 				// of a compass and causes the rotation to be relative to the robot's current direction.
 				CRadians rotation(RNG->Gaussian(uninformedSearchCorrelation.GetValue())),
-						 //angle(getVectorToLight().Angle().SignedNormalize() + rotation);
-				         angle((getHeading() > 0) ? (rotation + CRadians(getHeading())) : (rotation - CRadians(getHeading())));
+						 angle(rotation.UnsignedNormalize() + RobotHeading().UnsignedNormalize());
 
-				// Move from the current position "searchStepSize" distance away after turning "angle" degrees/radians etc.
 				target = setPositionInBounds(CVector2(searchStepSize, angle) + position);
 			}
 			else {
 				float correlation = exponentialDecay((CRadians::TWO_PI).GetValue(), searchTime++, informedSearchDecay);
 				CRadians rotation(bound(correlation, -(CRadians::PI).GetValue(), (CRadians::PI).GetValue())),
-				         //angle(getVectorToLight().Angle().SignedNormalize() + rotation);
-				         angle((getHeading() > 0) ? (rotation + CRadians(getHeading())) : (rotation - CRadians(getHeading)));
+						 angle(rotation.UnsignedNormalize() + RobotHeading().UnsignedNormalize());
 
 				target = setPositionInBounds(CVector2(searchStepSize, angle) + position);
 			}
@@ -356,7 +352,7 @@ void iAnt_controller::searching() {
 		CPFA = RETURNING;
 	}
 
-	setWheelSpeed(); //setWheelSpeed(getVectorToPosition(target));
+	setWheelSpeed(); /*setWheelSpeed(getVectorToPosition(target));*/
 }
 
 void iAnt_controller::returning() {
@@ -380,7 +376,7 @@ void iAnt_controller::returning() {
 
 		CPFA = DEPARTING;
 	}
-	else setWheelSpeed(); //setWheelSpeed(getVectorToLight());
+	else setWheelSpeed(); /*setWheelSpeed(getVectorToLight());*/
 }
 
 void iAnt_controller::senseLocalResourceDensity()
@@ -396,10 +392,11 @@ void iAnt_controller::senseLocalResourceDensity()
 	fidelityPosition = position;
 }
 
+// TODO (bug list: magic numbers), replaced 0.90 with 0.95 as a temporary stopgap, but I need to come back to this
 CVector2 iAnt_controller::setPositionInBounds(CVector2 rawPosition) {
 	// create x and y point ranges at 90% of max grid size
-	CRange<Real> x(-0.9*arenaSize.GetX()/2.0, 0.9*arenaSize.GetX()/2.0);
-	CRange<Real> y(-0.9*arenaSize.GetY()/2.0, 0.9*arenaSize.GetY()/2.0);
+	CRange<Real> x(-0.95 * arenaSize.GetX() / 2.0, 0.95 * arenaSize.GetX() / 2.0);
+	CRange<Real> y(-0.95 * arenaSize.GetY() / 2.0, 0.95 * arenaSize.GetY() / 2.0);
 
 	if(rawPosition.GetX() > x.GetMax()) rawPosition.SetX(x.GetMax());
 	else if(rawPosition.GetX() < x.GetMin()) rawPosition.SetX(x.GetMin());
@@ -413,8 +410,8 @@ CVector2 iAnt_controller::setPositionInBounds(CVector2 rawPosition) {
 // set target to a random location
 void iAnt_controller::setRandomSearchLocation() {
 	// create x and y point ranges at 90% of max grid size
-	CRange<Real> x(-0.9*arenaSize.GetX()/2.0, 0.9*arenaSize.GetX()/2.0);
-	CRange<Real> y(-0.9*arenaSize.GetY()/2.0, 0.9*arenaSize.GetY()/2.0);
+	CRange<Real> x(-0.95 * arenaSize.GetX() / 2.0, 0.95 * arenaSize.GetX() / 2.0);
+	CRange<Real> y(-0.95 * arenaSize.GetY() / 2.0, 0.95 * arenaSize.GetY() / 2.0);
 
 	// randomly set the target somewhere in the arena
 	target.SetX(RNG->Uniform(x));
@@ -422,25 +419,31 @@ void iAnt_controller::setRandomSearchLocation() {
 }
 
 bool iAnt_controller::collisionDetection() {
-	const CCI_FootBotProximitySensor::TReadings& proximityReadings = proximitySensor->GetReadings();
-	CVector2 accumulator;
+	if(DEBUG_iAnt) LOG << "********** collisionDetection **********" << endl << endl;
 
-	for(size_t i = 0; i < proximityReadings.size(); ++i) {
-        accumulator += CVector2(proximityReadings[i].Value, proximityReadings[i].Angle);
+	const CCI_FootBotProximitySensor::TReadings& proximityReadings = proximitySensor->GetReadings();
+	CVector2 accumulator(0.01, CRadians::ZERO);
+
+	for(size_t i = 0; i < proximityReadings.size(); i++) {
+        accumulator += CVector2(proximityReadings[i].Value, CRadians(proximityReadings[i].Angle).SignedNormalize());
+        if(DEBUG_iAnt) LOG << proximityReadings[i].Value << " [" << i << "].Value" << endl;
+        if(DEBUG_iAnt) LOG << proximityReadings[i].Angle << " [" << i << "].Angle" << endl << endl;
 	}
 
-	accumulator /= proximityReadings.size();
+	accumulator /= accumulator.Length();
 	CRadians angle = accumulator.Angle();
 
-	if(angleTolerance.WithinMinBoundIncludedMaxBoundIncluded(angle) &&
-	   accumulator.Length() < distanceTolerance) {
+	if(DEBUG_iAnt) LOG << accumulator << " ***** accumulator" << endl;
+	if(DEBUG_iAnt) LOG << accumulator.Angle() << " ***** accumulator.Angle()" << endl << endl;
+
+	if(!angleTolerance.WithinMinBoundIncludedMaxBoundIncluded(angle) /*&& accumulator.Length() > 0.0*/) {
 		steeringActuator->SetLinearVelocity(maxSpeed, maxSpeed);
 		return false; // collision not detected
 	} else {
-		if(angle.GetValue() > 0.0) {
-			steeringActuator->SetLinearVelocity(maxSpeed, 0.0);
+		if(angle.SignedNormalize() > CRadians::ZERO) {
+			steeringActuator->SetLinearVelocity(maxSpeed, -maxSpeed);//(maxSpeed, 0.0);
 		} else {
-			steeringActuator->SetLinearVelocity(0.0, maxSpeed);
+			steeringActuator->SetLinearVelocity(-maxSpeed, maxSpeed);//(0.0, maxSpeed);
 		}
 		return true; // collision detected
 	}
@@ -448,6 +451,7 @@ bool iAnt_controller::collisionDetection() {
 	return false; // collision not detected
 }
 
+/*
 CRadians iAnt_controller::lawOfCosines(CVector2& A, CVector2& B, CVector2& C) {
     // the length of each side of the calculated triangle
     Real a(sqrt(((B.GetX() - A.GetX()) * (B.GetX() - A.GetX())) + ((B.GetY() - A.GetY()) * (B.GetY() - A.GetY())))),
@@ -460,7 +464,9 @@ CRadians iAnt_controller::lawOfCosines(CVector2& A, CVector2& B, CVector2& C) {
     // formula for the law of cosines
     return CRadians(sign * acos(((a * a) + (b * b) - (c * c)) / (2.0 * a * b)));
 }
+*/
 
+/*
 Real iAnt_controller::getSignOfRotationAngle(CVector2& A, CVector2& B, CVector2& C) {
     // returned as is for positive rotation, -1.0 for negative rotation
     Real result(1.0);
@@ -495,6 +501,7 @@ Real iAnt_controller::getSignOfRotationAngle(CVector2& A, CVector2& B, CVector2&
 
     return result;
 }
+*/
 
 /*
  * ADD to this heading to turn RIGHT
@@ -507,7 +514,7 @@ Real iAnt_controller::getSignOfRotationAngle(CVector2& A, CVector2& B, CVector2&
  * +/- 180 degrees south,
  * -90 degrees west
  */
-double iAnt_controller::getHeading() {
+CRadians iAnt_controller::RobotHeading() {
     const CCI_PositioningSensor::SReading& sReading = m_pcPositioning->GetReading();
     CQuaternion orientation = sReading.Orientation;
 
@@ -516,46 +523,72 @@ double iAnt_controller::getHeading() {
     orientation.ToEulerAngles(z_angle, y_angle, x_angle);
 
     /*Angle to z-axis represents compass heading*/
-    return -z_angle.GetValue();
+    return z_angle;
 }
 
+/*
+int iAnt_controller::GetQuadrant(CVector2 pos) {
+	if((pos.GetX() >= 0) && (pos.GetY() > 0)) return 1; // quadrant 1, pos = (+,+)
+	if((pos.GetX() > 0) && (pos.GetY() <= 0)) return 2; // quadrant 2, pos = (+,-)
+	if((pos.GetX() <= 0) && (pos.GetY() < 0)) return 3; // quadrant 3, pos = (-,-)
+	if((pos.GetX() < 0) && (pos.GetY() >= 0)) return 4; // quadrant 4, pos = (-,+)
 
+	return 0; // pos = (0.0, 0.0)
+}
+*/
+
+/*
 CVector2 iAnt_controller::getVectorToLight() {
-//	const CCI_FootBotLightSensor::TReadings& readings = lightSensor->GetReadings();
+	const CCI_FootBotLightSensor::TReadings& readings = lightSensor->GetReadings();
 	CVector2 accumulator;
 
-//	for(size_t i = 0; i < readings.size(); ++i) {
-//	    accumulator += CVector2(readings[i].Value, readings[i].Angle);
-//	}
+	for(size_t i = 0; i < readings.size(); ++i) {
+	    accumulator += CVector2(readings[i].Value, readings[i].Angle);
+	}
 
 	return accumulator;
 }
 
 CVector2 iAnt_controller::getVectorToPosition(const CVector2& targetPosition) {
-//    const CCI_FootBotLightSensor::TReadings& readings = lightSensor->GetReadings();
+    const CCI_FootBotLightSensor::TReadings& readings = lightSensor->GetReadings();
     CVector2 accumulator;
     // we will construct a triangle using these points: A, B, C
     CVector2 A(nestPosition), B(position), C(targetPosition);
     CRadians rotationTowardsTarget(lawOfCosines(A, B, C));
 
-//    for(size_t i = 0; i < readings.size(); ++i) {
-//        accumulator += CVector2(readings[i].Value, readings[i].Angle + rotationTowardsTarget);
-//    }
+    for(size_t i = 0; i < readings.size(); ++i) {
+        accumulator += CVector2(readings[i].Value, readings[i].Angle + rotationTowardsTarget);
+    }
 
     return accumulator;
 }
+*/
 
 void iAnt_controller::setWheelSpeed() {
-	// ORDER MATTERS for (target - position).Angle() calculation, always do target first
-	// to ensure opposite sign of getHeading() call in the case robot is directly facing its target
-	CRadians headingAngle = CRadians(getHeading()) + (target - position).Angle();
+	collisionDetection();
+
+	if(DEBUG_iAnt) LOG << endl << "********** setWheelSpeed() **********" << endl << endl;
+
+	CVector2 targetHeading(target - position);
+	CRadians TH_angle(targetHeading.Angle().UnsignedNormalize()),
+			 RH_angle = RobotHeading().UnsignedNormalize(), headingAngle = (TH_angle - RH_angle);
+
+	if(DEBUG_iAnt) {
+		LOG << position << " ***** position" << endl;
+		LOG << position.Angle() << " ***** position.Angle()" << endl << endl;
+		LOG << target << " ***** target" << endl;
+		LOG << target.Angle() << " ***** target.Angle()" << endl << endl;
+	}
+
 	enum turnStatus { NO_TURN = 0, TURN = 1 } turnStatus;
 
-   if(Abs(headingAngle) < angleTolerance.GetMax()) {
-	   turnStatus = NO_TURN;
-   } else if(Abs(headingAngle) > angleTolerance.GetMax()) {
-	   turnStatus = TURN;
-   }
+	if((headingAngle > angleTolerance.GetMin()) && (headingAngle < angleTolerance.GetMax())) {
+		turnStatus = NO_TURN;
+	} else {
+		turnStatus = TURN;
+	}
+
+	/*if(DEBUG_iAnt)*/ LOG << "turnStatus = " << ((turnStatus == TURN) ? ("TURN ") : ("NO_TURN "));
 
    // Wheel speeds based on current turning state
    Real speed1, speed2;
@@ -577,19 +610,36 @@ void iAnt_controller::setWheelSpeed() {
 
    Real leftWheelSpeed, rightWheelSpeed;
 
-   if(headingAngle > CRadians::ZERO) {
+   if(headingAngle.SignedNormalize() >= CRadians::ZERO) {
       // Turn Left
       leftWheelSpeed  = speed1;
       rightWheelSpeed = speed2;
+
+      if(turnStatus == TURN) {
+    	  if(DEBUG_iAnt) {
+    		  LOG << "LEFT" << endl << endl;
+    	  }
+      }
+      else {
+    	  if(DEBUG_iAnt) LOG << endl << endl;
+      }
    } else {
       // Turn Right
       leftWheelSpeed  = speed2;
       rightWheelSpeed = speed1;
+
+      if(turnStatus == TURN) {
+    	  if(DEBUG_iAnt) LOG << "RIGHT" << endl << endl;
+      }
+      else {
+    	  if(DEBUG_iAnt) LOG << endl << endl;
+      }
    }
 
    steeringActuator->SetLinearVelocity(leftWheelSpeed, rightWheelSpeed);
 }
 
+/*
 void iAnt_controller::setWheelSpeed(const CVector2& heading) {
 	CRadians headingAngle = heading.Angle().SignedNormalize();
 	enum turnStatus { NO_TURN = 0, TURN = 1 } turnStatus;
@@ -632,5 +682,6 @@ void iAnt_controller::setWheelSpeed(const CVector2& heading) {
 
    steeringActuator->SetLinearVelocity(leftWheelSpeed, rightWheelSpeed);
 }
+*/
 
 REGISTER_CONTROLLER(iAnt_controller, "iAnt_controller")
