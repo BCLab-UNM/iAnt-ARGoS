@@ -63,9 +63,18 @@ CColor iAnt_loop_functions::GetFloorColor(const CVector2& position) {
 	}
 
 	// pheromone markers
+	/*
 	for(UInt32 i = 0; i < markerPositions.size(); i++) {
 		// if we are in the bounds of a food item, paint it black
 		if((position - markerPositions[i]).SquareLength() < foodRadiusSquared) {
+			return CColor::RED;
+		}
+	}
+	*/
+
+	for(UInt32 i = 0; i < pheromoneList.size(); i++) {
+		// if we are in the bounds of a food item, paint it black
+		if((position - pheromoneList[i].Location()).SquareLength() < foodRadiusSquared) {
 			return CColor::RED;
 		}
 	}
@@ -135,14 +144,16 @@ void iAnt_loop_functions::PreStep() {
 
 	    	double randomWeight = RNG->Uniform(CRange<double>(0.0, maxStrength));
 
-	    	for(unsigned int i = 0; i < pheromoneList.size(); i++) {
-	    		if(randomWeight < pheromoneList[i].Weight() && pheromoneList[i].IsActive() == true) {
-	    			c.TargetPheromone(pheromoneList[i]);
-	    			tempMarkerPositions.push_back(pheromoneList[i].Location());
+			vector<iAnt_pheromone>::iterator i;
+
+	    	for(i = pheromoneList.begin(); i != pheromoneList.end(); i++) {
+	    		if(randomWeight < i->Weight() && i->IsActive() == true) {
+	    			c.TargetPheromone(*i);
+	    			tempMarkerPositions.push_back(i->Location());
 	    			break;
 	    		}
 
-	    		randomWeight -= pheromoneList[i].Weight();
+	    		randomWeight -= i->Weight();
 	    	}
 
 	    	markerPositions = tempMarkerPositions;
