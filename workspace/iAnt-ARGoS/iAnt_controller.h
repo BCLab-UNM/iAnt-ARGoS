@@ -29,7 +29,8 @@ class iAnt_controller : public CCI_Controller {
 		void UpdatePosition(CVector2 newPosition); // update iAnt's position
 		void UpdateTime(long int newTime);         // update simulation time
 		CVector2 Position(); // return the robot's position
-		void TargetPheromone(iAnt_pheromone p); // update target pheromone
+		void SetTargetPheromone(iAnt_pheromone p); // update target pheromone
+		iAnt_pheromone GetTargetPheromone(); // get target pheromone
 
 		/* CCI_Controller inherited functions */
 		void Init(TConfigurationNode& node); // initialize variables based on XML file

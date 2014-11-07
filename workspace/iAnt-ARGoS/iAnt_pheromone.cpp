@@ -7,8 +7,8 @@ static inline float exponentialDecay(float quantity, float time, float lambda) {
 iAnt_pheromone::iAnt_pheromone() :
 	lastUpdated(0),
 	decayRate(0.0),
-	weight(0.0),
-	threshold(0.0),
+	weight(1.0),
+	threshold(0.001),
 	isActive(false)
 {}
 

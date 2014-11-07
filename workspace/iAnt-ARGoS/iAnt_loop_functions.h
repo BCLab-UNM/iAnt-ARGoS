@@ -27,7 +27,6 @@ class iAnt_loop_functions : public CLoopFunctions {
 		long int                tick;              // a counter for simulation frames
 		size_t                  foodItemCount;     // number of food items on the field
 		vector<CVector2>        foodPositions;     // positions for all food items on the field
-		vector<CVector2>		markerPositions;   // site fidelity markers
 		vector<iAnt_pheromone>  pheromoneList;     // list of pheromones to share with iAnts
 		CVector2                nestPosition;      // center of the circular nest
 		Real                    foodRadiusSquared; // radius of circular food object squared

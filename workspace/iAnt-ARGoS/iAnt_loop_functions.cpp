@@ -62,19 +62,9 @@ CColor iAnt_loop_functions::GetFloorColor(const CVector2& position) {
 		}
 	}
 
-	// pheromone markers
-	/*
-	for(UInt32 i = 0; i < markerPositions.size(); i++) {
+	for(UInt32 i = 0; i < pheromoneList.size() && foodPositions.size() > 0; i++) {
 		// if we are in the bounds of a food item, paint it black
-		if((position - markerPositions[i]).SquareLength() < foodRadiusSquared) {
-			return CColor::RED;
-		}
-	}
-	*/
-
-	for(UInt32 i = 0; i < pheromoneList.size(); i++) {
-		// if we are in the bounds of a food item, paint it black
-		if((position - pheromoneList[i].Location()).SquareLength() < foodRadiusSquared) {
+		if(pheromoneList[i].IsActive() && (position - pheromoneList[i].Location()).SquareLength() < foodRadiusSquared) {
 			return CColor::RED;
 		}
 	}
@@ -91,11 +81,11 @@ CColor iAnt_loop_functions::GetFloorColor(const CVector2& position) {
 
 // this function is called BEFORE the ControlStep() function in the controller class
 void iAnt_loop_functions::PreStep() {
-	tick++; // increment the frame variable
 	vector<CVector2> tempMarkerPositions;
-
 	// container for all available foot-bot controller objects
     CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
+
+    tick++; // increment the frame variable
 
     // loop through all of the foot-bot controller objects
 	for(CSpace::TMapPerType::iterator it = footbots.begin(); it != footbots.end(); ++it) {
@@ -119,6 +109,7 @@ void iAnt_loop_functions::PreStep() {
                 if((c.Position() - *i).SquareLength() < foodRadiusSquared) {
                     // pick up the food item and update foodData variables
         	    	c.PickupFood();
+        	    	if(c.GetTargetPheromone().IsActive() == true) pheromoneList.push_back(c.GetTargetPheromone());
                     done = true;
                 }
             }
@@ -131,6 +122,7 @@ void iAnt_loop_functions::PreStep() {
 
             c.UpdateFoodList(foodPositions);
 	    } else if(c.IsInTheNest() && c.IsHoldingFood()) {
+	    	bool pheromoneSet = false;
 	    	c.DropOffFood();
 
 	    	/* needs to be weighted random selection from pheromone */
@@ -146,18 +138,16 @@ void iAnt_loop_functions::PreStep() {
 
 			vector<iAnt_pheromone>::iterator i;
 
-	    	for(i = pheromoneList.begin(); i != pheromoneList.end(); i++) {
+	    	for(i = pheromoneList.begin(); i != pheromoneList.end() && !pheromoneSet; i++) {
 	    		if(randomWeight < i->Weight() && i->IsActive() == true) {
-	    			c.TargetPheromone(*i);
-	    			tempMarkerPositions.push_back(i->Location());
-	    			break;
+	    			c.SetTargetPheromone(*i);
+	    			pheromoneSet = true;
 	    		}
 
 	    		randomWeight -= i->Weight();
 	    	}
 
-	    	markerPositions = tempMarkerPositions;
-	    	floorEntity->SetChanged();
+	    	if(pheromoneSet) floorEntity->SetChanged();
 	    }
 	}
 }

@@ -229,9 +229,15 @@ CVector2 iAnt_controller::Position()
 }
 
 // update pheromone
-void iAnt_controller::TargetPheromone(iAnt_pheromone p)
+void iAnt_controller::SetTargetPheromone(iAnt_pheromone p)
 {
 	targetPheromone.Set(p);
+}
+
+// update pheromone
+iAnt_pheromone iAnt_controller::GetTargetPheromone()
+{
+	return sharedPheromone;
 }
 
 /* iAnt_controller Control Step Function
@@ -342,7 +348,7 @@ void iAnt_controller::searching() {
 void iAnt_controller::returning() {
 	if((position - target).SquareLength() < distanceTolerance) {
 		if(poissonCDF(resourceDensity, pheromoneRate) > RNG->Uniform(CRange<Real>(0.0, 1.0))) {
-			sharedPheromone.Set(iAnt_pheromone(position, simTime, pheromoneDecayRate));
+			sharedPheromone.Set(iAnt_pheromone(fidelityPosition, simTime, pheromoneDecayRate));
 		}
 
 		if(poissonCDF(resourceDensity, siteFidelityRate) > RNG->Uniform(CRange<Real>(0.0, 1.0))) {
@@ -372,6 +378,8 @@ void iAnt_controller::senseLocalResourceDensity()
 			resourceDensity++;
 		}
 	}
+
+	// LOG << position << endl << "(" << resourceDensity  << ")" << endl;
 
 	fidelityPosition = position;
 }
@@ -454,11 +462,12 @@ void iAnt_controller::SetWheelSpeed() {
 	if((collisionHeading.SignedNormalize() <= angleTolerance.GetMax()) &&
        (collisionHeading.SignedNormalize() >= angleTolerance.GetMin())) {
 
-		if(collisionHeading >= headingAngle) {
+		// since we are staying still while turning to avoid collision, it doesn't matter which direction we turn
+//		if(collisionHeading >= headingAngle) {
 			/* turn left */ steeringActuator->SetLinearVelocity(-maxSpeed, maxSpeed);
-		} else if(collisionHeading < CRadians::ZERO) {
-			/* turn right */ steeringActuator->SetLinearVelocity(maxSpeed, -maxSpeed);
-		}
+//		} else if(collisionHeading < CRadians::ZERO) {
+			/* turn right */ //steeringActuator->SetLinearVelocity(maxSpeed, -maxSpeed);
+//		}
 
 	} else if((headingAngle.SignedNormalize() < CRadians::ZERO) &&
               (headingAngle.SignedNormalize() <= angleTolerance.GetMin())) {

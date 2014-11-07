@@ -21,9 +21,12 @@
                 <positioning implementation="default"/>
             </sensors>
 
+<!--
+                            pheromoneDecayRate="0.3821808844804764"
+-->
             <params>
                 <CPFA       pheromoneRate="2.24421238899231"
-                            pheromoneDecayRate="0.3821808844804764"
+                            pheromoneDecayRate="0.03821"
                             travelGiveupProbability="0.2041456252336502"
                             siteFidelityRate="2.5117506980896"
                             informedSearchDecay="0.02497878670692444"/>
@@ -42,7 +45,7 @@
     </controllers>
 
     <loop_functions library="workspace/iAnt-ARGoS/Debug/libiAnt-ARGoS.so" label="iAnt_loop_functions">
-        <simulation_settings foodItemCount="60"/>
+        <simulation_settings foodItemCount="40"/>
                  <navigation forageRangeX="-2.9, 2.9"
                              forageRangeY="-2.9, 2.9"
                              nestPosition="0.0, 0.0"
