@@ -33,6 +33,9 @@ class iAnt_loop_functions : public CLoopFunctions {
 		Real                    nestRadiusSquared; // radius of circular nest squared
 		CRange<Real>            forageRangeX;      // Cartesian X domain of arena [-x, x]
 		CRange<Real>            forageRangeY;      // Cartesian Y range of arena [-y, y]
+		size_t					foodDistribution;  // 0 = "random", 1 = "cluster", 2 = "power law"
+
+		bool updateFoodOnly;
 };
 
 #endif /* IANT_LOOP_FUNCTIONS_H_ */

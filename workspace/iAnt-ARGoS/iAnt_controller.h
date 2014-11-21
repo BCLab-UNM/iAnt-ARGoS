@@ -17,6 +17,7 @@ using namespace std;
 class iAnt_controller : public CCI_Controller {
 
 	public:
+
 		iAnt_controller();
 		~iAnt_controller();
 
@@ -26,11 +27,11 @@ class iAnt_controller : public CCI_Controller {
 		void PickupFood();    // the robot is picking up a food item
 		void DropOffFood();   // the robot is dropping off a food item
 		void UpdateFoodList(vector<CVector2> newFoodPositions); // update food position list
-		void UpdatePosition(CVector2 newPosition); // update iAnt's position
-		void UpdateTime(long int newTime);         // update simulation time
-		CVector2 Position(); // return the robot's position
-		void SetTargetPheromone(iAnt_pheromone p); // update target pheromone
-		iAnt_pheromone GetTargetPheromone(); // get target pheromone
+		void UpdatePosition(CVector2 newPosition);	// update iAnt's position
+		void UpdateTime(long int newTime);			// update simulation time
+		CVector2 Position();						// return the robot's position
+		void SetTargetPheromone(iAnt_pheromone p);	// update target pheromone
+		iAnt_pheromone GetTargetPheromone();		// get target pheromone
 
 		/* CCI_Controller inherited functions */
 		void Init(TConfigurationNode& node); // initialize variables based on XML file
@@ -43,7 +44,6 @@ class iAnt_controller : public CCI_Controller {
 		CCI_DifferentialSteeringActuator *steeringActuator; // controls the robot's motor speeds
 		CCI_FootBotProximitySensor       *proximitySensor;  // detects nearby objects to prevent collision
 		CCI_FootBotMotorGroundSensor     *groundSensor;     // detects food items & nest (color changes)
-//		CCI_FootBotLightSensor           *lightSensor;      // detects nest-light for navigation control
 	    CCI_PositioningSensor            *m_pcPositioning;  // used for compass/heading
 
 		CRandom::CRNG *RNG; // random number generator
@@ -52,6 +52,7 @@ class iAnt_controller : public CCI_Controller {
 
 		bool holdingFood; // Is the robot carrying food? yes = true, no = false
 		bool informed; // is site fidelity or pheromones active
+		long int collisionDelay;
 
 		float resourceDensity; // number of food items around the last found food position
 
@@ -82,7 +83,8 @@ class iAnt_controller : public CCI_Controller {
 		iAnt_pheromone targetPheromone; // pheromone trail iAnt is following
 		iAnt_pheromone sharedPheromone; // pheromone iAnt is sharing
 
-		// state machine parameters, NOTE: the algorithm used is NOT a true state machine model
+		/* state machine parameters, NOTE: the algorithm used is NOT a true state machine model */
+
 		enum CPFA {
 			INACTIVE,
 			DEPARTING,
@@ -90,27 +92,24 @@ class iAnt_controller : public CCI_Controller {
 			RETURNING,
 		} CPFA;
 
-		// CPFA implementation functions
+		/* CPFA implementation functions */
+
 		void inactive();
 		void departing();
 		void searching();
 		void returning();
 
-		// CPFA helper functions
-		void senseLocalResourceDensity();
-		CVector2 setPositionInBounds(CVector2 rawPosition);
+		/* CPFA helper functions */
 
-		// private helper functions for motion control and navigation
-		void SetRandomSearchLocation(); // set target to a random location
-		CRadians CollisionHeading(); // detect collisions and turn appropriately
-//		CRadians lawOfCosines(CVector2& A, CVector2& B, CVector2& C); // helper for getVectorToPosition()
-//		Real getSignOfRotationAngle(CVector2& A, CVector2& B, CVector2& C); // helper for lawOfCosines()
-		CRadians RobotHeading();
-//		int GetQuadrant(CVector2 coordinates);
-//		CVector2 getVectorToLight(); // calculate heading towards the nest-light
-//		CVector2 getVectorToPosition(const CVector2& targetPosition); // calculate heading towards robot target
-		void SetWheelSpeed(); // set wheel speeds based on heading and target position
-//		void setWheelSpeed(const CVector2& heading); // set wheel speeds based on desired heading
+		void		senseLocalResourceDensity();
+		CVector2	setPositionInBounds(CVector2 rawPosition);
+
+		/* private helper functions for motion control and navigation */
+
+		void		SetRandomSearchLocation();	// set target to a random location
+		bool		CollisionDetection();		// detect collisions and turn appropriately
+		CRadians	RobotHeading();				// get robot compass direction
+		void		SetWheelSpeed();			// set wheel speeds based on heading and target position
 };
 
 #endif /* IANT_CONTROLLER_H_ */

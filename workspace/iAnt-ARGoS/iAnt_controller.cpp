@@ -31,7 +31,7 @@ static inline float poissonCDF(float k, float lambda) {
 }
 
 // constructor, see iAnt_controller::Init(TConfigurationNode& node);
-iAnt_controller::iAnt_controller() :
+iAnt_controller::iAnt_controller():
 	steeringActuator(NULL),
 	proximitySensor(NULL),
 	groundSensor(NULL),
@@ -39,6 +39,7 @@ iAnt_controller::iAnt_controller() :
 	RNG(NULL),
 	holdingFood(false),
 	informed(false),
+	collisionDelay(0),
 	resourceDensity(0),
 	searchRadiusSquared(0.0),
 	distanceTolerance(0.0),
@@ -410,25 +411,18 @@ void iAnt_controller::SetRandomSearchLocation() {
 	target.SetY(RNG->Uniform(y));
 }
 
-CRadians iAnt_controller::CollisionHeading() {
-
+bool iAnt_controller::CollisionDetection() {
 	const CCI_FootBotProximitySensor::TReadings& proximityReadings = proximitySensor->GetReadings();
-
-	CRadians collisionHeading = CRadians::ZERO;
-	CRange<CRadians> collisionRange(-CRadians::PI_OVER_FOUR, CRadians::PI_OVER_FOUR);
-	size_t size = 0;
+	size_t collisionsDetected = 0;
 
 	for(size_t i = 0; i < proximityReadings.size(); i++) {
 		if((proximityReadings[i].Value > 0.0) &&
            (angleTolerance.WithinMinBoundIncludedMaxBoundIncluded(proximityReadings[i].Angle))) {
-			collisionHeading += proximityReadings[i].Angle;
-			size++;
+			collisionsDetected++;
 		}
 	}
 
-	collisionHeading /= size;
-
-	return collisionHeading.SignedNormalize();
+	return (collisionsDetected > 0) ? (true) : (false);
 }
 
 /*
@@ -437,52 +431,40 @@ CRadians iAnt_controller::CollisionHeading() {
  *
  * this reading will give a value:
  *
- * +  0 degrees points due north,
- * - 90 degrees east,
- * -180 degrees south,
- * + 90 degrees west
+ * +     0 degrees [north],
+ * -    90 degrees [east],
+ * +/- 180 degrees [south],
+ * +    90 degrees [west]
  */
 CRadians iAnt_controller::RobotHeading() {
     const CCI_PositioningSensor::SReading& sReading = m_pcPositioning->GetReading();
     CQuaternion orientation = sReading.Orientation;
 
-    /*Convert quaternion to euler*/
+    /* Convert quaternion to euler */
     CRadians z_angle, y_angle, x_angle;
     orientation.ToEulerAngles(z_angle, y_angle, x_angle);
 
-    /*Angle to z-axis represents compass heading*/
+    /* Angle to z-axis represents compass heading */
     return z_angle;
 }
 
 void iAnt_controller::SetWheelSpeed() {
-	CRadians collisionHeading = CollisionHeading();
-	CRadians headingAngle = RobotHeading().SignedNormalize()
-			              - (target - position).Angle().SignedNormalize();
+	CRadians heading = (RobotHeading() - (target - position).Angle()).SignedNormalize();
 
-	if((collisionHeading.SignedNormalize() <= angleTolerance.GetMax()) &&
-       (collisionHeading.SignedNormalize() >= angleTolerance.GetMin())) {
-
-		// since we are staying still while turning to avoid collision, it doesn't matter which direction we turn
-//		if(collisionHeading >= headingAngle) {
-			/* turn left */ steeringActuator->SetLinearVelocity(-maxSpeed, maxSpeed);
-//		} else if(collisionHeading < CRadians::ZERO) {
-			/* turn right */ //steeringActuator->SetLinearVelocity(maxSpeed, -maxSpeed);
-//		}
-
-	} else if((headingAngle.SignedNormalize() < CRadians::ZERO) &&
-              (headingAngle.SignedNormalize() <= angleTolerance.GetMin())) {
-
-		/* turn left */ steeringActuator->SetLinearVelocity(-maxSpeed, maxSpeed);
-
-	} else if((headingAngle.SignedNormalize() > CRadians::ZERO) &&
-              (headingAngle.SignedNormalize() >= angleTolerance.GetMax())) {
-
-		/* turn right */ steeringActuator->SetLinearVelocity(maxSpeed, -maxSpeed);
-
-	} else if((headingAngle.SignedNormalize() >= angleTolerance.GetMin()) &&
-              (headingAngle.SignedNormalize() <= angleTolerance.GetMax())) {
-
-		/* go straight */ steeringActuator->SetLinearVelocity(maxSpeed, maxSpeed);
+	if(CollisionDetection() == true) {
+		// 32 = 2 seconds, 16 frames per second (set in XML) by 2
+		collisionDelay = simTime + 32;
+		/* turn left */
+		steeringActuator->SetLinearVelocity(-maxSpeed, maxSpeed);
+	} else if((heading <= angleTolerance.GetMin()) && (collisionDelay < simTime)) {
+		/* turn left */
+		steeringActuator->SetLinearVelocity(-maxSpeed, maxSpeed);
+	} else if((heading >= angleTolerance.GetMax()) && (collisionDelay < simTime)) {
+		/* turn right */
+		steeringActuator->SetLinearVelocity(maxSpeed, -maxSpeed);
+	} else {
+		/* go straight */
+		steeringActuator->SetLinearVelocity(maxSpeed, maxSpeed);
 	}
 }
 

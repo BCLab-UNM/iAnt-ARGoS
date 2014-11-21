@@ -5,7 +5,7 @@
         <system threads="0"/>
         <experiment length="0"
                     ticks_per_second="16"
-                    random_seed="100"/>
+                    random_seed="137"/>
     </framework>
 
     <controllers>
@@ -22,11 +22,32 @@
             </sensors>
 
 <!--
+                <CPFA       pheromoneRate="2.24421238899231"
                             pheromoneDecayRate="0.3821808844804764"
+                            travelGiveupProbability="0.2041456252336502"
+                            siteFidelityRate="2.5117506980896"
+                            informedSearchDecay="0.02497878670692444"/>
+                            searchGiveupProbability="0.00009405957534909248"
+-->
+
+<!--
+        ================
+        | UNIT TESTING |
+        ================
+
+        [1] correct pheromone placement test: disable pheromone decay (pheromoneDecayRate = 0)
+
+        [2] correct pheromone laying: [1] + enable pheromone laying (pheromoneRate = 0)
+
+        [3] correct pheromone following: enable pheromone following (siteFidelityRate++)
+
+        [4] correct site fidelity: (siteFidelityRate = 20)
+
+        NOTES: pheromoneRate and siteFidelityRate have values from 0 (on) to 20 (off)
 -->
             <params>
                 <CPFA       pheromoneRate="2.24421238899231"
-                            pheromoneDecayRate="0.03821"
+                            pheromoneDecayRate="0.3821808844804764"
                             travelGiveupProbability="0.2041456252336502"
                             siteFidelityRate="2.5117506980896"
                             informedSearchDecay="0.02497878670692444"/>
@@ -39,13 +60,17 @@
                             angleTolerance="22.5"
                             maxSpeed="16.0"
                             uninformedSearchCorrelation="17"/>
+<!--                        angleTolerance="22.5"-->
 <!--                <food/> -->
             </params>
         </iAnt_controller>
     </controllers>
 
     <loop_functions library="workspace/iAnt-ARGoS/Debug/libiAnt-ARGoS.so" label="iAnt_loop_functions">
-        <simulation_settings foodItemCount="40"/>
+        <!-- foodDistribution = "random" = 0, "cluster" = 1, "power law" = 2 -->
+        <!-- for power law: [64] (8x8 cluster), [16] (4x4 cluster), [4] (2x2 cluster), [1] (random place rest) -->
+        <simulation_settings foodItemCount="60"
+                             foodDistribution="2"/>
                  <navigation forageRangeX="-2.9, 2.9"
                              forageRangeY="-2.9, 2.9"
                              nestPosition="0.0, 0.0"
