@@ -39,10 +39,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/antonio/Programming/Argos3/iAnt-ARGoS
+CMAKE_SOURCE_DIR = /home/antonio/Programming/iAnt-ARGoS
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/antonio/Programming/Argos3/iAnt-ARGoS/build
+CMAKE_BINARY_DIR = /home/antonio/Programming/iAnt-ARGoS/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -69,9 +69,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/antonio/Programming/Argos3/iAnt-ARGoS/build/CMakeFiles /home/antonio/Programming/Argos3/iAnt-ARGoS/build/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/antonio/Programming/iAnt-ARGoS/build/CMakeFiles /home/antonio/Programming/iAnt-ARGoS/build/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/antonio/Programming/Argos3/iAnt-ARGoS/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/antonio/Programming/iAnt-ARGoS/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -177,6 +177,19 @@ iAnt_controller/fast:
 .PHONY : iAnt_controller/fast
 
 #=============================================================================
+# Target rules for targets named iAnt_pheromone
+
+# Build rule for target.
+iAnt_pheromone: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 iAnt_pheromone
+.PHONY : iAnt_pheromone
+
+# fast build rule for target.
+iAnt_pheromone/fast:
+	$(MAKE) -f controllers/iAnt_controller/CMakeFiles/iAnt_pheromone.dir/build.make controllers/iAnt_controller/CMakeFiles/iAnt_pheromone.dir/build
+.PHONY : iAnt_pheromone/fast
+
+#=============================================================================
 # Target rules for targets named foraging_loop_functions
 
 # Build rule for target.
@@ -229,6 +242,7 @@ help:
 	@echo "... footbot_gripping"
 	@echo "... footbot_foraging"
 	@echo "... iAnt_controller"
+	@echo "... iAnt_pheromone"
 	@echo "... foraging_loop_functions"
 	@echo "... iAnt_loop_functions"
 	@echo "... trajectory_loop_functions"

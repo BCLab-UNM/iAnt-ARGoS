@@ -4,7 +4,7 @@ SET(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 SET(CMAKE_DEPENDS_CHECK_CXX
-  "/home/antonio/Programming/Argos3/iAnt-ARGoS/controllers/footbot_synchronization/footbot_synchronization.cpp" "/home/antonio/Programming/Argos3/iAnt-ARGoS/build/controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/footbot_synchronization.cpp.o"
+  "/home/antonio/Programming/iAnt-ARGoS/controllers/footbot_synchronization/footbot_synchronization.cpp" "/home/antonio/Programming/iAnt-ARGoS/build/controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/footbot_synchronization.cpp.o"
   )
 SET(CMAKE_CXX_COMPILER_ID "GNU")
 

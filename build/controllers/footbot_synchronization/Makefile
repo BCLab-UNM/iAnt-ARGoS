@@ -39,10 +39,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/antonio/Programming/Argos3/iAnt-ARGoS
+CMAKE_SOURCE_DIR = /home/antonio/Programming/iAnt-ARGoS
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/antonio/Programming/Argos3/iAnt-ARGoS/build
+CMAKE_BINARY_DIR = /home/antonio/Programming/iAnt-ARGoS/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -69,14 +69,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/antonio/Programming/Argos3/iAnt-ARGoS/build/CMakeFiles /home/antonio/Programming/Argos3/iAnt-ARGoS/build/controllers/footbot_synchronization/CMakeFiles/progress.marks
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build && $(MAKE) -f CMakeFiles/Makefile2 controllers/footbot_synchronization/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/antonio/Programming/Argos3/iAnt-ARGoS/build/CMakeFiles 0
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/antonio/Programming/iAnt-ARGoS/build/CMakeFiles /home/antonio/Programming/iAnt-ARGoS/build/controllers/footbot_synchronization/CMakeFiles/progress.marks
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(MAKE) -f CMakeFiles/Makefile2 controllers/footbot_synchronization/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/antonio/Programming/iAnt-ARGoS/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build && $(MAKE) -f CMakeFiles/Makefile2 controllers/footbot_synchronization/clean
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(MAKE) -f CMakeFiles/Makefile2 controllers/footbot_synchronization/clean
 .PHONY : clean
 
 # The main clean target
@@ -85,22 +85,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build && $(MAKE) -f CMakeFiles/Makefile2 controllers/footbot_synchronization/preinstall
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(MAKE) -f CMakeFiles/Makefile2 controllers/footbot_synchronization/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build && $(MAKE) -f CMakeFiles/Makefile2 controllers/footbot_synchronization/preinstall
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(MAKE) -f CMakeFiles/Makefile2 controllers/footbot_synchronization/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/rule:
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build && $(MAKE) -f CMakeFiles/Makefile2 controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/rule
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(MAKE) -f CMakeFiles/Makefile2 controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/rule
 .PHONY : controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/rule
 
 # Convenience name for target.
@@ -109,7 +109,7 @@ footbot_synchronization: controllers/footbot_synchronization/CMakeFiles/footbot_
 
 # fast build rule for target.
 footbot_synchronization/fast:
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build && $(MAKE) -f controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/build.make controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/build
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(MAKE) -f controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/build.make controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/build
 .PHONY : footbot_synchronization/fast
 
 footbot_synchronization.o: footbot_synchronization.cpp.o
@@ -117,7 +117,7 @@ footbot_synchronization.o: footbot_synchronization.cpp.o
 
 # target to build an object file
 footbot_synchronization.cpp.o:
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build && $(MAKE) -f controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/build.make controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/footbot_synchronization.cpp.o
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(MAKE) -f controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/build.make controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/footbot_synchronization.cpp.o
 .PHONY : footbot_synchronization.cpp.o
 
 footbot_synchronization.i: footbot_synchronization.cpp.i
@@ -125,7 +125,7 @@ footbot_synchronization.i: footbot_synchronization.cpp.i
 
 # target to preprocess a source file
 footbot_synchronization.cpp.i:
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build && $(MAKE) -f controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/build.make controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/footbot_synchronization.cpp.i
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(MAKE) -f controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/build.make controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/footbot_synchronization.cpp.i
 .PHONY : footbot_synchronization.cpp.i
 
 footbot_synchronization.s: footbot_synchronization.cpp.s
@@ -133,7 +133,7 @@ footbot_synchronization.s: footbot_synchronization.cpp.s
 
 # target to generate assembly for a file
 footbot_synchronization.cpp.s:
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build && $(MAKE) -f controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/build.make controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/footbot_synchronization.cpp.s
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(MAKE) -f controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/build.make controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/footbot_synchronization.cpp.s
 .PHONY : footbot_synchronization.cpp.s
 
 # Help Target
@@ -159,6 +159,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

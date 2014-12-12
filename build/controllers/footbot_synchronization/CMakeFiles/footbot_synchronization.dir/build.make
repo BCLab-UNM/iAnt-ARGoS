@@ -35,10 +35,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/antonio/Programming/Argos3/iAnt-ARGoS
+CMAKE_SOURCE_DIR = /home/antonio/Programming/iAnt-ARGoS
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/antonio/Programming/Argos3/iAnt-ARGoS/build
+CMAKE_BINARY_DIR = /home/antonio/Programming/iAnt-ARGoS/build
 
 # Include any dependencies generated for this target.
 include controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/depend.make
@@ -51,17 +51,17 @@ include controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.d
 
 controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/footbot_synchronization.cpp.o: controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/flags.make
 controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/footbot_synchronization.cpp.o: ../controllers/footbot_synchronization/footbot_synchronization.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/antonio/Programming/Argos3/iAnt-ARGoS/build/CMakeFiles $(CMAKE_PROGRESS_1)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/antonio/Programming/iAnt-ARGoS/build/CMakeFiles $(CMAKE_PROGRESS_1)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/footbot_synchronization.cpp.o"
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build/controllers/footbot_synchronization && /usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/footbot_synchronization.dir/footbot_synchronization.cpp.o -c /home/antonio/Programming/Argos3/iAnt-ARGoS/controllers/footbot_synchronization/footbot_synchronization.cpp
+	cd /home/antonio/Programming/iAnt-ARGoS/build/controllers/footbot_synchronization && /usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/footbot_synchronization.dir/footbot_synchronization.cpp.o -c /home/antonio/Programming/iAnt-ARGoS/controllers/footbot_synchronization/footbot_synchronization.cpp
 
 controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/footbot_synchronization.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/footbot_synchronization.dir/footbot_synchronization.cpp.i"
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build/controllers/footbot_synchronization && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/antonio/Programming/Argos3/iAnt-ARGoS/controllers/footbot_synchronization/footbot_synchronization.cpp > CMakeFiles/footbot_synchronization.dir/footbot_synchronization.cpp.i
+	cd /home/antonio/Programming/iAnt-ARGoS/build/controllers/footbot_synchronization && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/antonio/Programming/iAnt-ARGoS/controllers/footbot_synchronization/footbot_synchronization.cpp > CMakeFiles/footbot_synchronization.dir/footbot_synchronization.cpp.i
 
 controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/footbot_synchronization.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/footbot_synchronization.dir/footbot_synchronization.cpp.s"
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build/controllers/footbot_synchronization && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/antonio/Programming/Argos3/iAnt-ARGoS/controllers/footbot_synchronization/footbot_synchronization.cpp -o CMakeFiles/footbot_synchronization.dir/footbot_synchronization.cpp.s
+	cd /home/antonio/Programming/iAnt-ARGoS/build/controllers/footbot_synchronization && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/antonio/Programming/iAnt-ARGoS/controllers/footbot_synchronization/footbot_synchronization.cpp -o CMakeFiles/footbot_synchronization.dir/footbot_synchronization.cpp.s
 
 controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/footbot_synchronization.cpp.o.requires:
 .PHONY : controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/footbot_synchronization.cpp.o.requires
@@ -83,7 +83,7 @@ controllers/footbot_synchronization/libfootbot_synchronization.so: controllers/f
 controllers/footbot_synchronization/libfootbot_synchronization.so: controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/build.make
 controllers/footbot_synchronization/libfootbot_synchronization.so: controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --red --bold "Linking CXX shared module libfootbot_synchronization.so"
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build/controllers/footbot_synchronization && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/footbot_synchronization.dir/link.txt --verbose=$(VERBOSE)
+	cd /home/antonio/Programming/iAnt-ARGoS/build/controllers/footbot_synchronization && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/footbot_synchronization.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/build: controllers/footbot_synchronization/libfootbot_synchronization.so
@@ -93,10 +93,10 @@ controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/requi
 .PHONY : controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/requires
 
 controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/clean:
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build/controllers/footbot_synchronization && $(CMAKE_COMMAND) -P CMakeFiles/footbot_synchronization.dir/cmake_clean.cmake
+	cd /home/antonio/Programming/iAnt-ARGoS/build/controllers/footbot_synchronization && $(CMAKE_COMMAND) -P CMakeFiles/footbot_synchronization.dir/cmake_clean.cmake
 .PHONY : controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/clean
 
 controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/depend:
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/antonio/Programming/Argos3/iAnt-ARGoS /home/antonio/Programming/Argos3/iAnt-ARGoS/controllers/footbot_synchronization /home/antonio/Programming/Argos3/iAnt-ARGoS/build /home/antonio/Programming/Argos3/iAnt-ARGoS/build/controllers/footbot_synchronization /home/antonio/Programming/Argos3/iAnt-ARGoS/build/controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/antonio/Programming/iAnt-ARGoS /home/antonio/Programming/iAnt-ARGoS/controllers/footbot_synchronization /home/antonio/Programming/iAnt-ARGoS/build /home/antonio/Programming/iAnt-ARGoS/build/controllers/footbot_synchronization /home/antonio/Programming/iAnt-ARGoS/build/controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : controllers/footbot_synchronization/CMakeFiles/footbot_synchronization.dir/depend
 

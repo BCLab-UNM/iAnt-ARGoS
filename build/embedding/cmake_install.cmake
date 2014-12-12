@@ -1,4 +1,4 @@
-# Install script for directory: /home/antonio/Programming/Argos3/iAnt-ARGoS/embedding
+# Install script for directory: /home/antonio/Programming/iAnt-ARGoS/embedding
 
 # Set the install prefix
 IF(NOT DEFINED CMAKE_INSTALL_PREFIX)

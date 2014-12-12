@@ -1,4 +1,4 @@
-# Install script for directory: /home/antonio/Programming/Argos3/iAnt-ARGoS/controllers/footbot_flocking
+# Install script for directory: /home/antonio/Programming/iAnt-ARGoS/controllers/footbot_flocking
 
 # Set the install prefix
 IF(NOT DEFINED CMAKE_INSTALL_PREFIX)

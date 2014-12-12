@@ -6,11 +6,11 @@
 
 #IncludeRegexTransform: 
 
-/home/antonio/Programming/Argos3/iAnt-ARGoS/controllers/footbot_synchronization/footbot_synchronization.cpp
+/home/antonio/Programming/iAnt-ARGoS/controllers/footbot_synchronization/footbot_synchronization.cpp
 footbot_synchronization.h
-/home/antonio/Programming/Argos3/iAnt-ARGoS/controllers/footbot_synchronization/footbot_synchronization.h
+/home/antonio/Programming/iAnt-ARGoS/controllers/footbot_synchronization/footbot_synchronization.h
 
-/home/antonio/Programming/Argos3/iAnt-ARGoS/controllers/footbot_synchronization/footbot_synchronization.h
+/home/antonio/Programming/iAnt-ARGoS/controllers/footbot_synchronization/footbot_synchronization.h
 argos3/core/control_interface/ci_controller.h
 -
 argos3/plugins/robots/generic/control_interface/ci_leds_actuator.h

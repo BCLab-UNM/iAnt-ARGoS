@@ -1,4 +1,4 @@
-# Install script for directory: /home/antonio/Programming/Argos3/iAnt-ARGoS/controllers/footbot_gripping
+# Install script for directory: /home/antonio/Programming/iAnt-ARGoS/controllers/footbot_gripping
 
 # Set the install prefix
 IF(NOT DEFINED CMAKE_INSTALL_PREFIX)

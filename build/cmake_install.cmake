@@ -1,4 +1,4 @@
-# Install script for directory: /home/antonio/Programming/Argos3/iAnt-ARGoS
+# Install script for directory: /home/antonio/Programming/iAnt-ARGoS
 
 # Set the install prefix
 IF(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -34,9 +34,9 @@ ENDIF(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 
 IF(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  INCLUDE("/home/antonio/Programming/Argos3/iAnt-ARGoS/build/controllers/cmake_install.cmake")
-  INCLUDE("/home/antonio/Programming/Argos3/iAnt-ARGoS/build/loop_functions/cmake_install.cmake")
-  INCLUDE("/home/antonio/Programming/Argos3/iAnt-ARGoS/build/embedding/cmake_install.cmake")
+  INCLUDE("/home/antonio/Programming/iAnt-ARGoS/build/controllers/cmake_install.cmake")
+  INCLUDE("/home/antonio/Programming/iAnt-ARGoS/build/loop_functions/cmake_install.cmake")
+  INCLUDE("/home/antonio/Programming/iAnt-ARGoS/build/embedding/cmake_install.cmake")
 
 ENDIF(NOT CMAKE_INSTALL_LOCAL_ONLY)
 
@@ -46,7 +46,7 @@ ELSE(CMAKE_INSTALL_COMPONENT)
   SET(CMAKE_INSTALL_MANIFEST "install_manifest.txt")
 ENDIF(CMAKE_INSTALL_COMPONENT)
 
-FILE(WRITE "/home/antonio/Programming/Argos3/iAnt-ARGoS/build/${CMAKE_INSTALL_MANIFEST}" "")
+FILE(WRITE "/home/antonio/Programming/iAnt-ARGoS/build/${CMAKE_INSTALL_MANIFEST}" "")
 FOREACH(file ${CMAKE_INSTALL_MANIFEST_FILES})
-  FILE(APPEND "/home/antonio/Programming/Argos3/iAnt-ARGoS/build/${CMAKE_INSTALL_MANIFEST}" "${file}\n")
+  FILE(APPEND "/home/antonio/Programming/iAnt-ARGoS/build/${CMAKE_INSTALL_MANIFEST}" "${file}\n")
 ENDFOREACH(file)

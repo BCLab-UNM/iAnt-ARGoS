@@ -90,6 +90,7 @@ SET(CMAKE_DEPEND_INFO_FILES
   "controllers/footbot_gripping/CMakeFiles/footbot_gripping.dir/DependInfo.cmake"
   "controllers/footbot_foraging/CMakeFiles/footbot_foraging.dir/DependInfo.cmake"
   "controllers/iAnt_controller/CMakeFiles/iAnt_controller.dir/DependInfo.cmake"
+  "controllers/iAnt_controller/CMakeFiles/iAnt_pheromone.dir/DependInfo.cmake"
   "loop_functions/foraging_loop_functions/CMakeFiles/foraging_loop_functions.dir/DependInfo.cmake"
   "loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/DependInfo.cmake"
   "loop_functions/trajectory_loop_functions/CMakeFiles/trajectory_loop_functions.dir/DependInfo.cmake"

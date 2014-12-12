@@ -35,10 +35,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/antonio/Programming/Argos3/iAnt-ARGoS
+CMAKE_SOURCE_DIR = /home/antonio/Programming/iAnt-ARGoS
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/antonio/Programming/Argos3/iAnt-ARGoS/build
+CMAKE_BINARY_DIR = /home/antonio/Programming/iAnt-ARGoS/build
 
 # Include any dependencies generated for this target.
 include loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/depend.make
@@ -51,17 +51,17 @@ include loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/fl
 
 loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/iAnt_loop_functions.cpp.o: loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/flags.make
 loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/iAnt_loop_functions.cpp.o: ../loop_functions/iAnt_loop_functions/iAnt_loop_functions.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/antonio/Programming/Argos3/iAnt-ARGoS/build/CMakeFiles $(CMAKE_PROGRESS_1)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/antonio/Programming/iAnt-ARGoS/build/CMakeFiles $(CMAKE_PROGRESS_1)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/iAnt_loop_functions.cpp.o"
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build/loop_functions/iAnt_loop_functions && /usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/iAnt_loop_functions.dir/iAnt_loop_functions.cpp.o -c /home/antonio/Programming/Argos3/iAnt-ARGoS/loop_functions/iAnt_loop_functions/iAnt_loop_functions.cpp
+	cd /home/antonio/Programming/iAnt-ARGoS/build/loop_functions/iAnt_loop_functions && /usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/iAnt_loop_functions.dir/iAnt_loop_functions.cpp.o -c /home/antonio/Programming/iAnt-ARGoS/loop_functions/iAnt_loop_functions/iAnt_loop_functions.cpp
 
 loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/iAnt_loop_functions.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/iAnt_loop_functions.dir/iAnt_loop_functions.cpp.i"
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build/loop_functions/iAnt_loop_functions && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/antonio/Programming/Argos3/iAnt-ARGoS/loop_functions/iAnt_loop_functions/iAnt_loop_functions.cpp > CMakeFiles/iAnt_loop_functions.dir/iAnt_loop_functions.cpp.i
+	cd /home/antonio/Programming/iAnt-ARGoS/build/loop_functions/iAnt_loop_functions && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/antonio/Programming/iAnt-ARGoS/loop_functions/iAnt_loop_functions/iAnt_loop_functions.cpp > CMakeFiles/iAnt_loop_functions.dir/iAnt_loop_functions.cpp.i
 
 loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/iAnt_loop_functions.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/iAnt_loop_functions.dir/iAnt_loop_functions.cpp.s"
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build/loop_functions/iAnt_loop_functions && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/antonio/Programming/Argos3/iAnt-ARGoS/loop_functions/iAnt_loop_functions/iAnt_loop_functions.cpp -o CMakeFiles/iAnt_loop_functions.dir/iAnt_loop_functions.cpp.s
+	cd /home/antonio/Programming/iAnt-ARGoS/build/loop_functions/iAnt_loop_functions && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/antonio/Programming/iAnt-ARGoS/loop_functions/iAnt_loop_functions/iAnt_loop_functions.cpp -o CMakeFiles/iAnt_loop_functions.dir/iAnt_loop_functions.cpp.s
 
 loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/iAnt_loop_functions.cpp.o.requires:
 .PHONY : loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/iAnt_loop_functions.cpp.o.requires
@@ -74,17 +74,17 @@ loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/iAnt_loop_
 
 loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/iAnt_qt_user_functions.cpp.o: loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/flags.make
 loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/iAnt_qt_user_functions.cpp.o: ../loop_functions/iAnt_loop_functions/iAnt_qt_user_functions.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/antonio/Programming/Argos3/iAnt-ARGoS/build/CMakeFiles $(CMAKE_PROGRESS_2)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/antonio/Programming/iAnt-ARGoS/build/CMakeFiles $(CMAKE_PROGRESS_2)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/iAnt_qt_user_functions.cpp.o"
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build/loop_functions/iAnt_loop_functions && /usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/iAnt_loop_functions.dir/iAnt_qt_user_functions.cpp.o -c /home/antonio/Programming/Argos3/iAnt-ARGoS/loop_functions/iAnt_loop_functions/iAnt_qt_user_functions.cpp
+	cd /home/antonio/Programming/iAnt-ARGoS/build/loop_functions/iAnt_loop_functions && /usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/iAnt_loop_functions.dir/iAnt_qt_user_functions.cpp.o -c /home/antonio/Programming/iAnt-ARGoS/loop_functions/iAnt_loop_functions/iAnt_qt_user_functions.cpp
 
 loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/iAnt_qt_user_functions.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/iAnt_loop_functions.dir/iAnt_qt_user_functions.cpp.i"
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build/loop_functions/iAnt_loop_functions && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/antonio/Programming/Argos3/iAnt-ARGoS/loop_functions/iAnt_loop_functions/iAnt_qt_user_functions.cpp > CMakeFiles/iAnt_loop_functions.dir/iAnt_qt_user_functions.cpp.i
+	cd /home/antonio/Programming/iAnt-ARGoS/build/loop_functions/iAnt_loop_functions && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/antonio/Programming/iAnt-ARGoS/loop_functions/iAnt_loop_functions/iAnt_qt_user_functions.cpp > CMakeFiles/iAnt_loop_functions.dir/iAnt_qt_user_functions.cpp.i
 
 loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/iAnt_qt_user_functions.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/iAnt_loop_functions.dir/iAnt_qt_user_functions.cpp.s"
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build/loop_functions/iAnt_loop_functions && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/antonio/Programming/Argos3/iAnt-ARGoS/loop_functions/iAnt_loop_functions/iAnt_qt_user_functions.cpp -o CMakeFiles/iAnt_loop_functions.dir/iAnt_qt_user_functions.cpp.s
+	cd /home/antonio/Programming/iAnt-ARGoS/build/loop_functions/iAnt_loop_functions && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/antonio/Programming/iAnt-ARGoS/loop_functions/iAnt_loop_functions/iAnt_qt_user_functions.cpp -o CMakeFiles/iAnt_loop_functions.dir/iAnt_qt_user_functions.cpp.s
 
 loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/iAnt_qt_user_functions.cpp.o.requires:
 .PHONY : loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/iAnt_qt_user_functions.cpp.o.requires
@@ -107,9 +107,10 @@ loop_functions/iAnt_loop_functions/libiAnt_loop_functions.so: loop_functions/iAn
 loop_functions/iAnt_loop_functions/libiAnt_loop_functions.so: loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/iAnt_qt_user_functions.cpp.o
 loop_functions/iAnt_loop_functions/libiAnt_loop_functions.so: loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/build.make
 loop_functions/iAnt_loop_functions/libiAnt_loop_functions.so: controllers/iAnt_controller/libiAnt_controller.so
+loop_functions/iAnt_loop_functions/libiAnt_loop_functions.so: controllers/iAnt_controller/libiAnt_pheromone.so
 loop_functions/iAnt_loop_functions/libiAnt_loop_functions.so: loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --red --bold "Linking CXX shared module libiAnt_loop_functions.so"
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build/loop_functions/iAnt_loop_functions && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/iAnt_loop_functions.dir/link.txt --verbose=$(VERBOSE)
+	cd /home/antonio/Programming/iAnt-ARGoS/build/loop_functions/iAnt_loop_functions && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/iAnt_loop_functions.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/build: loop_functions/iAnt_loop_functions/libiAnt_loop_functions.so
@@ -120,10 +121,10 @@ loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/requires: 
 .PHONY : loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/requires
 
 loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/clean:
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build/loop_functions/iAnt_loop_functions && $(CMAKE_COMMAND) -P CMakeFiles/iAnt_loop_functions.dir/cmake_clean.cmake
+	cd /home/antonio/Programming/iAnt-ARGoS/build/loop_functions/iAnt_loop_functions && $(CMAKE_COMMAND) -P CMakeFiles/iAnt_loop_functions.dir/cmake_clean.cmake
 .PHONY : loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/clean
 
 loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/depend:
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/antonio/Programming/Argos3/iAnt-ARGoS /home/antonio/Programming/Argos3/iAnt-ARGoS/loop_functions/iAnt_loop_functions /home/antonio/Programming/Argos3/iAnt-ARGoS/build /home/antonio/Programming/Argos3/iAnt-ARGoS/build/loop_functions/iAnt_loop_functions /home/antonio/Programming/Argos3/iAnt-ARGoS/build/loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/antonio/Programming/iAnt-ARGoS /home/antonio/Programming/iAnt-ARGoS/loop_functions/iAnt_loop_functions /home/antonio/Programming/iAnt-ARGoS/build /home/antonio/Programming/iAnt-ARGoS/build/loop_functions/iAnt_loop_functions /home/antonio/Programming/iAnt-ARGoS/build/loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : loop_functions/iAnt_loop_functions/CMakeFiles/iAnt_loop_functions.dir/depend
 

@@ -39,10 +39,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/antonio/Programming/Argos3/iAnt-ARGoS
+CMAKE_SOURCE_DIR = /home/antonio/Programming/iAnt-ARGoS
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/antonio/Programming/Argos3/iAnt-ARGoS/build
+CMAKE_BINARY_DIR = /home/antonio/Programming/iAnt-ARGoS/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -69,14 +69,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/antonio/Programming/Argos3/iAnt-ARGoS/build/CMakeFiles /home/antonio/Programming/Argos3/iAnt-ARGoS/build/controllers/iAnt_controller/CMakeFiles/progress.marks
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build && $(MAKE) -f CMakeFiles/Makefile2 controllers/iAnt_controller/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/antonio/Programming/Argos3/iAnt-ARGoS/build/CMakeFiles 0
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/antonio/Programming/iAnt-ARGoS/build/CMakeFiles /home/antonio/Programming/iAnt-ARGoS/build/controllers/iAnt_controller/CMakeFiles/progress.marks
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(MAKE) -f CMakeFiles/Makefile2 controllers/iAnt_controller/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/antonio/Programming/iAnt-ARGoS/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build && $(MAKE) -f CMakeFiles/Makefile2 controllers/iAnt_controller/clean
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(MAKE) -f CMakeFiles/Makefile2 controllers/iAnt_controller/clean
 .PHONY : clean
 
 # The main clean target
@@ -85,22 +85,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build && $(MAKE) -f CMakeFiles/Makefile2 controllers/iAnt_controller/preinstall
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(MAKE) -f CMakeFiles/Makefile2 controllers/iAnt_controller/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build && $(MAKE) -f CMakeFiles/Makefile2 controllers/iAnt_controller/preinstall
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(MAKE) -f CMakeFiles/Makefile2 controllers/iAnt_controller/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 controllers/iAnt_controller/CMakeFiles/iAnt_controller.dir/rule:
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build && $(MAKE) -f CMakeFiles/Makefile2 controllers/iAnt_controller/CMakeFiles/iAnt_controller.dir/rule
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(MAKE) -f CMakeFiles/Makefile2 controllers/iAnt_controller/CMakeFiles/iAnt_controller.dir/rule
 .PHONY : controllers/iAnt_controller/CMakeFiles/iAnt_controller.dir/rule
 
 # Convenience name for target.
@@ -109,15 +109,29 @@ iAnt_controller: controllers/iAnt_controller/CMakeFiles/iAnt_controller.dir/rule
 
 # fast build rule for target.
 iAnt_controller/fast:
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build && $(MAKE) -f controllers/iAnt_controller/CMakeFiles/iAnt_controller.dir/build.make controllers/iAnt_controller/CMakeFiles/iAnt_controller.dir/build
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(MAKE) -f controllers/iAnt_controller/CMakeFiles/iAnt_controller.dir/build.make controllers/iAnt_controller/CMakeFiles/iAnt_controller.dir/build
 .PHONY : iAnt_controller/fast
+
+# Convenience name for target.
+controllers/iAnt_controller/CMakeFiles/iAnt_pheromone.dir/rule:
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(MAKE) -f CMakeFiles/Makefile2 controllers/iAnt_controller/CMakeFiles/iAnt_pheromone.dir/rule
+.PHONY : controllers/iAnt_controller/CMakeFiles/iAnt_pheromone.dir/rule
+
+# Convenience name for target.
+iAnt_pheromone: controllers/iAnt_controller/CMakeFiles/iAnt_pheromone.dir/rule
+.PHONY : iAnt_pheromone
+
+# fast build rule for target.
+iAnt_pheromone/fast:
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(MAKE) -f controllers/iAnt_controller/CMakeFiles/iAnt_pheromone.dir/build.make controllers/iAnt_controller/CMakeFiles/iAnt_pheromone.dir/build
+.PHONY : iAnt_pheromone/fast
 
 iAnt_controller.o: iAnt_controller.cpp.o
 .PHONY : iAnt_controller.o
 
 # target to build an object file
 iAnt_controller.cpp.o:
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build && $(MAKE) -f controllers/iAnt_controller/CMakeFiles/iAnt_controller.dir/build.make controllers/iAnt_controller/CMakeFiles/iAnt_controller.dir/iAnt_controller.cpp.o
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(MAKE) -f controllers/iAnt_controller/CMakeFiles/iAnt_controller.dir/build.make controllers/iAnt_controller/CMakeFiles/iAnt_controller.dir/iAnt_controller.cpp.o
 .PHONY : iAnt_controller.cpp.o
 
 iAnt_controller.i: iAnt_controller.cpp.i
@@ -125,7 +139,7 @@ iAnt_controller.i: iAnt_controller.cpp.i
 
 # target to preprocess a source file
 iAnt_controller.cpp.i:
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build && $(MAKE) -f controllers/iAnt_controller/CMakeFiles/iAnt_controller.dir/build.make controllers/iAnt_controller/CMakeFiles/iAnt_controller.dir/iAnt_controller.cpp.i
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(MAKE) -f controllers/iAnt_controller/CMakeFiles/iAnt_controller.dir/build.make controllers/iAnt_controller/CMakeFiles/iAnt_controller.dir/iAnt_controller.cpp.i
 .PHONY : iAnt_controller.cpp.i
 
 iAnt_controller.s: iAnt_controller.cpp.s
@@ -133,8 +147,32 @@ iAnt_controller.s: iAnt_controller.cpp.s
 
 # target to generate assembly for a file
 iAnt_controller.cpp.s:
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build && $(MAKE) -f controllers/iAnt_controller/CMakeFiles/iAnt_controller.dir/build.make controllers/iAnt_controller/CMakeFiles/iAnt_controller.dir/iAnt_controller.cpp.s
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(MAKE) -f controllers/iAnt_controller/CMakeFiles/iAnt_controller.dir/build.make controllers/iAnt_controller/CMakeFiles/iAnt_controller.dir/iAnt_controller.cpp.s
 .PHONY : iAnt_controller.cpp.s
+
+iAnt_pheromone.o: iAnt_pheromone.cpp.o
+.PHONY : iAnt_pheromone.o
+
+# target to build an object file
+iAnt_pheromone.cpp.o:
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(MAKE) -f controllers/iAnt_controller/CMakeFiles/iAnt_pheromone.dir/build.make controllers/iAnt_controller/CMakeFiles/iAnt_pheromone.dir/iAnt_pheromone.cpp.o
+.PHONY : iAnt_pheromone.cpp.o
+
+iAnt_pheromone.i: iAnt_pheromone.cpp.i
+.PHONY : iAnt_pheromone.i
+
+# target to preprocess a source file
+iAnt_pheromone.cpp.i:
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(MAKE) -f controllers/iAnt_controller/CMakeFiles/iAnt_pheromone.dir/build.make controllers/iAnt_controller/CMakeFiles/iAnt_pheromone.dir/iAnt_pheromone.cpp.i
+.PHONY : iAnt_pheromone.cpp.i
+
+iAnt_pheromone.s: iAnt_pheromone.cpp.s
+.PHONY : iAnt_pheromone.s
+
+# target to generate assembly for a file
+iAnt_pheromone.cpp.s:
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(MAKE) -f controllers/iAnt_controller/CMakeFiles/iAnt_pheromone.dir/build.make controllers/iAnt_controller/CMakeFiles/iAnt_pheromone.dir/iAnt_pheromone.cpp.s
+.PHONY : iAnt_pheromone.cpp.s
 
 # Help Target
 help:
@@ -144,10 +182,14 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... iAnt_controller"
+	@echo "... iAnt_pheromone"
 	@echo "... rebuild_cache"
 	@echo "... iAnt_controller.o"
 	@echo "... iAnt_controller.i"
 	@echo "... iAnt_controller.s"
+	@echo "... iAnt_pheromone.o"
+	@echo "... iAnt_pheromone.i"
+	@echo "... iAnt_pheromone.s"
 .PHONY : help
 
 
@@ -159,6 +201,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/antonio/Programming/Argos3/iAnt-ARGoS/build && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/antonio/Programming/iAnt-ARGoS/build && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

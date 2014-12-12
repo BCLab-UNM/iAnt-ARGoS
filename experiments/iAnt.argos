@@ -9,7 +9,7 @@
     </framework>
 
     <controllers>
-        <iAnt_controller id="iAnt_c" library="workspace/iAnt-ARGoS/Debug/libiAnt-ARGoS.so">
+        <iAnt_controller id="iAnt_c" library="build/controllers/iAnt_controller/libiAnt_controller.so">
             <actuators>
                 <differential_steering implementation="default"/>
             </actuators>
@@ -66,7 +66,7 @@
         </iAnt_controller>
     </controllers>
 
-    <loop_functions library="workspace/iAnt-ARGoS/Debug/libiAnt-ARGoS.so" label="iAnt_loop_functions">
+    <loop_functions library="build/loop_functions/iAnt_loop_functions/libiAnt_loop_functions.so" label="iAnt_loop_functions">
         <!-- foodDistribution = "random" = 0, "cluster" = 1, "power law" = 2 -->
         <!-- for power law: [64] (8x8 cluster), [16] (4x4 cluster), [4] (2x2 cluster), [1] (random place rest) -->
         <simulation_settings foodItemCount="60"

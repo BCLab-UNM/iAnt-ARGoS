@@ -1,4 +1,4 @@
-# Install script for directory: /home/antonio/Programming/Argos3/iAnt-ARGoS/loop_functions/foraging_loop_functions
+# Install script for directory: /home/antonio/Programming/iAnt-ARGoS/loop_functions/foraging_loop_functions
 
 # Set the install prefix
 IF(NOT DEFINED CMAKE_INSTALL_PREFIX)
