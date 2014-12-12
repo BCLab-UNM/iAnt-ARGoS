@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/antonio/Programming/Argos3/iAnt-ARGoS/controllers/footbot_flocking/footbot_flocking.cpp
+footbot_flocking.h
+/home/antonio/Programming/Argos3/iAnt-ARGoS/controllers/footbot_flocking/footbot_flocking.h
+argos3/core/utility/configuration/argos_configuration.h
+-
+
+/home/antonio/Programming/Argos3/iAnt-ARGoS/controllers/footbot_flocking/footbot_flocking.h
+argos3/core/control_interface/ci_controller.h
+-
+argos3/plugins/robots/generic/control_interface/ci_differential_steering_actuator.h
+-
+argos3/plugins/robots/generic/control_interface/ci_leds_actuator.h
+-
+argos3/plugins/robots/generic/control_interface/ci_colored_blob_omnidirectional_camera_sensor.h
+-
+argos3/plugins/robots/foot-bot/control_interface/ci_footbot_light_sensor.h
+-
+argos3/core/utility/math/vector2.h
+-
+
