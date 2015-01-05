@@ -1,0 +1,40 @@
+1. implement site fidelity markers
+2. Test 1: power law distribution
+   |--force on Site fidelity (siteFidelityRate = 0)
+   |--force on pheromone (siteFidelityRate = 20), (pheromoneRate = 0), (pheromoneDecayRate = 0.5)
+   |--1 robot
+3. Test 2: power law distribution
+   |--force on pheromone, sitefidelity = 20, pheromoneRate = 0, pheromoneDecay = 0
+   |--6 robots
+
+
+sitefidelity: 0 on, 20 off, from 0 to 20
+pheromoneRate:  0 always lay pheromone, 20 never lay pheromone
+pheromoneDecayRate: 0 = slow decay, 1 = fast decay
+
+
+        ================
+        | UNIT TESTING |
+        ================
+
+        [1] correct pheromone placement test: disable pheromone decay (pheromoneDecayRate = 0)
+
+        [2] correct pheromone laying: [1] + enable pheromone laying (pheromoneRate = 0)
+
+        [3] correct pheromone following: enable pheromone following (siteFidelityRate++)
+
+        [4] correct site fidelity: (siteFidelityRate = 20)
+
+        NOTES: pheromoneRate and siteFidelityRate have values from 0 (on) to 20 (off)
+
+
+
+CPFA default values
+    pheromoneRate="2.24421238899231"
+    pheromoneDecayRate="0.3821808844804764"
+    travelGiveupProbability="0.2041456252336502"
+    siteFidelityRate="2.5117506980896"
+    informedSearchDecay="0.02497878670692444"/>
+    searchGiveupProbability="0.00009405957534909248"
+    angleTolerance="22.5"
+
