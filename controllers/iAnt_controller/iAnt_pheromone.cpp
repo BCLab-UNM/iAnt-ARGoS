@@ -72,6 +72,16 @@ CVector2 iAnt_pheromone::Location() {
 	return location;
 }
 
+// simTime pheromone was last updated at
+long int iAnt_pheromone::LastUpdated() {
+    return lastUpdated;
+}
+
+// pheromone decay rate
+double iAnt_pheromone::DecayRate() {
+    return decayRate;
+}
+
 // set this pheromone to another pheromone's values
 void iAnt_pheromone::Set(iAnt_pheromone newPheromone) {
 	location    = newPheromone.location;
@@ -84,4 +94,16 @@ void iAnt_pheromone::Set(iAnt_pheromone newPheromone) {
 
 double iAnt_pheromone::Weight() {
 	return weight;
+}
+
+void iAnt_pheromone::PrintPheromone()
+{
+    LOG << "*****\n";
+	LOG << "location: "    << location    << endl;
+	LOG << "decayRate: "   << decayRate   << endl;
+	LOG << "weight: "      << weight      << endl;
+	LOG << "threshold: "   << threshold   << endl;
+	LOG << "lastUpdated: " << lastUpdated << endl;
+	LOG << "isActive: "    << isActive    << endl;
+    LOG << "*****\n";
 }

@@ -12,7 +12,7 @@ using namespace std;
 class iAnt_loop_functions : public CLoopFunctions {
 	public:
 		iAnt_loop_functions();
-		~iAnt_loop_functions() {}
+		~iAnt_loop_functions();
 
 		/* inherited from CLoopFunctions */
 		void   Init(TConfigurationNode& node);
@@ -23,18 +23,20 @@ class iAnt_loop_functions : public CLoopFunctions {
 	private:
 		CFloorEntity           *floorEntity;       // object for the floor graphics
 		CRandom::CRNG          *RNG;               // random number generator
-		long int                tick;              // a counter for simulation frames
+		long int                simTime;           // a counter for simulation frames
 		size_t                  foodItemCount;     // number of food items on the field
 		vector<CVector2>        foodPositions;     // positions for all food items on the field
 		vector<iAnt_pheromone>  pheromoneList;     // list of pheromones to share with iAnts
+
 		CVector2                nestPosition;      // center of the circular nest
+
 		Real                    foodRadiusSquared; // radius of circular food object squared
 		Real                    nestRadiusSquared; // radius of circular nest squared
+
 		CRange<Real>            forageRangeX;      // Cartesian X domain of arena [-x, x]
 		CRange<Real>            forageRangeY;      // Cartesian Y range of arena [-y, y]
-		size_t					foodDistribution;  // 0 = "random", 1 = "cluster", 2 = "power law"
 
-		bool updateFoodOnly;
+		size_t					foodDistribution;  // 0 = "random", 1 = "cluster", 2 = "power law"
 };
 
 #endif /* IANT_LOOP_FUNCTIONS_H_ */

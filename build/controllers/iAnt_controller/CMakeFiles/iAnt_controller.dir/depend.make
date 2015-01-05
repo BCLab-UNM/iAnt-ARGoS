@@ -4,8 +4,4 @@
 controllers/iAnt_controller/CMakeFiles/iAnt_controller.dir/iAnt_controller.cpp.o: ../controllers/iAnt_controller/iAnt_controller.cpp
 controllers/iAnt_controller/CMakeFiles/iAnt_controller.dir/iAnt_controller.cpp.o: ../controllers/iAnt_controller/iAnt_controller.h
 controllers/iAnt_controller/CMakeFiles/iAnt_controller.dir/iAnt_controller.cpp.o: ../controllers/iAnt_controller/iAnt_pheromone.h
-controllers/iAnt_controller/CMakeFiles/iAnt_controller.dir/iAnt_controller.cpp.o: /usr/include/lua5.1/lauxlib.h
-controllers/iAnt_controller/CMakeFiles/iAnt_controller.dir/iAnt_controller.cpp.o: /usr/include/lua5.1/lua.h
-controllers/iAnt_controller/CMakeFiles/iAnt_controller.dir/iAnt_controller.cpp.o: /usr/include/lua5.1/luaconf.h
-controllers/iAnt_controller/CMakeFiles/iAnt_controller.dir/iAnt_controller.cpp.o: /usr/include/lua5.1/lualib.h
 

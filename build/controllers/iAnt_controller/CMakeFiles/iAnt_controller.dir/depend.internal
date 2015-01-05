@@ -5,7 +5,3 @@ controllers/iAnt_controller/CMakeFiles/iAnt_controller.dir/iAnt_controller.cpp.o
  /home/antonio/Programming/iAnt-ARGoS/controllers/iAnt_controller/iAnt_controller.cpp
  /home/antonio/Programming/iAnt-ARGoS/controllers/iAnt_controller/iAnt_controller.h
  /home/antonio/Programming/iAnt-ARGoS/controllers/iAnt_controller/iAnt_pheromone.h
- /usr/include/lua5.1/lauxlib.h
- /usr/include/lua5.1/lua.h
- /usr/include/lua5.1/luaconf.h
- /usr/include/lua5.1/lualib.h

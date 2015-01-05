@@ -2,8 +2,10 @@
 #define IANT_PHEROMONE_H_
 
 #include <argos3/core/utility/math/vector2.h>
+#include <argos3/core/utility/logging/argos_log.h>
 
 using namespace argos;
+using namespace std;
 
 class iAnt_pheromone {
 	public:
@@ -18,8 +20,12 @@ class iAnt_pheromone {
 		bool     IsActive(); // is the pheromone valid and active?
 		double   Strength(); // pheromone strength or weight
 		CVector2 Location(); // pheromone location
+        long int LastUpdated(); // simTime pheromone was last updated at
+        double   DecayRate(); // pheromone decay rate
 		void     Set(iAnt_pheromone newPheromone); // set pheromone = newPheromone
 		double   Weight(); // return weight
+
+        void     PrintPheromone(); // print pheromone status
 
 	private:
 		CVector2 location;

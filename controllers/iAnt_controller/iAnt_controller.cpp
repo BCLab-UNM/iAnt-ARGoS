@@ -35,12 +35,13 @@ iAnt_controller::iAnt_controller():
 	steeringActuator(NULL),
 	proximitySensor(NULL),
 	groundSensor(NULL),
-	m_pcPositioning(NULL),
+	compassSensor(NULL),
 	RNG(NULL),
 	holdingFood(false),
 	informed(false),
 	collisionDelay(0),
 	resourceDensity(0),
+    foodRadiusSquared(0.0),
 	searchRadiusSquared(0.0),
 	distanceTolerance(0.0),
 	travelGiveupProbability(0.0),
@@ -73,11 +74,9 @@ void iAnt_controller::Init(TConfigurationNode& node) {
 	steeringActuator = GetActuator<CCI_DifferentialSteeringActuator>("differential_steering");
 	proximitySensor  = GetSensor<CCI_FootBotProximitySensor>        ("footbot_proximity"    );
 	groundSensor     = GetSensor<CCI_FootBotMotorGroundSensor>      ("footbot_motor_ground" );
-    m_pcPositioning  = GetSensor<CCI_PositioningSensor>             ("positioning"          );
+    compassSensor    = GetSensor<CCI_PositioningSensor>             ("positioning"          );
 
 	GetNodeAttribute(GetNode(node, "navigation"), "searchRadius"           , searchRadiusSquared);
-	GetNodeAttribute(GetNode(node, "navigation"), "arenaSize"              , arenaSize);
-	GetNodeAttribute(GetNode(node, "navigation"), "nestPosition"           , nestPosition);
 	GetNodeAttribute(GetNode(node, "navigation"), "distanceTolerance"      , distanceTolerance);
 	GetNodeAttribute(GetNode(node, "navigation"), "searchGiveupProbability", searchGiveupProbability);
 	GetNodeAttribute(GetNode(node, "navigation"), "searchStepSize"         , searchStepSize);
@@ -93,8 +92,8 @@ void iAnt_controller::Init(TConfigurationNode& node) {
 
 	// We get input in degrees from the XML file for the user's ease of use.
 	CDegrees angleInDegrees;
-
     GetNodeAttribute(GetNode(node, "navigation"), "uninformedSearchCorrelation", angleInDegrees);
+
     // Convert the input from angleInDegrees to Radians.
     uninformedSearchCorrelation = ToRadians(angleInDegrees);
 
@@ -133,20 +132,22 @@ void iAnt_controller::Init(TConfigurationNode& node) {
  */
 bool iAnt_controller::IsInTheNest() {
 	// Obtain the current ground sensor readings for this controller object.
-	const CCI_FootBotMotorGroundSensor::TReadings& groundReadings = groundSensor->GetReadings();
+	const CCI_FootBotMotorGroundSensor::TReadings &groundReadings = groundSensor->GetReadings();
+
 	// The ideal value is 0.8, but we must account for sensor read errors (+/- 0.1).
 	CRange<Real> nestSensorRange(0.7, 0.9);
+
 	// Assign the ground readings to temporary variables for clarity.
 	Real backLeftWheelReading  = groundReadings[2].Value;
 	Real backRightWheelReading = groundReadings[3].Value;
 
-	// We only need to check the back side sensors. If these are in the nest so is the front.
+	// We only need to check the back side sensors, if these are in the nest so is the front.
 	if(nestSensorRange.WithinMinBoundIncludedMaxBoundIncluded(backLeftWheelReading) &&
 	   nestSensorRange.WithinMinBoundIncludedMaxBoundIncluded(backRightWheelReading)) {
-	    return true; // robot is in the nest zone
+	    return true; // The robot is in the nest zone.
 	}
 
-	return false; // robot is not in the nest zone
+	return false; // The robot is not in the nest zone.
 }
 
 /*
@@ -224,9 +225,23 @@ void iAnt_controller::UpdateTime(long int newTime) {
 }
 
 // return the robot's position
-CVector2 iAnt_controller::Position()
-{
+CVector2 iAnt_controller::Position() {
 	return position;
+}
+
+// return the robot's fidelity position
+CVector2 iAnt_controller::FidelityPosition() {
+    return fidelityPosition;
+}
+
+// set new nest position
+void iAnt_controller::SetNestPosition(CVector2 np) {
+    nestPosition = np;
+}
+
+// set squaqred radius of food items
+void iAnt_controller::SetFoodRadiusSquared(Real rs) {
+    foodRadiusSquared = rs;
 }
 
 // update pheromone
@@ -235,10 +250,21 @@ void iAnt_controller::SetTargetPheromone(iAnt_pheromone p)
 	targetPheromone.Set(p);
 }
 
+// setup forage boundary
+void iAnt_controller::SetForageRange(CRange<Real> X, CRange<Real> Y) {
+    forageRangeX = X;
+    forageRangeY = Y;
+}
+
 // update pheromone
 iAnt_pheromone iAnt_controller::GetTargetPheromone()
 {
 	return sharedPheromone;
+}
+
+// return pheromoneDecayRate
+Real iAnt_controller::PheromoneDecayRate() {
+    return pheromoneDecayRate;
 }
 
 /* iAnt_controller Control Step Function
@@ -249,19 +275,29 @@ iAnt_pheromone iAnt_controller::GetTargetPheromone()
  * state machine do to various modifications.
  */
 void iAnt_controller::ControlStep() {
-	switch(CPFA) {
-		case INACTIVE:
-			inactive();
-			break;
-		case DEPARTING:
-			departing();
-			break;
-		case SEARCHING:
-			searching();
-			break;
-		case RETURNING:
-			returning();
-	}
+    if(foodPositions.size() > 0) {
+	    switch(CPFA) {
+		    case INACTIVE:
+		    	inactive();
+		    	break;
+		    case DEPARTING:
+		    	departing();
+		    	break;
+		    case SEARCHING:
+		    	searching();
+		    	break;
+		    case RETURNING:
+		    	returning();
+	    }
+    } else {
+		target = setPositionInBounds(nestPosition);
+
+        if((position - target).SquareLength() < distanceTolerance) {
+            steeringActuator->SetLinearVelocity(0.0, 0.0);
+        } else {
+            SetWheelSpeed();
+        }
+    }
 }
 
 /* iAnt_controller Reset Function
@@ -271,7 +307,8 @@ void iAnt_controller::ControlStep() {
  * for the ones in this reset list which are reset to default initialized values.
  */
 void iAnt_controller::Reset() {
-	// todo make sure this reset function is actually resetting "EVERYTHING" it needs to...
+	// TODO make sure this reset function is actually resetting "EVERYTHING" it needs to...
+
 	// Restart the simulation with the CPFA in the REST state.
 	CPFA = INACTIVE;
 
@@ -298,13 +335,16 @@ void iAnt_controller::inactive() {
 }
 
 void iAnt_controller::departing() {
-	if(informed == false) {
+    if(IsHoldingFood() == true) {
+		senseLocalResourceDensity();
+		target = setPositionInBounds(nestPosition);
+		CPFA = RETURNING;
+	} else if(informed == false) {
 		if(RNG->Uniform(CRange<Real>(0.0, 1.0)) < travelGiveupProbability) {
 			searchTime = 0;
 			CPFA = SEARCHING;
 		}
-	}
-	else if((position - target).SquareLength() < distanceTolerance) {
+	} else if((position - target).SquareLength() < distanceTolerance) {
 		searchTime = 0;
 		CPFA = SEARCHING;
 		informed = false;
@@ -336,8 +376,7 @@ void iAnt_controller::searching() {
 				target = setPositionInBounds(CVector2(searchStepSize, angle) + position);
 			}
 		}
-	}
-	else {
+	} else {
 		senseLocalResourceDensity();
 		target = setPositionInBounds(nestPosition);
 		CPFA = RETURNING;
@@ -378,37 +417,30 @@ void iAnt_controller::senseLocalResourceDensity()
 		if((position - foodPositions[i]).SquareLength() < searchRadiusSquared) {
 			resourceDensity++;
 		}
+
+        if((position - foodPositions[i]).SquareLength() < foodRadiusSquared) {
+            fidelityPosition = foodPositions[i];
+        }
 	}
-
-	// LOG << position << endl << "(" << resourceDensity  << ")" << endl;
-
-	fidelityPosition = position;
 }
 
-// TODO (bug list: magic numbers), replaced 0.90 with 0.95 as a temporary stopgap, but I need to come back to this
-CVector2 iAnt_controller::setPositionInBounds(CVector2 rawPosition) {
-	// create x and y point ranges at 90% of max grid size
-	CRange<Real> x(-0.95 * arenaSize.GetX() / 2.0, 0.95 * arenaSize.GetX() / 2.0);
-	CRange<Real> y(-0.95 * arenaSize.GetY() / 2.0, 0.95 * arenaSize.GetY() / 2.0);
+CVector2 iAnt_controller::setPositionInBounds(CVector2 p) {
+	if(p.GetX() > forageRangeX.GetMax()) p.SetX(forageRangeX.GetMax());
+	else if(p.GetX() < forageRangeX.GetMin()) p.SetX(forageRangeX.GetMin());
 
-	if(rawPosition.GetX() > x.GetMax()) rawPosition.SetX(x.GetMax());
-	else if(rawPosition.GetX() < x.GetMin()) rawPosition.SetX(x.GetMin());
+	if(p.GetY() > forageRangeY.GetMax()) p.SetY(forageRangeY.GetMax());
+	else if(p.GetY() < forageRangeY.GetMin()) p.SetY(forageRangeY.GetMin());
 
-	if(rawPosition.GetY() > y.GetMax()) rawPosition.SetY(y.GetMax());
-	else if(rawPosition.GetY() < y.GetMin()) rawPosition.SetY(y.GetMin());
-
-	return rawPosition;
+	return p;
 }
 
 // set target to a random location
 void iAnt_controller::SetRandomSearchLocation() {
-	// create x and y point ranges at 90% of max grid size
-	CRange<Real> x(-0.95 * arenaSize.GetX() / 2.0, 0.95 * arenaSize.GetX() / 2.0);
-	CRange<Real> y(-0.95 * arenaSize.GetY() / 2.0, 0.95 * arenaSize.GetY() / 2.0);
-
 	// randomly set the target somewhere in the arena
-	target.SetX(RNG->Uniform(x));
-	target.SetY(RNG->Uniform(y));
+	target.SetX(RNG->Uniform(forageRangeX));
+	target.SetY(RNG->Uniform(forageRangeY));
+
+    target = setPositionInBounds(target);
 }
 
 bool iAnt_controller::CollisionDetection() {
@@ -418,7 +450,7 @@ bool iAnt_controller::CollisionDetection() {
 	for(size_t i = 0; i < proximityReadings.size(); i++) {
 		if((proximityReadings[i].Value > 0.0) &&
            (angleTolerance.WithinMinBoundIncludedMaxBoundIncluded(proximityReadings[i].Angle))) {
-			collisionsDetected++;
+            collisionsDetected++;
 		}
 	}
 
@@ -437,7 +469,7 @@ bool iAnt_controller::CollisionDetection() {
  * +    90 degrees [west]
  */
 CRadians iAnt_controller::RobotHeading() {
-    const CCI_PositioningSensor::SReading& sReading = m_pcPositioning->GetReading();
+    const CCI_PositioningSensor::SReading& sReading = compassSensor->GetReading();
     CQuaternion orientation = sReading.Orientation;
 
     /* Convert quaternion to euler */
