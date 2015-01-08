@@ -25,17 +25,30 @@ class iAnt_controller : public CCI_Controller {
         bool IsHoldingFood(); // true or false: AM I holding a food item?
         void PickupFood();    // the robot picks up a food item
         void DropOffFood();   // the robot is drops off a food item
+
         void UpdateFoodList(vector<CVector2> newFoodPositions); // update food position list
+        void UpdatePheromoneList(vector<CVector2> newPheromonePositions); // update pheromone positions
+        void UpdateFidelityList(vector<CVector2> newFidelityPositions);   // update fidelity positions
         void UpdatePosition(CVector2 newPosition);	// update iAnt's position
         void UpdateTime(long int newTime);			// update simulation time
+
         CVector2 Position();						// return the robot's position
         CVector2 FidelityPosition();                // return the robot's fidelity position
-        void SetNestPosition(CVector2 np); // set new nest position
-        void SetFoodRadiusSquared(Real rs); // set squaqred radius of food items
+        Real     PheromoneDecayRate();              // return pheromoneDecayRate
+
+        void SetNestPosition(CVector2 np);          // set new nest position
+        void SetNestRadiusSquared(Real r);          // set new nest radius
+        void SetFoodRadiusSquared(Real rs);         // set squaqred radius of food items
         void SetTargetPheromone(iAnt_pheromone p);	// update target pheromone
         void SetForageRange(CRange<Real> X, CRange<Real> Y); // setup forage boundary
-        iAnt_pheromone GetTargetPheromone();		// get target pheromone
-        Real PheromoneDecayRate(); // return pheromoneDecayRate
+
+        CVector2         GetNestPosition();         // get nest position
+        Real             GetNestRadius();           // get nest radius
+        Real             GetFoodRadius();           // get food radius
+        vector<CVector2> GetFoodPositions();        // get food position list
+        vector<CVector2> GetPheromonePositions();   // get pheromone position list
+        vector<CVector2> GetFidelityPositions();    // get fidelity position list
+        iAnt_pheromone   GetTargetPheromone();		// get target pheromone
 
         /* CCI_Controller inherited functions */
         void Init(TConfigurationNode& node); // initialize variables based on XML file
@@ -52,20 +65,23 @@ class iAnt_controller : public CCI_Controller {
 
         CRandom::CRNG *RNG; // random number generator
 
-        vector<CVector2> foodPositions; // list of food item positions, updated by loop_functions
+        vector<CVector2> foodPositions;      // food item positions, updated by loop_functions
+        vector<CVector2> pheromonePositions; // pheromones positions, updated by loop_functions
+        vector<CVector2> fidelityPositions;  // fidelity positions, updated by loop_functions
 
-        bool holdingFood; // Is the robot carrying food? yes = true, no = false
-        bool informed; // is site fidelity or pheromones active
-        long int collisionDelay; // delay after collision detection
-        int resourceDensity; // number of food items around the last found food position
+        bool     holdingFood;      // Is the robot carrying food? yes = true, no = false
+        bool     informed;         // is site fidelity or pheromones active
+        long int collisionDelay;   // delay after collision detection
+        int      resourceDensity;  // number of food items around the last found food position
 
-        CVector2 position; // robot's position on the arena
-        CVector2 target; // robot's current target or location to move to
+        CVector2 position;         // robot's position on the arena
+        CVector2 target;           // robot's current target or location to move to
         CVector2 fidelityPosition; // robot's remembered fidelity location
-        CVector2 nestPosition; // the position of the center of the nest
+        CVector2 nestPosition;     // the position of the center of the nest
         CRange<Real> forageRangeX; // cartesian X forage boundary
         CRange<Real> forageRangeY; // cartesian Y forage boundary
 
+        Real nestRadiusSquared; // radius of the nest
         Real foodRadiusSquared; // radius of food items, squared
         Real searchRadiusSquared; // radius of search for resourceDensity
         Real distanceTolerance; // distance to trigger collision detection

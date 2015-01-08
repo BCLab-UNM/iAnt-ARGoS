@@ -30,11 +30,9 @@ argos3/core/utility/math/vector2.h
 argos3/core/utility/logging/argos_log.h
 -
 
-/home/antonio/Programming/iAnt-ARGoS/loop_functions/iAnt_loop_functions/iAnt_loop_functions.cpp
-iAnt_loop_functions.h
-/home/antonio/Programming/iAnt-ARGoS/loop_functions/iAnt_loop_functions/iAnt_loop_functions.h
-
-/home/antonio/Programming/iAnt-ARGoS/loop_functions/iAnt_loop_functions/iAnt_loop_functions.h
+../loop_functions/iAnt_loop_functions/iAnt_loop_functions.h
+map
+-
 controllers/iAnt_controller/iAnt_controller.h
 -
 argos3/core/simulator/loop_functions.h
@@ -50,6 +48,8 @@ iAnt_qt_user_functions.h
 
 /home/antonio/Programming/iAnt-ARGoS/loop_functions/iAnt_loop_functions/iAnt_qt_user_functions.h
 controllers/iAnt_controller/iAnt_controller.h
+-
+loop_functions/iAnt_loop_functions/iAnt_loop_functions.h
 -
 argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_user_functions.h
 -

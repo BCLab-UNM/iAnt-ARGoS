@@ -1,3 +1,25 @@
+data to collect
+-----> number of tags collected in x ticks (converted to 1 hour)
+-----> re-introduce messy positioning for pheromones/fidelity
+
+todo, demo, Jan 30, 12-2pm
+
+. optimize time based parameters
+. testing
+    a. using argos to replicate past experiments
+. streamline definition of time vs frames, etc.
+. improve distribution functions
+    1x64, max number of other piles
+. streamline classes (variables, functions, implementation)
+. speed up painting
+
+graphics improvement:
+    lazy evaluation,
+        has pixel been changed, if not, dont update
+
+
+power law, use 1 x 8x8 and use max number of 4x4, 2x2, before random distribution
+
 1. implement site fidelity markers
 2. Test 1: power law distribution
    |--force on Site fidelity (siteFidelityRate = 0)

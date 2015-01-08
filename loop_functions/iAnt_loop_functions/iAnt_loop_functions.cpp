@@ -11,7 +11,6 @@ iAnt_loop_functions::iAnt_loop_functions():
 	foodDistribution(0)
 {}
 
-
 iAnt_loop_functions::~iAnt_loop_functions() {}
 
 void iAnt_loop_functions::Init(TConfigurationNode& node) {
@@ -208,22 +207,17 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
 
         c.UpdateFoodList(foodPositions);
         c.SetNestPosition(nestPosition);
+        c.SetNestRadiusSquared(nestRadiusSquared);
         c.SetForageRange(forageRangeX, forageRangeY);
         c.SetFoodRadiusSquared(foodRadiusSquared);
     }
+
+    floorEntity->SetChanged();
 }
 
 CColor iAnt_loop_functions::GetFloorColor(const CVector2& position) {
-	// TODO enhance the efficiency of this code!
-    // food items are black discs with radius set in XML
-    // check the positions of all food items
-	for(UInt32 i = 0; i < foodPositions.size(); i++) {
-		// if we are in the bounds of a food item, paint it black
-		if((position - foodPositions[i]).SquareLength() < foodRadiusSquared) {
-			return CColor::BLACK;
-		}
-	}
-
+/*
+    // fidelity markers are blue circles
     if(foodPositions.size() > 0) {
         CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
 
@@ -237,8 +231,11 @@ CColor iAnt_loop_functions::GetFloorColor(const CVector2& position) {
         }
     }
 
+    // pheromones are red circles
     for(UInt32 i = 0; i < pheromoneList.size(); i++) {
-    	if(pheromoneList[i].IsActive() && (position - pheromoneList[i].Location()).SquareLength() < foodRadiusSquared) {
+    	if(pheromoneList[i].IsActive() && 
+           (position - pheromoneList[i].Location()).SquareLength() < foodRadiusSquared &&
+           (pheromoneList[i].Location() != nestPosition)) {
     		return CColor::RED;
     	}
     }
@@ -246,15 +243,26 @@ CColor iAnt_loop_functions::GetFloorColor(const CVector2& position) {
 	// nest area is grey disc with radius set in XML
     // if we are in the bounds of the nest, paint it grey
     if((position - nestPosition).SquareLength() < nestRadiusSquared) {
-        return CColor::GRAY80;
+        //return CColor::GRAY80;
     }
 
+    // food items are black discs with radius set in XML
+    // check the positions of all food items
+	for(UInt32 i = 0; i < foodPositions.size(); i++) {
+		// if we are in the bounds of a food item, paint it black
+		if((position - foodPositions[i]).SquareLength() < foodRadiusSquared) {
+			return CColor::BLACK;
+		}
+	}
+*/
     // default arena color when otherwise not the nest, food item, or pheromone
 	return CColor::WHITE;
 }
 
 // this function is called BEFORE the ControlStep() function in the controller class
 void iAnt_loop_functions::PreStep() {
+    bool setChanged = false;
+
 	// container for all available foot-bot controller objects
     CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
 
@@ -272,6 +280,7 @@ void iAnt_loop_functions::PreStep() {
 				                  footBot.GetEmbodiedEntity().GetPosition().GetY()));
 		c.UpdateTime(simTime);
         c.UpdateFoodList(foodPositions);
+        c.UpdateFidelityList(fidelityPositions);
 
 		// if the robot has found food and isn't already holding food
 		if(c.IsFindingFood() && !c.IsHoldingFood()) {
@@ -284,14 +293,20 @@ void iAnt_loop_functions::PreStep() {
                     // pick up the food item and update foodData variables
         	    	c.PickupFood();
         	    	if(c.GetTargetPheromone().IsActive() == true) {
-                        //pheromoneList.push_back(c.GetTargetPheromone());
+
+                        // clean pheromone placement
                         pheromoneList.push_back(iAnt_pheromone((*i),
                                                 c.GetTargetPheromone().LastUpdated(),
                                                 c.GetTargetPheromone().DecayRate(),
                                                 c.GetTargetPheromone().Weight()));
+                        // dirty pheromone placement
+                        //pheromoneList.push_back(c.GetTargetPheromone());
+
+                        //pheromonePositions.push_back(c.GetTargetPheromone().Location());
+                        fidelityPositions.push_back(c.GetTargetPheromone().Location());
                     }
                     foodPositions.erase(i);
-                    floorEntity->SetChanged();
+                    setChanged = true;
                     break;
                 }
             }
@@ -303,7 +318,9 @@ void iAnt_loop_functions::PreStep() {
 
 	    	for(unsigned int i = 0; i < pheromoneList.size(); i++) {
                 pheromoneList[i].Update(simTime);
-                if(pheromoneList[i].IsActive() == true) maxStrength += pheromoneList[i].Weight();
+                if(pheromoneList[i].IsActive() == true) {
+                    maxStrength += pheromoneList[i].Weight();
+                }
 	    	}
 
 	    	double randomWeight = RNG->Uniform(CRange<double>(0.0, maxStrength));
@@ -313,14 +330,27 @@ void iAnt_loop_functions::PreStep() {
             for(i = pheromoneList.begin(); i != pheromoneList.end(); i++) {
 	    		if(randomWeight < i->Weight() && i->IsActive() == true) {
 	    			c.SetTargetPheromone(*i);
-                    floorEntity->SetChanged();
+                    setChanged = true;
 	    			break;
 	    		}
 
 	    		randomWeight -= i->Weight();
 	    	}
         }
+
+        for(int i = 0; i < pheromoneList.size(); i++) {
+            if(pheromoneList[i].IsActive() == true) {
+                pheromonePositions.push_back(pheromoneList[i].Location());
+            }
+        }
+
+        c.UpdatePheromoneList(pheromonePositions);
     }
+
+    fidelityPositions.clear();
+    pheromonePositions.clear();
+
+    if(setChanged == true) floorEntity->SetChanged();
 }
 
 void iAnt_loop_functions::PostStep() {

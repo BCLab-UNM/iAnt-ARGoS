@@ -41,6 +41,7 @@ iAnt_controller::iAnt_controller():
 	informed(false),
 	collisionDelay(0),
 	resourceDensity(0),
+    nestRadiusSquared(0.0),
     foodRadiusSquared(0.0),
 	searchRadiusSquared(0.0),
 	distanceTolerance(0.0),
@@ -131,6 +132,7 @@ void iAnt_controller::Init(TConfigurationNode& node) {
  *                      "false" if the robot is not currently within the borders of the nest
  */
 bool iAnt_controller::IsInTheNest() {
+    /*
 	// Obtain the current ground sensor readings for this controller object.
 	const CCI_FootBotMotorGroundSensor::TReadings &groundReadings = groundSensor->GetReadings();
 
@@ -146,6 +148,12 @@ bool iAnt_controller::IsInTheNest() {
 	   nestSensorRange.WithinMinBoundIncludedMaxBoundIncluded(backRightWheelReading)) {
 	    return true; // The robot is in the nest zone.
 	}
+    */
+    Real dts = (distanceTolerance * distanceTolerance);
+
+    if((position - nestPosition).SquareLength() < dts) {
+        return true; // robot is in the nest
+    }
 
 	return false; // The robot is not in the nest zone.
 }
@@ -173,6 +181,7 @@ bool iAnt_controller::IsInTheNest() {
  *                      "false" if the robot is not currently on top of a food item
  */
 bool iAnt_controller::IsFindingFood() {
+    /*
 	// Obtain the current ground sensor readings for this controller object.
 	const CCI_FootBotMotorGroundSensor::TReadings& groundReadings = groundSensor->GetReadings();
 	// The ideal value is 0.0, but we must account for sensor read errors (+/- 0.1).
@@ -189,7 +198,15 @@ bool iAnt_controller::IsFindingFood() {
 	   foodSensorRange.WithinMinBoundIncludedMaxBoundIncluded(backLeftWheelReading  ) ||
 	   foodSensorRange.WithinMinBoundIncludedMaxBoundIncluded(backRightWheelReading )) {
 	    return true; // found food
-	}
+	} */
+
+    Real dts = (distanceTolerance * distanceTolerance);
+
+    for(int i = 0; i < foodPositions.size(); i++) {
+        if((position - foodPositions[i]).SquareLength() < dts) {
+            return true; // robot is in the nest
+        }
+    }
 
 	return false; // has not found food
 }
@@ -214,6 +231,15 @@ void iAnt_controller::UpdateFoodList(vector<CVector2> newFoodPositions) {
 	foodPositions = newFoodPositions;
 }
 
+// update pheromone positions
+void iAnt_controller::UpdatePheromoneList(vector<CVector2> newPheromonePositions) {
+    pheromonePositions = newPheromonePositions;
+}
+
+// update fidelity positions
+void iAnt_controller::UpdateFidelityList(vector<CVector2> newFidelityPositions) {
+    fidelityPositions = newFidelityPositions;
+}
 // update the iAnt's position
 void iAnt_controller::UpdatePosition(CVector2 newPosition) {
 	position = newPosition;
@@ -239,6 +265,10 @@ void iAnt_controller::SetNestPosition(CVector2 np) {
     nestPosition = np;
 }
 
+void iAnt_controller::SetNestRadiusSquared(Real r) {
+    nestRadiusSquared = r;
+}
+
 // set squaqred radius of food items
 void iAnt_controller::SetFoodRadiusSquared(Real rs) {
     foodRadiusSquared = rs;
@@ -256,9 +286,38 @@ void iAnt_controller::SetForageRange(CRange<Real> X, CRange<Real> Y) {
     forageRangeY = Y;
 }
 
-// update pheromone
-iAnt_pheromone iAnt_controller::GetTargetPheromone()
-{
+// get nest position
+CVector2 iAnt_controller::GetNestPosition() {
+    return nestPosition;
+}
+
+// get nest radius
+Real iAnt_controller::GetNestRadius() {
+    return sqrt(nestRadiusSquared);
+}
+
+// get food radius
+Real iAnt_controller::GetFoodRadius() {
+    return sqrt(foodRadiusSquared);
+}
+
+// get food position list from robot
+vector<CVector2> iAnt_controller::GetFoodPositions() {
+    return foodPositions;
+}
+
+// get pheromone position list from robot
+vector<CVector2> iAnt_controller::GetPheromonePositions() {
+    return pheromonePositions;
+}
+
+// get fidelity position list
+vector<CVector2> iAnt_controller::GetFidelityPositions() {
+    return fidelityPositions;
+}
+
+// get pheromone for master pheromone list in loop_functions
+iAnt_pheromone iAnt_controller::GetTargetPheromone() {
 	return sharedPheromone;
 }
 
@@ -275,7 +334,15 @@ Real iAnt_controller::PheromoneDecayRate() {
  * state machine do to various modifications.
  */
 void iAnt_controller::ControlStep() {
-    if(foodPositions.size() > 0) {
+    if(foodPositions.size() == 0 && !IsHoldingFood()) {
+		target = setPositionInBounds(nestPosition);
+
+        if((position - target).SquareLength() < distanceTolerance) {
+            steeringActuator->SetLinearVelocity(0.0, 0.0);
+        } else {
+            SetWheelSpeed();
+        }
+    } else {
 	    switch(CPFA) {
 		    case INACTIVE:
 		    	inactive();
@@ -289,14 +356,6 @@ void iAnt_controller::ControlStep() {
 		    case RETURNING:
 		    	returning();
 	    }
-    } else {
-		target = setPositionInBounds(nestPosition);
-
-        if((position - target).SquareLength() < distanceTolerance) {
-            steeringActuator->SetLinearVelocity(0.0, 0.0);
-        } else {
-            SetWheelSpeed();
-        }
     }
 }
 
@@ -411,17 +470,21 @@ void iAnt_controller::returning() {
 
 void iAnt_controller::senseLocalResourceDensity()
 {
-	resourceDensity = -1; // DON'T count the food item robot just found
+	resourceDensity = 0; // DO count the food item robot just found
 
 	for(size_t i = 0; i < foodPositions.size(); i++) {
 		if((position - foodPositions[i]).SquareLength() < searchRadiusSquared) {
 			resourceDensity++;
 		}
 
+        // clean location
         if((position - foodPositions[i]).SquareLength() < foodRadiusSquared) {
             fidelityPosition = foodPositions[i];
         }
 	}
+
+    // messy location
+    //fidelityPosition = position;
 }
 
 CVector2 iAnt_controller::setPositionInBounds(CVector2 p) {
