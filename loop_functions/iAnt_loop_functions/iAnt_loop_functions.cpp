@@ -39,8 +39,11 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
     // create a random number generator for random food item placement
     RNG = CRandom::CreateRNG("argos");
 
+    SetFoodDistribution();
+
     // food distribution can = "random", "power law", "cluster"
     /* TODO: move this into its own function */
+/*
     switch(foodDistribution) {
     	case 1: { // cluster
     		int clusterSize = (foodItemCount / 4);
@@ -60,33 +63,31 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
     				placementPosition.SetY(placementPosition.GetY() + (foodRadius * 3.0));
     			}
     		}
-
     		break;
     	}
     	case 2: { // power law
-            /* old method */
-            /*
-    		int clusterNumber = 4;
-    		int clusterSize = foodItemCount;
-    		int clusterWidth = 0;
-    		CVector2 placementPosition;
+            // old method
+    		//int clusterNumber = 4;
+    		//int clusterSize = foodItemCount;
+    		//int clusterWidth = 0;
+    		//CVector2 placementPosition;
 
-    		for(int i = 0; i < clusterNumber; i++) {
-    			placementPosition.Set(RNG->Uniform(forageRangeX), RNG->Uniform(forageRangeY));
-    			clusterSize = (int)round((double)clusterSize / 2.0);
-        		clusterWidth = (int)sqrt(round((double)clusterSize));
+    		//for(int i = 0; i < clusterNumber; i++) {
+    			//placementPosition.Set(RNG->Uniform(forageRangeX), RNG->Uniform(forageRangeY));
+    			//clusterSize = (int)round((double)clusterSize / 2.0);
+        		//clusterWidth = (int)sqrt(round((double)clusterSize));
 
-    			for(int j = 0; j < clusterWidth; j++) {
-    				for(int k = 0; k < clusterWidth; k++) {
-    	    			foodPositions.push_back(placementPosition);
-    	    			placementPosition.SetX(placementPosition.GetX() + (foodRadius * 3.0));
-    				}
+    			//for(int j = 0; j < clusterWidth; j++) {
+    				//for(int k = 0; k < clusterWidth; k++) {
+    	    			//foodPositions.push_back(placementPosition);
+    	    			//placementPosition.SetX(placementPosition.GetX() + (foodRadius * 3.0));
+    				//}
 
-    				placementPosition.SetX(placementPosition.GetX() - (foodRadius * 3.0 * clusterWidth));
-    				placementPosition.SetY(placementPosition.GetY() + (foodRadius * 3.0));
-    			}
-    		}
-            */
+    				//placementPosition.SetX(placementPosition.GetX() - (foodRadius * 3.0 * clusterWidth));
+    				//placementPosition.SetY(placementPosition.GetY() + (foodRadius * 3.0));
+    			//}
+    		//}
+
     		CVector2 placementPosition(RNG->Uniform(forageRangeX), RNG->Uniform(forageRangeY));
     		CVector2 startPosition = placementPosition;
             CRange<Real> cluster64x, cluster64y;
@@ -98,11 +99,14 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
                 for(int i = 0; i < 8; i++) {
                     for(int j = 0; j < 8; j++) {
     	    			foodPositions.push_back(placementPosition);
-    	    			placementPosition.SetX(placementPosition.GetX() -/*+*/ (foodRadius * 3.0));
+    	    			placementPosition.SetX(placementPosition.GetX() - (foodRadius * 3.0));
+    	    			//placementPosition.SetX(placementPosition.GetX() + (foodRadius * 3.0));
     				}
 
-    				placementPosition.SetX(placementPosition.GetX() +/*-*/ (foodRadius * 3.0 * 8.0));
-    				placementPosition.SetY(placementPosition.GetY() -/*+*/ (foodRadius * 3.0));
+    				placementPosition.SetX(placementPosition.GetX() + (foodRadius * 3.0 * 8.0));
+    				placementPosition.SetY(placementPosition.GetY() - (foodRadius * 3.0));
+    				//placementPosition.SetX(placementPosition.GetX() - (foodRadius * 3.0 * 8.0));
+    				//placementPosition.SetY(placementPosition.GetY() + (foodRadius * 3.0));
                 }
 
                 cluster64x.Set(startPosition.GetX() - foodRadius - (foodRadius * 3.0 * 4.0),
@@ -124,11 +128,14 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
                 for(int i = 0; i < 4; i++) {
                     for(int j = 0; j < 4; j++) {
     	    			foodPositions.push_back(placementPosition);
-    	    			placementPosition.SetX(placementPosition.GetX() -/*+*/ (foodRadius * 3.0));
+    	    			placementPosition.SetX(placementPosition.GetX() - (foodRadius * 3.0));
+    	    			//placementPosition.SetX(placementPosition.GetX() + (foodRadius * 3.0));
     				}
 
-    				placementPosition.SetX(placementPosition.GetX() +/*-*/ (foodRadius * 3.0 * 4.0));
-    				placementPosition.SetY(placementPosition.GetY() -/*+*/ (foodRadius * 3.0));
+    				placementPosition.SetX(placementPosition.GetX() + (foodRadius * 3.0 * 4.0));
+    				placementPosition.SetY(placementPosition.GetY() - (foodRadius * 3.0));
+    				//placementPosition.SetX(placementPosition.GetX() - (foodRadius * 3.0 * 4.0));
+    				//placementPosition.SetY(placementPosition.GetY() + (foodRadius * 3.0));
                 }
 
                 cluster16x.Set(startPosition.GetX() - foodRadius - (foodRadius * 3.0 * 2.0),
@@ -152,11 +159,14 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
                 for(int i = 0; i < 2; i++) {
                     for(int j = 0; j < 2; j++) {
     	    			foodPositions.push_back(placementPosition);
-    	    			placementPosition.SetX(placementPosition.GetX() -/*+*/ (foodRadius * 3.0));
+    	    			placementPosition.SetX(placementPosition.GetX() - (foodRadius * 3.0));
+    	    			//placementPosition.SetX(placementPosition.GetX() + (foodRadius * 3.0));
     				}
 
-    				placementPosition.SetX(placementPosition.GetX() +/*-*/ (foodRadius * 3.0 * 2.0));
-    				placementPosition.SetY(placementPosition.GetY() -/*+*/ (foodRadius * 3.0));
+    				placementPosition.SetX(placementPosition.GetX() + (foodRadius * 3.0 * 2.0));
+    				placementPosition.SetY(placementPosition.GetY() - (foodRadius * 3.0));
+    				//placementPosition.SetX(placementPosition.GetX() - (foodRadius * 3.0 * 2.0));
+    				//placementPosition.SetY(placementPosition.GetY() + (foodRadius * 3.0));
                 }
 
                 cluster4x.Set(startPosition.GetX() - foodRadius - (foodRadius * 3.0),
@@ -196,6 +206,7 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
     			foodPositions.push_back(CVector2(RNG->Uniform(forageRangeX), RNG->Uniform(forageRangeY)));
     		}
     }
+*/
 
     // get the footbot entities
     CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
@@ -204,59 +215,16 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
     for(CSpace::TMapPerType::iterator it = footbots.begin(); it != footbots.end(); ++it) {
         CFootBotEntity& footBot = *any_cast<CFootBotEntity*>(it->second);
         iAnt_controller& c = dynamic_cast<iAnt_controller&>(footBot.GetControllableEntity().GetController());
-
         c.UpdateFoodList(foodPositions);
         c.SetNestPosition(nestPosition);
         c.SetNestRadiusSquared(nestRadiusSquared);
         c.SetForageRange(forageRangeX, forageRangeY);
         c.SetFoodRadiusSquared(foodRadiusSquared);
     }
-
-    floorEntity->SetChanged();
 }
 
 CColor iAnt_loop_functions::GetFloorColor(const CVector2& position) {
-/*
-    // fidelity markers are blue circles
-    if(foodPositions.size() > 0) {
-        CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
-
-        for(CSpace::TMapPerType::iterator it = footbots.begin(); it != footbots.end(); ++it) {
-            CFootBotEntity& footBot = *any_cast<CFootBotEntity*>(it->second);
-            iAnt_controller& c = dynamic_cast<iAnt_controller&>(footBot.GetControllableEntity().GetController());
-            if(((c.FidelityPosition() - position).SquareLength() < foodRadiusSquared) &&
-               (c.FidelityPosition() != nestPosition)) {
-                return CColor::BLUE;
-            }
-        }
-    }
-
-    // pheromones are red circles
-    for(UInt32 i = 0; i < pheromoneList.size(); i++) {
-    	if(pheromoneList[i].IsActive() && 
-           (position - pheromoneList[i].Location()).SquareLength() < foodRadiusSquared &&
-           (pheromoneList[i].Location() != nestPosition)) {
-    		return CColor::RED;
-    	}
-    }
-
-	// nest area is grey disc with radius set in XML
-    // if we are in the bounds of the nest, paint it grey
-    if((position - nestPosition).SquareLength() < nestRadiusSquared) {
-        //return CColor::GRAY80;
-    }
-
-    // food items are black discs with radius set in XML
-    // check the positions of all food items
-	for(UInt32 i = 0; i < foodPositions.size(); i++) {
-		// if we are in the bounds of a food item, paint it black
-		if((position - foodPositions[i]).SquareLength() < foodRadiusSquared) {
-			return CColor::BLACK;
-		}
-	}
-*/
-    // default arena color when otherwise not the nest, food item, or pheromone
-	return CColor::WHITE;
+    return CColor::WHITE;
 }
 
 // this function is called BEFORE the ControlStep() function in the controller class
@@ -295,14 +263,14 @@ void iAnt_loop_functions::PreStep() {
         	    	if(c.GetTargetPheromone().IsActive() == true) {
 
                         // clean pheromone placement
-                        pheromoneList.push_back(iAnt_pheromone((*i),
-                                                c.GetTargetPheromone().LastUpdated(),
-                                                c.GetTargetPheromone().DecayRate(),
-                                                c.GetTargetPheromone().Weight()));
-                        // dirty pheromone placement
-                        //pheromoneList.push_back(c.GetTargetPheromone());
+                        //pheromoneList.push_back(iAnt_pheromone((*i),
+                        //                        c.GetTargetPheromone().LastUpdated(),
+                        //                        c.GetTargetPheromone().DecayRate(),
+                        //                        c.GetTargetPheromone().Weight()));
 
-                        //pheromonePositions.push_back(c.GetTargetPheromone().Location());
+                        // messy pheromone placement
+                        pheromoneList.push_back(c.GetTargetPheromone());
+
                         fidelityPositions.push_back(c.GetTargetPheromone().Location());
                     }
                     foodPositions.erase(i);
@@ -380,6 +348,59 @@ void iAnt_loop_functions::Reset() {
 
 	floorEntity->SetChanged();
 	simTime = 0;
+}
+
+/*
+ * foodDistribution is set in the XML file
+ * random    = 0
+ * cluster   = 1
+ * power law = 2
+ *
+ */
+void iAnt_loop_functions::SetFoodDistribution() {
+    switch(foodDistribution) {
+        case 0:
+            RandomFoodDistribution();
+            break;
+        case 1:
+            ClusterFoodDistribution();
+            break;
+        case 2:
+            PowerLawFoodDistribution();
+            break;
+        default:
+            LOGERR << "ERROR: Invalid food distribution in XML file.\n";
+    }
+}
+
+void iAnt_loop_functions::RandomFoodDistribution() {
+    for(UInt32 i = 0; i < foodItemCount; ++i) {
+        foodPositions.push_back(CVector2(RNG->Uniform(forageRangeX), RNG->Uniform(forageRangeY)));
+    }
+}
+
+void iAnt_loop_functions::ClusterFoodDistribution() {
+    double foodRadius = sqrt(foodRadiusSquared);
+    int clusterSize = 4; (foodItemCount / 4);
+    int clusterWidth = (int)sqrt(round((double)(foodItemCount/clusterSize)));
+    CVector2 placementPosition;
+
+    for(int i = 0; i < clusterSize; i++) {
+        placementPosition.Set(RNG->Uniform(forageRangeX), RNG->Uniform(forageRangeY));
+
+        for(int j = 0; j < clusterWidth; j++) {
+            for(int k = 0; k < clusterWidth; k++) {
+                foodPositions.push_back(placementPosition);
+                placementPosition.SetX(placementPosition.GetX() + (foodRadius * 3.0));
+            }
+
+            placementPosition.SetX(placementPosition.GetX() - (foodRadius * 3.0 * clusterWidth));
+            placementPosition.SetY(placementPosition.GetY() + (foodRadius * 3.0));
+        }
+    }
+}
+
+void iAnt_loop_functions::PowerLawFoodDistribution() {
 }
 
 REGISTER_LOOP_FUNCTIONS(iAnt_loop_functions, "iAnt_loop_functions")

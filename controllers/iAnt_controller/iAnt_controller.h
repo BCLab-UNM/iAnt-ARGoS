@@ -31,7 +31,6 @@ class iAnt_controller : public CCI_Controller {
         void UpdateFidelityList(vector<CVector2> newFidelityPositions);   // update fidelity positions
         void UpdatePosition(CVector2 newPosition);	// update iAnt's position
         void UpdateTime(long int newTime);			// update simulation time
-
         CVector2 Position();						// return the robot's position
         CVector2 FidelityPosition();                // return the robot's fidelity position
         Real     PheromoneDecayRate();              // return pheromoneDecayRate

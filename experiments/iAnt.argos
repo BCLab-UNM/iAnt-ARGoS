@@ -1,111 +1,87 @@
 <?xml version="1.0"?>
 <argos-configuration>
 
-<framework>
-  <system threads="0"/>
-  <experiment length="0" ticks_per_second="16" random_seed="100"/>
-</framework>
+  <!-- FRAMEWORK -->
+  <framework>
+    <system threads="0"/>
+    <experiment length="0" ticks_per_second="16" random_seed="100"/>
+  </framework>
 
-<controllers>
-  <iAnt_controller id="iAnt_c" library="build/controllers/iAnt_controller/libiAnt_controller.so">
+  <!-- CONTROLLERS -->
+  <controllers>
+    <iAnt_controller id="iAnt_c" library="build/controllers/iAnt_controller/libiAnt_controller.so">
+      <actuators>
+        <differential_steering implementation="default"/>
+      </actuators>
+      <sensors>
+        <footbot_proximity implementation="default" show_rays="false"/>
+        <footbot_motor_ground implementation="rot_z_only"/>
+        <positioning implementation="default"/>
+      </sensors>
+      <params>
+        <CPFA       pheromoneRate="0.0"
+                    pheromoneDecayRate="0.025"
+                    travelGiveupProbability="0.09"
+                    siteFidelityRate="0.0"
+                    informedSearchDecay="0.01"/>
+        <navigation searchRadius="1"
+                    searchStepSize="0.08"
+                    distanceTolerance="0.1"
+                    searchGiveupProbability="0.00009"
+                    angleTolerance="22.5"
+                    maxSpeed="16.0"
+                    uninformedSearchCorrelation="17"/>
+      </params>
+    </iAnt_controller>
+  </controllers>
 
-  <actuators>
-    <differential_steering implementation="default"/>
-  </actuators>
-
-  <sensors>
-    <footbot_proximity implementation="default" show_rays="false"/>
-    <footbot_motor_ground implementation="rot_z_only"/>
-    <positioning implementation="default"/>
-  </sensors>
-
-  <params>
-    <CPFA       pheromoneRate="0.0"
-                pheromoneDecayRate="0.025"
-                travelGiveupProbability="0.09"
-                siteFidelityRate="0.0"
-                informedSearchDecay="0.01"/>
-    <navigation searchRadius="1"
-                searchStepSize="0.08"
-                distanceTolerance="0.1"
-                searchGiveupProbability="0.00009"
-                angleTolerance="22.5"
-                maxSpeed="16.0"
-                uninformedSearchCorrelation="17"/>
-  </params>
-
-  </iAnt_controller>
-</controllers>
-
-<loop_functions library="build/loop_functions/iAnt_loop_functions/libiAnt_loop_functions.so"
-                label="iAnt_loop_functions">
-
+  <!-- LOOP FUNCTIONS -->
   <!-- foodDistribution = "random" = 0, "cluster" = 1, "power law" = 2 -->
-  <!-- for power law: [64] (8x8 cluster), [16] (4x4 cluster), [4] (2x2 cluster), [1] (random place rest) -->
-  <simulation_settings foodItemCount="666"
-                       foodDistribution="2"/>
-           <navigation forageRangeX="-2.9, 2.9"
-                       forageRangeY="-2.9, 2.9"
-                       nestPosition="0.0, 0.0"
-                       nestRadius="0.5"/>
-                 <food foodRadius="0.05"/>
+  <loop_functions library="build/loop_functions/iAnt_loop_functions/libiAnt_loop_functions.so"
+                  label="iAnt_loop_functions">
+    <!-- foodDistribution = "random" = 0, "cluster" = 1, "power law" = 2 -->
+    <simulation_settings foodItemCount="100"
+                         foodDistribution="1"/>
+             <navigation forageRangeX="-5.0, 5.0"
+                         forageRangeY="-5.0, 5.0"
+                         nestPosition="0.0, 0.0"
+                         nestRadius="0.5"/>
+                   <food foodRadius="0.05"/>
   </loop_functions>
 
-  <arena size="6, 6, 1" center="0.0, 0.0, 0.5">
-  <!-- default: size="6, 6, 1" center="0.0, 0.0, 0.5" -->
-
-    <floor id="floor"
-           source="loop_functions"
-           pixels_per_meter="50"/>
-    <!-- default: pizels_per_meter="50"-->
-
-    <box id="wall_north" size="6, 0.1, 0.2" movable="false">
-      <body position="0, 3.1, 0" orientation="0, 0, 0"/>
-    </box>
-
-    <box id="wall_south" size="6, 0.1, 0.2" movable="false">
-      <body position="0, -3.1, 0" orientation="0, 0, 0"/>
-    </box>
-
-    <box id="wall_east" size="0.1, 6, 0.2" movable="false">
-      <body position="3.1, 0, 0" orientation="0, 0, 0"/>
-    </box>
-
-    <box id="wall_west" size="0.1, 6, 0.2" movable="false">
-      <body position="-3.1, 0, 0" orientation="0, 0, 0"/>
-    </box>
-
+  <!-- ARENA -->
+  <arena size="10.0, 10.0, 0.0" center="0.0, 0.0, 0.0">
+    <floor id="floor" source="loop_functions" pixels_per_meter="50"/>
     <distribute>
       <position method="uniform" min="-1, -1, 0" max="1, 1, 0"/>
       <orientation method="gaussian" mean="0, 0, 0" std_dev="360, 0, 0"/>
-      <entity quantity="5" max_trials="100">
+      <entity quantity="10" max_trials="200">
         <foot-bot id="fb">
           <controller config="iAnt_c"/>
         </foot-bot>
       </entity>
     </distribute>
-
   </arena>
 
+  <!-- PHYSICS ENGINE(S) -->
   <physics_engines>
     <dynamics2d id="dyn2d"/>
   </physics_engines>
 
+  <!-- MEDIA -->
   <media>
     <led id="leds"/>
   </media>
 
+  <!-- VISUALIZATION -->
   <visualization>
     <qt-opengl>
-
       <camera>
-        <placement idx="0" position="0, 0, 10" look_at="0, 0, 0" lens_focal_length="40"/>
+        <placement idx="0" position="0, 0, 10" look_at="0, 0, 0" lens_focal_length="25"/>
         <placement idx="1" position="0, 0, 10" look_at="0, 0, 0" lens_focal_length="120"/>
         <placement idx="2" position="-30, 0, 10" look_at="0, 0, 0" lens_focal_length="180"/>
       </camera>
-
       <user_functions label="iAnt_qt_user_functions"/>
-
     </qt-opengl>
   </visualization>
 

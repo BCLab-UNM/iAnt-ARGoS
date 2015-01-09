@@ -149,13 +149,12 @@ bool iAnt_controller::IsInTheNest() {
 	    return true; // The robot is in the nest zone.
 	}
     */
-    Real dts = (distanceTolerance * distanceTolerance);
 
-    if((position - nestPosition).SquareLength() < dts) {
-        return true; // robot is in the nest
+    if((position - nestPosition).SquareLength() < GetNestRadius()) {
+        return true; // The robot is in the nest.
     }
 
-	return false; // The robot is not in the nest zone.
+	return false; // The robot is not in the nest.
 }
 
 /*
@@ -395,7 +394,7 @@ void iAnt_controller::inactive() {
 
 void iAnt_controller::departing() {
     if(IsHoldingFood() == true) {
-		senseLocalResourceDensity();
+		if(IsFindingFood() == true) senseLocalResourceDensity();
 		target = setPositionInBounds(nestPosition);
 		CPFA = RETURNING;
 	} else if(informed == false) {
@@ -436,7 +435,7 @@ void iAnt_controller::searching() {
 			}
 		}
 	} else {
-		senseLocalResourceDensity();
+		if(IsFindingFood() == true) senseLocalResourceDensity();
 		target = setPositionInBounds(nestPosition);
 		CPFA = RETURNING;
 	}
@@ -478,13 +477,13 @@ void iAnt_controller::senseLocalResourceDensity()
 		}
 
         // clean location
-        if((position - foodPositions[i]).SquareLength() < foodRadiusSquared) {
-            fidelityPosition = foodPositions[i];
-        }
+        //if((position - foodPositions[i]).SquareLength() < foodRadiusSquared) {
+            //fidelityPosition = foodPositions[i];
+        //}
 	}
 
     // messy location
-    //fidelityPosition = position;
+    fidelityPosition = position;
 }
 
 CVector2 iAnt_controller::setPositionInBounds(CVector2 p) {

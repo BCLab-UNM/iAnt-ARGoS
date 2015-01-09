@@ -13,12 +13,10 @@ todo, demo, Jan 30, 12-2pm
 . streamline classes (variables, functions, implementation)
 . speed up painting
 
-graphics improvement:
-    lazy evaluation,
-        has pixel been changed, if not, dont update
-
-
-power law, use 1 x 8x8 and use max number of 4x4, 2x2, before random distribution
+<!-- for power law: (only one pile this size) [64] (8x8 cluster), 
+                    (as many as possible)     [16] (4x4 cluster), 
+                    (as many as possible)      [4] (2x2 cluster), 
+                                               [1] (random place rest) -->
 
 1. implement site fidelity markers
 2. Test 1: power law distribution

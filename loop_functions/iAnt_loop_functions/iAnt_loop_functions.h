@@ -1,7 +1,7 @@
 #ifndef IANT_LOOP_FUNCTIONS_H_
 #define IANT_LOOP_FUNCTIONS_H_
 
-#include <map>
+#include <string>
 #include <controllers/iAnt_controller/iAnt_controller.h>
 #include <argos3/core/simulator/loop_functions.h>
 #include <argos3/core/simulator/entity/floor_entity.h>
@@ -25,26 +25,30 @@ class iAnt_loop_functions : public CLoopFunctions {
 		void   Reset();
 
 	private:
-		CFloorEntity            *floorEntity;       // object for the floor graphics
-		CRandom::CRNG           *RNG;               // random number generator
-		long int                 simTime;           // a counter for simulation frames
-		size_t                   foodItemCount;     // number of food items on the field
 
-		vector<CVector2>         foodPositions;     // positions for all food items on the field
-        vector<CVector2>         fidelityPositions;
-        vector<CVector2>         pheromonePositions;
+        void SetFoodDistribution();
+        void RandomFoodDistribution();
+        void ClusterFoodDistribution();
+        void PowerLawFoodDistribution();
 
-		vector<iAnt_pheromone>   pheromoneList;     // list of pheromones to share with iAnts
+		CFloorEntity           *floorEntity;        // object for the floor graphics
+		CRandom::CRNG          *RNG;                // random number generator
+		long int                simTime;            // a counter for simulation frames
+		size_t                  foodItemCount;      // number of food items on the field
 
-		CVector2                 nestPosition;      // center of the circular nest
+		vector<CVector2>        foodPositions;      // food item positions on the field
+        vector<CVector2>        fidelityPositions;  // all robot site fidelity positions
+        vector<CVector2>        pheromonePositions; // pheromone positions on the field
+		vector<iAnt_pheromone>  pheromoneList;      // list of pheromones to share with iAnts
+		CVector2                nestPosition;       // center of the circular nest
 
-		Real                     foodRadiusSquared; // radius of circular food object squared
-		Real                     nestRadiusSquared; // radius of circular nest squared
+		Real                    foodRadiusSquared;  // radius of circular food object squared
+		Real                    nestRadiusSquared;  // radius of circular nest squared
 
-		CRange<Real>             forageRangeX;      // Cartesian X domain of arena [-x, x]
-		CRange<Real>             forageRangeY;      // Cartesian Y range of arena [-y, y]
+		CRange<Real>            forageRangeX;       // Cartesian X domain of arena [-x, x]
+		CRange<Real>            forageRangeY;       // Cartesian Y range of arena [-y, y]
 
-		size_t					 foodDistribution;  // 0 = "random", 1 = "cluster", 2 = "power law"
+		size_t                  foodDistribution;   // 0="random", 1="cluster", 2="power law"
 };
 
 #endif /* IANT_LOOP_FUNCTIONS_H_ */

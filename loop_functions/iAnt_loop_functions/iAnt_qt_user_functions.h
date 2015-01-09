@@ -19,6 +19,9 @@ private:
     vector<CVector2> foodPositions;
     CVector2         nestPosition;
 
+    bool             IsInFoodVector(CVector2 p);
+    void             UpdateDrawInWorldData(iAnt_controller& c);
+
 public:
 
     // constructor
