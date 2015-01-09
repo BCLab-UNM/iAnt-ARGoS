@@ -109,52 +109,21 @@ void iAnt_controller::Init(TConfigurationNode& node) {
 	RNG = CRandom::CreateRNG("argos");
 }
 
-/*
- * iAnt_controller Helper Function
+/*******************************************************************************
+ * - subtract the robot's nest position from its current position
+ * - this new point is used to calculate distance from the nest
  *
- * The CCI_FootBotMotorGroundSensor sensors are built on the motor PCB and they are located close
- * to the motors. There are four sensors and are useful to detect changes in color on the ground.
- *
- * The readings are in the following order (seeing the robot from TOP, battery socket is the BACK):
- *
- *   /---[front]---\    The color values read by these sensors ranges in value from 0.0 to 1.0,
- * l|w             r|w  where 0.0 = black and 1.0 = white. iAnt_loop_functions uses the predefined
- * e|h   1     0   i|h  CColor gray-scale colors to set up various objects on the field.
- * f|e             g|e
- * t|e   2     3   h|e  Arena Floor = [CColor::WHITE]  reading value is approximately 1.00
- *  |l             t|l  Food Item   = [CColor::BLACK]  reading value is approximately 0.00
- *   \---[back ]---/    Nest Zone   = [CColor::GRAY80] reading value is approximately 0.80
- *                      Pheromone   = [CColor::GRAY40] reading value is approximately 0.40
- *
- * This function is used to determine if the robot is currently inside the Nest Zone.
- *
- * @return     bool     "true" if the robot is currently within the borders of the nest,
- *                      "false" if the robot is not currently within the borders of the nest
- */
+ * @return TRUE:  The robot is in the nest.
+ *         FALSE: The robot is not in the nest.
+ ******************************************************************************/
 bool iAnt_controller::IsInTheNest() {
-    /*
-	// Obtain the current ground sensor readings for this controller object.
-	const CCI_FootBotMotorGroundSensor::TReadings &groundReadings = groundSensor->GetReadings();
-
-	// The ideal value is 0.8, but we must account for sensor read errors (+/- 0.1).
-	CRange<Real> nestSensorRange(0.7, 0.9);
-
-	// Assign the ground readings to temporary variables for clarity.
-	Real backLeftWheelReading  = groundReadings[2].Value;
-	Real backRightWheelReading = groundReadings[3].Value;
-
-	// We only need to check the back side sensors, if these are in the nest so is the front.
-	if(nestSensorRange.WithinMinBoundIncludedMaxBoundIncluded(backLeftWheelReading) &&
-	   nestSensorRange.WithinMinBoundIncludedMaxBoundIncluded(backRightWheelReading)) {
-	    return true; // The robot is in the nest zone.
-	}
-    */
 
     if((position - nestPosition).SquareLength() < GetNestRadius()) {
-        return true; // The robot is in the nest.
+        LOG << "distance from robot to nest center: ";
+        LOG << sqrt((position - nestPosition).SquareLength()) << endl;
     }
 
-	return false; // The robot is not in the nest.
+    return ((position - nestPosition).SquareLength() < GetNestRadius());
 }
 
 /*
