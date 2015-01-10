@@ -4,7 +4,7 @@
   <!-- FRAMEWORK -->
   <framework>
     <system threads="0"/>
-    <experiment length="0" ticks_per_second="16" random_seed="100"/>
+    <experiment length="0" ticks_per_second="16" random_seed="1337"/>
   </framework>
 
   <!-- CONTROLLERS -->
@@ -15,7 +15,6 @@
       </actuators>
       <sensors>
         <footbot_proximity implementation="default" show_rays="false"/>
-        <footbot_motor_ground implementation="rot_z_only"/>
         <positioning implementation="default"/>
       </sensors>
       <params>
@@ -29,24 +28,27 @@
                     distanceTolerance="0.1"
                     searchGiveupProbability="0.00009"
                     angleTolerance="22.5"
-                    maxSpeed="16.0"
+                    maxRobotSpeed="16.0"
                     uninformedSearchCorrelation="17"/>
       </params>
     </iAnt_controller>
   </controllers>
 
   <!-- LOOP FUNCTIONS -->
-  <!-- foodDistribution = "random" = 0, "cluster" = 1, "power law" = 2 -->
   <loop_functions library="build/loop_functions/iAnt_loop_functions/libiAnt_loop_functions.so"
                   label="iAnt_loop_functions">
-    <!-- foodDistribution = "random" = 0, "cluster" = 1, "power law" = 2 -->
-    <simulation_settings foodItemCount="100"
-                         foodDistribution="1"/>
-             <navigation forageRangeX="-5.0, 5.0"
-                         forageRangeY="-5.0, 5.0"
-                         nestPosition="0.0, 0.0"
-                         nestRadius="0.5"/>
-                   <food foodRadius="0.05"/>
+    <simulation_settings       foodItemCount="0"
+                               foodDistribution="2"
+                               forageRangeX="-5.0, 5.0"
+                               forageRangeY="-5.0, 5.0"
+                               nestPosition="0.0, 0.0"
+                               nestRadius="0.5"
+                               foodRadius="0.05"/>
+    <random_distribution_0/>   <!-- no settings for this distribution -->
+    <cluster_distribution_1    numberOfClusters="10"
+                               clusterWidthX="4"
+                               clusterLengthY="4"/>
+    <powerLaw_distribution_2   powerRank="3"/>
   </loop_functions>
 
   <!-- ARENA -->
@@ -55,7 +57,7 @@
     <distribute>
       <position method="uniform" min="-1, -1, 0" max="1, 1, 0"/>
       <orientation method="gaussian" mean="0, 0, 0" std_dev="360, 0, 0"/>
-      <entity quantity="1" max_trials="200">
+      <entity quantity="10" max_trials="200">
         <foot-bot id="fb">
           <controller config="iAnt_c"/>
         </foot-bot>

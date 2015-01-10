@@ -18,11 +18,11 @@ static inline double bound(double x, double min, double max) {
 }
 
 // Returns Poisson cumulative probability at a given k and lambda
-static inline float poissonCDF(float k, float lambda) {
-    float sumAccumulator = 1;
-    float factorialAccumulator = 1;
+static inline Real poissonCDF(Real k, Real lambda) {
+    Real sumAccumulator       = 1.0;
+    Real factorialAccumulator = 1.0;
 
-    for (int i = 1; i <= floor(k); i++) {
+    for (size_t i = 1; i <= floor(k); i++) {
         factorialAccumulator *= i;
         sumAccumulator += pow(lambda, i) / factorialAccumulator;
     }
@@ -34,7 +34,6 @@ static inline float poissonCDF(float k, float lambda) {
 iAnt_controller::iAnt_controller():
 	steeringActuator(NULL),
 	proximitySensor(NULL),
-	groundSensor(NULL),
 	compassSensor(NULL),
 	RNG(NULL),
 	holdingFood(false),
@@ -48,7 +47,7 @@ iAnt_controller::iAnt_controller():
 	travelGiveupProbability(0.0),
 	searchGiveupProbability(0.0),
 	searchStepSize(0.0),
-	maxSpeed(0.0),
+	maxRobotSpeed(0.0),
 	informedSearchDecay(0.0),
 	siteFidelityRate(0.0),
 	pheromoneRate(0.0),
@@ -74,14 +73,13 @@ void iAnt_controller::Init(TConfigurationNode& node) {
 	// Initialize ARGoS sensors and actuators from these categories in the *.argos XML file.
 	steeringActuator = GetActuator<CCI_DifferentialSteeringActuator>("differential_steering");
 	proximitySensor  = GetSensor<CCI_FootBotProximitySensor>        ("footbot_proximity"    );
-	groundSensor     = GetSensor<CCI_FootBotMotorGroundSensor>      ("footbot_motor_ground" );
     compassSensor    = GetSensor<CCI_PositioningSensor>             ("positioning"          );
 
 	GetNodeAttribute(GetNode(node, "navigation"), "searchRadius"           , searchRadiusSquared);
 	GetNodeAttribute(GetNode(node, "navigation"), "distanceTolerance"      , distanceTolerance);
 	GetNodeAttribute(GetNode(node, "navigation"), "searchGiveupProbability", searchGiveupProbability);
 	GetNodeAttribute(GetNode(node, "navigation"), "searchStepSize"         , searchStepSize);
-	GetNodeAttribute(GetNode(node, "navigation"), "maxSpeed"               , maxSpeed);
+	GetNodeAttribute(GetNode(node, "navigation"), "maxRobotSpeed"          , maxRobotSpeed);
 	GetNodeAttribute(GetNode(node, "CPFA"      ), "informedSearchDecay"    , informedSearchDecay);
 	GetNodeAttribute(GetNode(node, "CPFA"      ), "siteFidelityRate"       , siteFidelityRate);
 	GetNodeAttribute(GetNode(node, "CPFA"      ), "pheromoneRate"          , pheromoneRate);
@@ -110,20 +108,29 @@ void iAnt_controller::Init(TConfigurationNode& node) {
 }
 
 /*******************************************************************************
- * - subtract the robot's nest position from its current position
- * - this new point is used to calculate distance from the nest
+ * Calculate the distance to the edge of the nest using the X and Y coordinates
+ * of the robot's current position and the Pythagorean Theorem. The robot's
+ * position will be centered in the middle of the robot. Therefore, this check
+ * will not return TRUE until the robot is at least halfway into the nest.
+ *
+ * - Subtract the robot's nest position from its current position to ensure the
+ *   calculation occurs as if the nest was always at the origin (0,0).
+ *
+ * - Pythagorean Theorem: a^2 + b^2 = c^2
+ *   a   = position.GetX() - nestPosition.GetX()
+ *   b   = position.GetY() - nestPosition.GetY()
+ *   c^2 = a^2 + b^2 = (position - nestPosition).SquareLength()
+ *
+ * - Use the squared value of the radius and c^2 for the comparison calculation
+ *   instead of calculating square roots for improved efficiency.
+ *
+ * - If c^2 < nestRadiusSquared, the robot is inside of the nest.
  *
  * @return TRUE:  The robot is in the nest.
  *         FALSE: The robot is not in the nest.
  ******************************************************************************/
 bool iAnt_controller::IsInTheNest() {
-
-    if((position - nestPosition).SquareLength() < GetNestRadius()) {
-        LOG << "distance from robot to nest center: ";
-        LOG << sqrt((position - nestPosition).SquareLength()) << endl;
-    }
-
-    return ((position - nestPosition).SquareLength() < GetNestRadius());
+    return ((GetPosition() - nestPosition).SquareLength() < nestRadiusSquared);
 }
 
 /*
@@ -170,9 +177,9 @@ bool iAnt_controller::IsFindingFood() {
 
     Real dts = (distanceTolerance * distanceTolerance);
 
-    for(int i = 0; i < foodPositions.size(); i++) {
-        if((position - foodPositions[i]).SquareLength() < dts) {
-            return true; // robot is in the nest
+    for(size_t i = 0; i < foodPositions.size(); i++) {
+        if((GetPosition() - foodPositions[i]).SquareLength() < dts) {
+            return true; // robot is finding food
         }
     }
 
@@ -195,36 +202,37 @@ void iAnt_controller::DropOffFood() {
 }
 
 // update the list of available food positions
-void iAnt_controller::UpdateFoodList(vector<CVector2> newFoodPositions) {
-	foodPositions = newFoodPositions;
+void iAnt_controller::SetFoodPositions(vector<CVector2> fp) {
+	foodPositions = fp;
 }
 
 // update pheromone positions
-void iAnt_controller::UpdatePheromoneList(vector<CVector2> newPheromonePositions) {
-    pheromonePositions = newPheromonePositions;
+void iAnt_controller::SetPheromonePositions(vector<CVector2> pp) {
+    pheromonePositions = pp;
 }
 
 // update fidelity positions
-void iAnt_controller::UpdateFidelityList(vector<CVector2> newFidelityPositions) {
-    fidelityPositions = newFidelityPositions;
+void iAnt_controller::SetFidelityPositions(vector<CVector2> fp) {
+    fidelityPositions = fp;
 }
 // update the iAnt's position
-void iAnt_controller::UpdatePosition(CVector2 newPosition) {
-	position = newPosition;
+void iAnt_controller::SetPosition(CVector2 p) {
+	//position = p;
 }
 
 // update simulation time
-void iAnt_controller::UpdateTime(long int newTime) {
-	simTime = newTime;
+void iAnt_controller::SetTime(size_t t) {
+	simTime = t;
 }
 
 // return the robot's position
-CVector2 iAnt_controller::Position() {
-	return position;
+CVector2 iAnt_controller::GetPosition() {
+    CVector3 position3D = compassSensor->GetReading().Position;
+    return CVector2(position3D.GetX(), position3D.GetY());
 }
 
 // return the robot's fidelity position
-CVector2 iAnt_controller::FidelityPosition() {
+CVector2 iAnt_controller::GetFidelityPosition() {
     return fidelityPosition;
 }
 
@@ -243,15 +251,14 @@ void iAnt_controller::SetFoodRadiusSquared(Real rs) {
 }
 
 // update pheromone
-void iAnt_controller::SetTargetPheromone(iAnt_pheromone p)
-{
-	targetPheromone.Set(p);
+void iAnt_controller::SetTargetPheromone(iAnt_pheromone tp) {
+	targetPheromone.Set(tp);
 }
 
 // setup forage boundary
-void iAnt_controller::SetForageRange(CRange<Real> X, CRange<Real> Y) {
-    forageRangeX = X;
-    forageRangeY = Y;
+void iAnt_controller::SetForageRange(CRange<Real> x, CRange<Real> y) {
+    forageRangeX = x;
+    forageRangeY = y;
 }
 
 // get nest position
@@ -289,11 +296,6 @@ iAnt_pheromone iAnt_controller::GetTargetPheromone() {
 	return sharedPheromone;
 }
 
-// return pheromoneDecayRate
-Real iAnt_controller::PheromoneDecayRate() {
-    return pheromoneDecayRate;
-}
-
 /* iAnt_controller Control Step Function
  *
  * This function is the primary integration between this class and the ARGoS simulator. ARGoS will
@@ -303,9 +305,9 @@ Real iAnt_controller::PheromoneDecayRate() {
  */
 void iAnt_controller::ControlStep() {
     if(foodPositions.size() == 0 && !IsHoldingFood()) {
-		target = setPositionInBounds(nestPosition);
+		targetPosition = setPositionInBounds(nestPosition);
 
-        if((position - target).SquareLength() < distanceTolerance) {
+        if((GetPosition() - targetPosition).SquareLength() < distanceTolerance) {
             steeringActuator->SetLinearVelocity(0.0, 0.0);
         } else {
             SetWheelSpeed();
@@ -364,14 +366,14 @@ void iAnt_controller::inactive() {
 void iAnt_controller::departing() {
     if(IsHoldingFood() == true) {
 		if(IsFindingFood() == true) senseLocalResourceDensity();
-		target = setPositionInBounds(nestPosition);
+		targetPosition = setPositionInBounds(nestPosition);
 		CPFA = RETURNING;
 	} else if(informed == false) {
 		if(RNG->Uniform(CRange<Real>(0.0, 1.0)) < travelGiveupProbability) {
 			searchTime = 0;
 			CPFA = SEARCHING;
 		}
-	} else if((position - target).SquareLength() < distanceTolerance) {
+	} else if((GetPosition() - targetPosition).SquareLength() < distanceTolerance) {
 		searchTime = 0;
 		CPFA = SEARCHING;
 		informed = false;
@@ -383,29 +385,29 @@ void iAnt_controller::departing() {
 void iAnt_controller::searching() {
 	if(IsHoldingFood() == false) {
 		if(RNG->Uniform(CRange<Real>(0.0, 1.0)) < searchGiveupProbability) {
-			target = setPositionInBounds(nestPosition);
+			targetPosition = setPositionInBounds(nestPosition);
 			CPFA = RETURNING;
 		}
-		else if((simTime % 8 == 0) && (position - target).SquareLength() < distanceTolerance) {
+		else if((simTime % 8 == 0) && (GetPosition() - targetPosition).SquareLength() < distanceTolerance) {
 			if(informed == false) {
 				// Get a random rotation angle and then add it to the getVectorToLight angle. This serves the functionality
 				// of a compass and causes the rotation to be relative to the robot's current direction.
 				CRadians rotation(RNG->Gaussian(uninformedSearchCorrelation.GetValue())),
 						 angle(rotation.UnsignedNormalize() + RobotHeading().UnsignedNormalize());
 
-				target = setPositionInBounds(CVector2(searchStepSize, angle) + position);
+				targetPosition = setPositionInBounds(CVector2(searchStepSize, angle) + GetPosition());
 			}
 			else {
 				float correlation = exponentialDecay((CRadians::TWO_PI).GetValue(), searchTime++, informedSearchDecay);
 				CRadians rotation(bound(correlation, -(CRadians::PI).GetValue(), (CRadians::PI).GetValue())),
 						 angle(rotation.UnsignedNormalize() + RobotHeading().UnsignedNormalize());
 
-				target = setPositionInBounds(CVector2(searchStepSize, angle) + position);
+				targetPosition = setPositionInBounds(CVector2(searchStepSize, angle) + GetPosition());
 			}
 		}
 	} else {
 		if(IsFindingFood() == true) senseLocalResourceDensity();
-		target = setPositionInBounds(nestPosition);
+		targetPosition = setPositionInBounds(nestPosition);
 		CPFA = RETURNING;
 	}
 
@@ -413,17 +415,17 @@ void iAnt_controller::searching() {
 }
 
 void iAnt_controller::returning() {
-	if((position - target).SquareLength() < distanceTolerance) {
+	if((GetPosition() - targetPosition).SquareLength() < distanceTolerance) {
 		if(poissonCDF(resourceDensity, pheromoneRate) > RNG->Uniform(CRange<Real>(0.0, 1.0))) {
 			sharedPheromone.Set(iAnt_pheromone(fidelityPosition, simTime, pheromoneDecayRate));
 		}
 
 		if(poissonCDF(resourceDensity, siteFidelityRate) > RNG->Uniform(CRange<Real>(0.0, 1.0))) {
-			target = setPositionInBounds(fidelityPosition);
+			targetPosition = setPositionInBounds(fidelityPosition);
 			informed = true;
 		}
 		else if(targetPheromone.IsActive() == true) {
-			target = setPositionInBounds(targetPheromone.Location());
+			targetPosition = setPositionInBounds(targetPheromone.Location());
 			informed = true;
 		}
 		else {
@@ -441,18 +443,18 @@ void iAnt_controller::senseLocalResourceDensity()
 	resourceDensity = 0; // DO count the food item robot just found
 
 	for(size_t i = 0; i < foodPositions.size(); i++) {
-		if((position - foodPositions[i]).SquareLength() < searchRadiusSquared) {
+		if((GetPosition() - foodPositions[i]).SquareLength() < searchRadiusSquared) {
 			resourceDensity++;
 		}
 
         // clean location
-        //if((position - foodPositions[i]).SquareLength() < foodRadiusSquared) {
+        //if((GetPosition() - foodPositions[i]).SquareLength() < foodRadiusSquared) {
             //fidelityPosition = foodPositions[i];
         //}
 	}
 
     // messy location
-    fidelityPosition = position;
+    fidelityPosition = GetPosition();
 }
 
 CVector2 iAnt_controller::setPositionInBounds(CVector2 p) {
@@ -468,10 +470,10 @@ CVector2 iAnt_controller::setPositionInBounds(CVector2 p) {
 // set target to a random location
 void iAnt_controller::SetRandomSearchLocation() {
 	// randomly set the target somewhere in the arena
-	target.SetX(RNG->Uniform(forageRangeX));
-	target.SetY(RNG->Uniform(forageRangeY));
+	targetPosition.SetX(RNG->Uniform(forageRangeX));
+	targetPosition.SetY(RNG->Uniform(forageRangeY));
 
-    target = setPositionInBounds(target);
+    targetPosition = setPositionInBounds(targetPosition);
 }
 
 bool iAnt_controller::CollisionDetection() {
@@ -512,22 +514,22 @@ CRadians iAnt_controller::RobotHeading() {
 }
 
 void iAnt_controller::SetWheelSpeed() {
-	CRadians heading = (RobotHeading() - (target - position).Angle()).SignedNormalize();
+	CRadians heading = (RobotHeading() - (targetPosition - GetPosition()).Angle()).SignedNormalize();
 
 	if(CollisionDetection() == true) {
 		// 32 = 2 seconds, 16 frames per second (set in XML) by 2
 		collisionDelay = simTime + 32;
 		/* turn left */
-		steeringActuator->SetLinearVelocity(-maxSpeed, maxSpeed);
+		steeringActuator->SetLinearVelocity(-maxRobotSpeed, maxRobotSpeed);
 	} else if((heading <= angleTolerance.GetMin()) && (collisionDelay < simTime)) {
 		/* turn left */
-		steeringActuator->SetLinearVelocity(-maxSpeed, maxSpeed);
+		steeringActuator->SetLinearVelocity(-maxRobotSpeed, maxRobotSpeed);
 	} else if((heading >= angleTolerance.GetMax()) && (collisionDelay < simTime)) {
 		/* turn right */
-		steeringActuator->SetLinearVelocity(maxSpeed, -maxSpeed);
+		steeringActuator->SetLinearVelocity(maxRobotSpeed, -maxRobotSpeed);
 	} else {
 		/* go straight */
-		steeringActuator->SetLinearVelocity(maxSpeed, maxSpeed);
+		steeringActuator->SetLinearVelocity(maxRobotSpeed, maxRobotSpeed);
 	}
 }
 

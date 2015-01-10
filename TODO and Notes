@@ -1,3 +1,22 @@
+-- power law, rediculous distribution
+
+(32x32)   1 of these piles, 1  x 1  = 1
+(16x16)   4 of these piles, 2  x 2  = 4
+ (8x8)   16 of these piles, 4  x 4  = 16
+ (4x4)   64 of these piles, 8  x 8  = 64
+ (2x2)  256 of these piles, 16 x 16 = 256
+ (1x1) 1024 of these piles, 32 x 32 = 1024
+
+in order to increase, multiply by 2, for example see above
+1  piles of 64 (8x8)
+4  piles of 16 (4x4)
+16 piles of 4  (2x2)
+64 piles of 1  (1x1)
+
+-- make sure food cant be placed on the nest zone
+
+finish in 4 weeks (from 1.9.15)
+
 data to collect
 -----> number of tags collected in x ticks (converted to 1 hour)
 -----> re-introduce messy positioning for pheromones/fidelity
@@ -5,6 +24,7 @@ data to collect
 todo, demo, Jan 30, 12-2pm
 
 . optimize time based parameters
+. fix clustering algorithms
 . testing
     a. using argos to replicate past experiments
 . streamline definition of time vs frames, etc.
@@ -31,7 +51,6 @@ todo, demo, Jan 30, 12-2pm
 sitefidelity: 0 on, 20 off, from 0 to 20
 pheromoneRate:  0 always lay pheromone, 20 never lay pheromone
 pheromoneDecayRate: 0 = slow decay, 1 = fast decay
-
 
         ================
         | UNIT TESTING |

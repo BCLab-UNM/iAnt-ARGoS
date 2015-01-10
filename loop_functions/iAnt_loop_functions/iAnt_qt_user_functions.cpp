@@ -10,7 +10,7 @@ iAnt_qt_user_functions::iAnt_qt_user_functions() :
 }
 
 bool iAnt_qt_user_functions::IsInFoodVector(CVector2 p) {
-    for(int i = 0; i < foodPositions.size(); i++) {
+    for(size_t i = 0; i < foodPositions.size(); i++) {
         if(p == foodPositions[i]) return true;
     }
 
@@ -24,17 +24,17 @@ void iAnt_qt_user_functions::UpdateDrawInWorldData(iAnt_controller& c) {
     vector<CVector2> p = c.GetPheromonePositions();
     vector<CVector2> f = c.GetFoodPositions();
 
-    for(int i = 0; i < f.size(); i++) {
+    for(size_t i = 0; i < f.size(); i++) {
         if(IsInFoodVector(f[i]) == false) {
             foodPositions.push_back(f[i]);
         }
     }
 
-    for(int i = 0; i < p.size(); i++) {
+    for(size_t i = 0; i < p.size(); i++) {
         pheromonePositions.push_back(p[i]);
     }
 
-    fidelityPositions.push_back(c.FidelityPosition());
+    fidelityPositions.push_back(c.GetFidelityPosition());
 }
 
 
@@ -62,14 +62,14 @@ void iAnt_qt_user_functions::DrawInWorld() {
 
     if(foodPositions.size() > 0) {
         // draw the food items
-        for(int i = 0; i < foodPositions.size(); i++) {
+        for(size_t i = 0; i < foodPositions.size(); i++) {
             DrawCircle(foodRadius,
                        CVector3(foodPositions[i].GetX(), foodPositions[i].GetY(), 0.002f),
                        CColor::BLACK);
         }
 
         // draw the pheromone positions
-        for(int i = 0; i < pheromonePositions.size(); i++) {
+        for(size_t i = 0; i < pheromonePositions.size(); i++) {
             if(pheromonePositions[i] != nestPosition) {
                 DrawCircle(foodRadius,
                            CVector3(pheromonePositions[i].GetX(), pheromonePositions[i].GetY(), 0.003f),
@@ -78,7 +78,7 @@ void iAnt_qt_user_functions::DrawInWorld() {
         }
 
         // draw the fidelity positions
-        for(int i = 0; i < fidelityPositions.size(); i++) {
+        for(size_t i = 0; i < fidelityPositions.size(); i++) {
             if(fidelityPositions[i] != nestPosition) {
                 DrawCircle(foodRadius,
                            CVector3(fidelityPositions[i].GetX(), fidelityPositions[i].GetY(), 0.004f),

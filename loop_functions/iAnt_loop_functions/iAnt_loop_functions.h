@@ -28,12 +28,20 @@ class iAnt_loop_functions : public CLoopFunctions {
 
         void SetFoodDistribution();
         void RandomFoodDistribution();
+        void RandomFoodDistribution(size_t f);
         void ClusterFoodDistribution();
         void PowerLawFoodDistribution();
 
+        bool IsCollidingWithNest(CVector2 p);
+        bool IsCollidingWithFood(CVector2 p);
+        bool IsOutOfBounds(CVector2 p, size_t length, size_t width);
+
+        Real GetNestRadius();
+        Real GetFoodRadius();
+
 		CFloorEntity           *floorEntity;        // object for the floor graphics
 		CRandom::CRNG          *RNG;                // random number generator
-		long int                simTime;            // a counter for simulation frames
+		size_t                  simTime;            // a counter for simulation frames
 		size_t                  foodItemCount;      // number of food items on the field
 
 		vector<CVector2>        foodPositions;      // food item positions on the field
@@ -49,6 +57,10 @@ class iAnt_loop_functions : public CLoopFunctions {
 		CRange<Real>            forageRangeY;       // Cartesian Y range of arena [-y, y]
 
 		size_t                  foodDistribution;   // 0="random", 1="cluster", 2="power law"
+        size_t                  numberOfClusters;
+        size_t                  clusterWidthX;
+        size_t                  clusterLengthY;
+        size_t                  powerRank;
 };
 
 #endif /* IANT_LOOP_FUNCTIONS_H_ */
