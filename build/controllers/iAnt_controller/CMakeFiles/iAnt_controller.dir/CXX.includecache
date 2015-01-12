@@ -19,8 +19,6 @@ argos3/plugins/robots/generic/control_interface/ci_differential_steering_actuato
 -
 argos3/plugins/robots/foot-bot/control_interface/ci_footbot_proximity_sensor.h
 -
-argos3/plugins/robots/foot-bot/control_interface/ci_footbot_motor_ground_sensor.h
--
 argos3/plugins/robots/generic/control_interface/ci_positioning_sensor.h
 -
 argos3/core/utility/math/rng.h

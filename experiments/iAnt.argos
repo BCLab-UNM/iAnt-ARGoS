@@ -18,18 +18,18 @@
         <positioning implementation="default"/>
       </sensors>
       <params>
-        <CPFA       pheromoneRate="0.0"
-                    pheromoneDecayRate="0.025"
-                    travelGiveupProbability="0.09"
-                    siteFidelityRate="0.0"
-                    informedSearchDecay="0.01"/>
-        <navigation searchRadius="1"
-                    searchStepSize="0.08"
-                    distanceTolerance="0.1"
-                    searchGiveupProbability="0.00009"
-                    angleTolerance="22.5"
-                    maxRobotSpeed="16.0"
-                    uninformedSearchCorrelation="17"/>
+        <CPFA pheromoneRate="0.0"
+              pheromoneDecayRate="0.025"
+              travelGiveupProbability="0.09"
+              siteFidelityRate="0.0"
+              informedSearchDecay="0.01"
+              searchRadius="1"
+              searchStepSize="0.08"
+              distanceTolerance="0.1"
+              searchGiveupProbability="0.00009"
+              angleTolerance="22.5"
+              maxRobotSpeed="16.0"
+              uninformedSearchCorrelation="17"/>
       </params>
     </iAnt_controller>
   </controllers>
@@ -39,8 +39,8 @@
                   label="iAnt_loop_functions">
     <simulation_settings       foodItemCount="0"
                                foodDistribution="2"
-                               forageRangeX="-5.0, 5.0"
-                               forageRangeY="-5.0, 5.0"
+                               forageRangeX="-10.0, 10.0"
+                               forageRangeY="-10.0, 10.0"
                                nestPosition="0.0, 0.0"
                                nestRadius="0.5"
                                foodRadius="0.05"/>
@@ -48,11 +48,11 @@
     <cluster_distribution_1    numberOfClusters="10"
                                clusterWidthX="4"
                                clusterLengthY="4"/>
-    <powerLaw_distribution_2   powerRank="3"/>
+    <powerLaw_distribution_2   powerRank="4"/>
   </loop_functions>
 
   <!-- ARENA -->
-  <arena size="10.0, 10.0, 0.0" center="0.0, 0.0, 0.0">
+  <arena size="20.0, 20.0, 0.0" center="0.0, 0.0, 0.0">
     <floor id="floor" source="loop_functions" pixels_per_meter="50"/>
     <distribute>
       <position method="uniform" min="-1, -1, 0" max="1, 1, 0"/>

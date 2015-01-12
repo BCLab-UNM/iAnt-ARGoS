@@ -5,7 +5,6 @@
 #include <argos3/core/control_interface/ci_controller.h>
 #include <argos3/plugins/robots/generic/control_interface/ci_differential_steering_actuator.h>
 #include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_proximity_sensor.h>
-#include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_motor_ground_sensor.h>
 #include <argos3/plugins/robots/generic/control_interface/ci_positioning_sensor.h>
 #include <argos3/core/utility/math/rng.h>
 #include <argos3/core/utility/logging/argos_log.h>
@@ -138,14 +137,17 @@ class iAnt_controller : public CCI_Controller {
     void returning();
 
     /***************************************************************************
-    * Navigation Helper Functions
+    * CPFA And Navigation Helper Functions
     ***************************************************************************/
-    void     senseLocalResourceDensity();
+    bool     IsCollisionDetected();
+    void     SetLocalResourceDensity();
     void     SetRandomSearchLocation();
     void     SetWheelSpeed();
-    bool     CollisionDetection();
-    CVector2 setPositionInBounds(CVector2 p);
-    CRadians RobotHeading();
+    CVector2 SetPositionInBounds(CVector2 p);
+    CRadians GetRobotHeading();
+    Real     GetExponentialDecay(Real quantity, Real time, Real lambda);
+    Real     GetBound(Real x, Real min, Real max);
+    Real     GetPoissonCDF(Real k, Real lambda);
 };
 
 #endif /* IANT_CONTROLLER_H_ */

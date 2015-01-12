@@ -24,7 +24,7 @@
   <controllers>
 
     <footbot_diffusion_controller id="fdc"
-                                  library="build/controllers/footbot_diffusion/libfootbot_diffusion">
+                                  library="build/controllers/footbot_diffusion/libfootbot_diffusion.so">
       <actuators>
         <differential_steering implementation="default" />
       </actuators>
@@ -39,7 +39,7 @@
   <!-- ****************** -->
   <!-- * Loop functions * -->
   <!-- ****************** -->
-  <loop_functions library="build/loop_functions/trajectory_loop_functions/libtrajectory_loop_functions"
+  <loop_functions library="build/loop_functions/trajectory_loop_functions/libtrajectory_loop_functions.so"
                   label="trajectory_loop_functions" />
 
   <!-- *********************** -->
@@ -63,7 +63,7 @@
     <distribute>
       <position method="uniform" min="-2,-2,0" max="2,2,0" />
       <orientation method="gaussian" mean="0,0,0" std_dev="360,0,0" />
-      <entity quantity="10" max_trials="100">
+      <entity quantity="1" max_trials="100">
         <foot-bot id="fb">
           <controller config="fdc" />
         </foot-bot>
@@ -101,7 +101,7 @@
   <media />
 
   <!-- ****************** -->
-  <!-- * Visualization * -->
+  <!-- * Visualization  * -->
   <!-- ****************** -->
   <visualization>
     <!--
@@ -110,7 +110,7 @@
         Check 'argos3 -q qt-opengl' for more help.
     -->
     <qt-opengl>
-      <user_functions library="build/loop_functions/trajectory_loop_functions/libtrajectory_loop_functions"
+      <user_functions library="build/loop_functions/trajectory_loop_functions/libtrajectory_loop_functions.so"
                       label="trajectory_qtuser_functions" />
     </qt-opengl>
   </visualization>
