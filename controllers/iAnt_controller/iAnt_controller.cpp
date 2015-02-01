@@ -111,82 +111,99 @@ bool iAnt_controller::IsInTheNest() {
   return ((GetPosition() - nestPosition).SquareLength() < nestRadiusSquared);
 }
 
-/*
- * iAnt_controller Helper Function
- *
- * The CCI_FootBotMotorGroundSensor sensors are built on the motor PCB and they are located close
- * to the motors. There are four sensors and are useful to detect changes in color on the ground.
- *
- * The readings are in the following order (seeing the robot from TOP, battery socket is the BACK):
- *
- *   /---[front]---\    The color values read by these sensors ranges in value from 0.0 to 1.0,
- * l|w             r|w  where 0.0 = black and 1.0 = white. iAnt_loop_functions uses the predefined
- * e|h   1     0   i|h  CColor gray-scale colors to set up various objects on the field.
- * f|e             g|e
- * t|e   2     3   h|e  Arena Floor = [CColor::WHITE]  reading value is approximately 1.00
- *  |l             t|l  Food Item   = [CColor::BLACK]  reading value is approximately 0.00
- *   \---[back ]---/    Nest Zone   = [CColor::GRAY80] reading value is approximately 0.80
- *                      Pheromone   = [CColor::GRAY40] reading value is approximately 0.40
- *
- * This function is used to determine if the robot is currently on top of a food item.
- *
- * @return     bool     "true" if the robot is currently on top of a food item,
- *                      "false" if the robot is not currently on top of a food item
- */
+/*******************************************************************************
+* Using the Pythagorean Theorem, the robot's current position, and a list of
+* all food item positions currently available, this function will determine if
+* a robot has encountered a food item. See comments for IsInTheNest() for
+* details on how the checked distances are calculated.
+*
+* @return TRUE:  The robot is finding food.
+*         FALSE: The robot is not finding food.
+*******************************************************************************/
 bool iAnt_controller::IsFindingFood() {
+    // d.t.s. = distance tolerance squared
     Real dts = (distanceTolerance * distanceTolerance);
 
     for(size_t i = 0; i < foodPositions.size(); i++) {
         if((GetPosition() - foodPositions[i]).SquareLength() < dts) {
-            return true; // robot is finding food
+            return true;
         }
     }
 
-	return false; // has not found food
+	return false;
 }
 
-// Is the robot holding a food item?
+/*******************************************************************************
+* By design, iAnt robots cannot carry more then 1 piece of food at a time. This
+* function is used to check the status of the holdingFood boolean flag.
+*
+* @return TRUE:  The robot is holding food.
+*         FALSE: The robot is not holding food.
+*******************************************************************************/
 bool iAnt_controller::IsHoldingFood() {
 	return holdingFood;
 }
 
-// the robot is picking up a food item
+/*******************************************************************************
+* If IsFindingFood() = true AND IsHoldingFood() = false, then this function
+* should be called to indicate that the iAnt is picking up a food item.
+*******************************************************************************/
 void iAnt_controller::PickupFood() {
 	holdingFood = true;
 }
 
-// the robot is dropping off a food item
+/*******************************************************************************
+* If IsInTheNest() = true AND IsHoldingFood() = true, then this function
+* should be called to indicate that the iAnt is dropping off a food item.
+*******************************************************************************/
 void iAnt_controller::DropOffFood() {
 	holdingFood = false;
 }
 
-// update the list of available food positions
+/*******************************************************************************
+* Update the list of all food positions on the map. This list should decrease
+* in size as robots find food during the simulation and should be called by
+* the iAnt_loop_functions class.
+*******************************************************************************/
 void iAnt_controller::SetFoodPositions(vector<CVector2> fp) {
 	foodPositions = fp;
 }
 
-// update pheromone positions
+/*******************************************************************************
+* Update the list of all pheromone positions on the map. This list should
+* variably change in size depending upon the number of robots and pheromone
+* laying rate. This should be called by the iAnt_loop_functions class.
+*******************************************************************************/
 void iAnt_controller::SetPheromonePositions(vector<CVector2> pp) {
     pheromonePositions = pp;
 }
 
-// update fidelity positions
+/*******************************************************************************
+* Update the list of all site fidelity positions on the map. This list should
+* range in size from 0 to the maximum number of robots on the map. This should
+* be called by the iAnt_loop_functions class.
+*******************************************************************************/
 void iAnt_controller::SetFidelityPositions(vector<CVector2> fp) {
     fidelityPositions = fp;
 }
-// update the iAnt's position
-void iAnt_controller::SetPosition(CVector2 p) {
-	//position = p;
-}
 
-// update simulation time
+/*******************************************************************************
+* Update the simulation time, which is kept track of in frames. The number of
+* frames per second is defined in the XML file. The iAnt_loop_functions class
+* uses this function for each robot to keep sim time synchronized.
+*******************************************************************************/
 void iAnt_controller::SetTime(size_t t) {
 	simTime = t;
 }
 
-// return the robot's position
+/*******************************************************************************
+* Return the Cartesian X,Y coordinates of the robot using the compassSensor.
+*******************************************************************************/
 CVector2 iAnt_controller::GetPosition() {
+    // 3d Vector Position, x-position, y-position, z-position(height)
     CVector3 position3D = compassSensor->GetReading().Position;
+
+    // we only need the X,Y coordinates
     return CVector2(position3D.GetX(), position3D.GetY());
 }
 

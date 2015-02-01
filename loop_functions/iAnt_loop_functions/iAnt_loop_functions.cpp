@@ -82,9 +82,6 @@ void iAnt_loop_functions::PreStep() {
 	    // variable for the current foot-bot's controller object
 		iAnt_controller& c = dynamic_cast<iAnt_controller&>(footBot.GetControllableEntity().GetController());
 
-		// set the current foot-bot's position (used in controller class for positioning)
-		c.SetPosition(CVector2(footBot.GetEmbodiedEntity().GetPosition().GetX(),
-				               footBot.GetEmbodiedEntity().GetPosition().GetY()));
 		c.SetTime(simTime);
         c.SetFoodPositions(foodPositions);
         c.SetFidelityPositions(fidelityPositions);

@@ -41,7 +41,6 @@ class iAnt_controller : public CCI_Controller {
     void SetFoodPositions(vector<CVector2> fp);
     void SetPheromonePositions(vector<CVector2> pp);
     void SetFidelityPositions(vector<CVector2> fp);
-    void SetPosition(CVector2 p);
     void SetTime(size_t t);
     void SetNestPosition(CVector2 np);
     void SetNestRadiusSquared(Real nrs);

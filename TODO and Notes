@@ -1,19 +1,13 @@
--- power law, rediculous distribution
+make the arena a 5m radius circle instead of a square
 
-(32x32)   1 of these piles, 1  x 1  = 1
-(16x16)   4 of these piles, 2  x 2  = 4
- (8x8)   16 of these piles, 4  x 4  = 16
- (4x4)   64 of these piles, 8  x 8  = 64
- (2x2)  256 of these piles, 16 x 16 = 256
- (1x1) 1024 of these piles, 32 x 32 = 1024
+notes about clustering
+----------------------
+    current clustering optimization is using B.I.C.: bayesian information criterion
+    TODO, read about BIC and learn how it works (hint: statistics)
 
-in order to increase, multiply by 2, for example see above
-1  piles of 64 (8x8)
-4  piles of 16 (4x4)
-16 piles of 4  (2x2)
-64 piles of 1  (1x1)
-
--- make sure food cant be placed on the nest zone
+ideas:
+    -- in the future, think about adding/implementing clustering
+    -- in the future, think about adding/implementing genetic algorithm
 
 finish in 4 weeks (from 1.9.15)
 
@@ -32,11 +26,6 @@ todo, demo, Jan 30, 12-2pm
     1x64, max number of other piles
 . streamline classes (variables, functions, implementation)
 . speed up painting
-
-<!-- for power law: (only one pile this size) [64] (8x8 cluster), 
-                    (as many as possible)     [16] (4x4 cluster), 
-                    (as many as possible)      [4] (2x2 cluster), 
-                                               [1] (random place rest) -->
 
 1. implement site fidelity markers
 2. Test 1: power law distribution
