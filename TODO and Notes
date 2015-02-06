@@ -1,3 +1,8 @@
+possible identification code for file output
+--> 10.29.2012.1400.1337
+    |--------| |--| |--|
+    date       time random_seed
+
 make the arena a 5m radius circle instead of a square
 
 notes about clustering

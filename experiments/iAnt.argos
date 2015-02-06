@@ -4,7 +4,7 @@
   <!-- FRAMEWORK -->
   <framework>
     <system threads="0"/>
-    <experiment length="0" ticks_per_second="16" random_seed="1"/>
+    <experiment length="10" ticks_per_second="16" random_seed="100"/>
   </framework>
 
   <!-- CONTROLLERS -->
@@ -18,18 +18,18 @@
         <positioning implementation="default"/>
       </sensors>
       <params>
-        <CPFA pheromoneRate="0.0"
-              pheromoneDecayRate="0.025"
-              travelGiveupProbability="0.09"
-              siteFidelityRate="0.0"
-              informedSearchDecay="0.01"
+        <CPFA pheromoneRate="3.74975037574768"
+              pheromoneDecayRate="0.03360721096396446"
+              travelGiveupProbability="0.5044407248497009"
+              siteFidelityRate="4.26935863494873"
+              informedSearchDecay="0.2838849127292633"
               searchRadius="1"
               searchStepSize="0.08"
               distanceTolerance="0.1"
-              searchGiveupProbability="0.00009"
+              searchGiveupProbability="0.0009318816591985524"
               angleTolerance="22.5"
               maxRobotSpeed="16.0"
-              uninformedSearchCorrelation="17"/>
+              uninformedSearchCorrelation="13.2744146"/>
       </params>
     </iAnt_controller>
   </controllers>
@@ -37,17 +37,16 @@
   <!-- LOOP FUNCTIONS -->
   <loop_functions library="build/loop_functions/iAnt_loop_functions/libiAnt_loop_functions.so"
                   label="iAnt_loop_functions">
-    <simulation_settings     foodItemCount="256"
-                             foodDistribution="2"
-                             forageRangeX="-5.0, 5.0"
-                             forageRangeY="-5.0, 5.0"
+    <simulation_settings     variableSeed="1"
                              nestPosition="0.0, 0.0"
                              nestRadius="0.5"
-                             foodRadius="0.05"/>
+                             foodRadius="0.05"
+                             foodItemCount="0"
+                             foodDistribution="2"/>
     <random_distribution_0/> <!-- no settings for this distribution -->
-    <cluster_distribution_1  numberOfClusters="256 / 16"
-                             clusterWidthX="4"
-                             clusterLengthY="4"/>
+    <cluster_distribution_1  numberOfClusters="1"
+                             clusterWidthX="3"
+                             clusterLengthY="3"/>
     <powerLaw_distribution_2 powerRank="4"/>
   </loop_functions>
 
@@ -57,7 +56,7 @@
     <distribute>
       <position method="uniform" min="-1, -1, 0" max="1, 1, 0"/>
       <orientation method="gaussian" mean="0, 0, 0" std_dev="360, 0, 0"/>
-      <entity quantity="6" max_trials="200">
+      <entity quantity="2" max_trials="200">
         <foot-bot id="fb">
           <controller config="iAnt_c"/>
         </foot-bot>
@@ -76,6 +75,7 @@
   </media>
 
   <!-- VISUALIZATION -->
+<!--
   <visualization>
     <qt-opengl>
       <camera>
@@ -88,5 +88,5 @@
       <user_functions label="iAnt_qt_user_functions"/>
     </qt-opengl>
   </visualization>
-
+-->
 </argos-configuration>

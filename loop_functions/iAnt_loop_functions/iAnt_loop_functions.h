@@ -2,6 +2,7 @@
 #define IANT_LOOP_FUNCTIONS_H_
 
 #include <string>
+#include <fstream>
 #include <controllers/iAnt_controller/iAnt_controller.h>
 #include <argos3/core/simulator/loop_functions.h>
 #include <argos3/core/simulator/entity/floor_entity.h>
@@ -22,6 +23,8 @@ class iAnt_loop_functions : public CLoopFunctions {
 		CColor GetFloorColor(const CVector2& c_position_on_plane);
 		void   PreStep();
 		void   PostStep();
+        bool   IsExperimentFinished();
+        void   PostExperiment();
 		void   Reset();
 
 	private:
@@ -39,10 +42,15 @@ class iAnt_loop_functions : public CLoopFunctions {
         Real GetNestRadius();
         Real GetFoodRadius();
 
+        TConfigurationNode     *initNode;
 		CFloorEntity           *floorEntity;        // object for the floor graphics
 		CRandom::CRNG          *RNG;                // random number generator
 		size_t                  simTime;            // a counter for simulation frames
+		size_t                  simCounter;         // a counter for simulation runs
 		size_t                  foodItemCount;      // number of food items on the field
+        size_t                  ticks_per_second;
+        size_t                  ticks_per_simulation;
+        size_t                  random_seed;
 
 		vector<CVector2>        foodPositions;      // food item positions on the field
         vector<CVector2>        fidelityPositions;  // all robot site fidelity positions
@@ -53,9 +61,11 @@ class iAnt_loop_functions : public CLoopFunctions {
 		Real                    foodRadiusSquared;  // radius of circular food object squared
 		Real                    nestRadiusSquared;  // radius of circular nest squared
 
+        CVector3                arenaSize;
 		CRange<Real>            forageRangeX;       // Cartesian X domain of arena [-x, x]
 		CRange<Real>            forageRangeY;       // Cartesian Y range of arena [-y, y]
 
+        bool                    variableSeed;       // random seed changes after reset
 		size_t                  foodDistribution;   // 0="random", 1="cluster", 2="power law"
         size_t                  numberOfClusters;
         size_t                  clusterWidthX;

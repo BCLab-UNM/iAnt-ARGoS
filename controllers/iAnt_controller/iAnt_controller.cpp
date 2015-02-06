@@ -280,6 +280,13 @@ iAnt_pheromone iAnt_controller::GetTargetPheromone() {
  * state machine do to various modifications.
  */
 void iAnt_controller::ControlStep() {
+//    LOG << GetId() << " :: " << GetPosition() << endl << endl;
+/*
+    LOG << GetId() << " :: " << forageRangeX << endl << forageRangeY << endl << endl;
+    LOG << GetId() << endl << "target: " << targetPosition << endl
+        << "nest: " << nestPosition << endl;
+*/
+
     if(foodPositions.size() == 0 && !IsHoldingFood()) {
 		targetPosition = SetPositionInBounds(nestPosition);
 
@@ -312,13 +319,23 @@ void iAnt_controller::ControlStep() {
  * for the ones in this reset list which are reset to default initialized values.
  */
 void iAnt_controller::Reset() {
-	// TODO make sure this reset function is actually resetting "EVERYTHING" it needs to...
+    steeringActuator->Reset();
+    proximitySensor->Reset();
+    compassSensor->Reset();
+
+    targetPosition   = nestPosition;
+    fidelityPosition = nestPosition;
+
+    targetPheromone.Reset(nestPosition, 0);
+    sharedPheromone.Reset(nestPosition, 0);
+
+    simTime = 0;
 
 	// Restart the simulation with the CPFA in the REST state.
-	CPFA = INACTIVE;
+	CPFA = RETURNING;
 
 	// Reset food data for this controller.
-	holdingFood = false;
+	holdingFood = informed = false;
 }
 
 /* iAnt_controller Destroy Function
@@ -430,15 +447,14 @@ void iAnt_controller::SetLocalResourceDensity()
 	}
 
     // messy location
-    fidelityPosition = GetPosition();
+    fidelityPosition = SetPositionInBounds(GetPosition());
 }
 
 CVector2 iAnt_controller::SetPositionInBounds(CVector2 p) {
 	if(p.GetX() > forageRangeX.GetMax()) p.SetX(forageRangeX.GetMax());
-	else if(p.GetX() < forageRangeX.GetMin()) p.SetX(forageRangeX.GetMin());
-
+	if(p.GetX() < forageRangeX.GetMin()) p.SetX(forageRangeX.GetMin());
 	if(p.GetY() > forageRangeY.GetMax()) p.SetY(forageRangeY.GetMax());
-	else if(p.GetY() < forageRangeY.GetMin()) p.SetY(forageRangeY.GetMin());
+	if(p.GetY() < forageRangeY.GetMin()) p.SetY(forageRangeY.GetMin());
 
 	return p;
 }
