@@ -8,6 +8,7 @@
 * using settings and values from the ARGoS XML file.
 *******************************************************************************/
 iAnt_controller::iAnt_controller():
+  loopFunctions(NULL),
   steeringActuator(NULL),
   proximitySensor(NULL),
   compassSensor(NULL),
@@ -161,6 +162,13 @@ void iAnt_controller::DropOffFood() {
 }
 
 /*******************************************************************************
+* 
+*******************************************************************************/
+void iAnt_controller::SetLoopFunctions(iAnt_loop_functions *lf) {
+    loopFunctions = lf;
+}
+
+/*******************************************************************************
 * Update the list of all food positions on the map. This list should decrease
 * in size as robots find food during the simulation and should be called by
 * the iAnt_loop_functions class.
@@ -183,9 +191,9 @@ void iAnt_controller::SetPheromonePositions(vector<CVector2> pp) {
 * range in size from 0 to the maximum number of robots on the map. This should
 * be called by the iAnt_loop_functions class.
 *******************************************************************************/
-void iAnt_controller::SetFidelityPositions(vector<CVector2> fp) {
-    fidelityPositions = fp;
-}
+//void iAnt_controller::SetFidelityPositions(vector<CVector2> fp) {
+//    fidelityPositions = fp;
+//}
 
 /*******************************************************************************
 * Update the simulation time, which is kept track of in frames. The number of
@@ -259,12 +267,12 @@ vector<CVector2> iAnt_controller::GetFoodPositions() {
 
 // get pheromone position list from robot
 vector<CVector2> iAnt_controller::GetPheromonePositions() {
-    return pheromonePositions;
+    return loopFunctions->GetPheromonePositions();
 }
 
 // get fidelity position list
 vector<CVector2> iAnt_controller::GetFidelityPositions() {
-    return fidelityPositions;
+    return loopFunctions->GetFidelityPositions();
 }
 
 // get pheromone for master pheromone list in loop_functions
@@ -280,7 +288,11 @@ iAnt_pheromone iAnt_controller::GetTargetPheromone() {
  * state machine do to various modifications.
  */
 void iAnt_controller::ControlStep() {
-//    LOG << GetId() << " :: " << GetPosition() << endl << endl;
+/*
+    LOG << GetId() << "::" << GetPosition() << endl
+        << targetPosition << endl
+        << GetRobotHeading() << endl << endl;
+*/
 /*
     LOG << GetId() << " :: " << forageRangeX << endl << forageRangeY << endl << endl;
     LOG << GetId() << endl << "target: " << targetPosition << endl
@@ -319,6 +331,8 @@ void iAnt_controller::ControlStep() {
  * for the ones in this reset list which are reset to default initialized values.
  */
 void iAnt_controller::Reset() {
+    RNG = CRandom::CreateRNG("argos");
+
     steeringActuator->Reset();
     proximitySensor->Reset();
     compassSensor->Reset();
@@ -326,16 +340,18 @@ void iAnt_controller::Reset() {
     targetPosition   = nestPosition;
     fidelityPosition = nestPosition;
 
-    targetPheromone.Reset(nestPosition, 0);
-    sharedPheromone.Reset(nestPosition, 0);
+    targetPheromone.Reset(nestPosition, 0, 0.0);
+    sharedPheromone.Reset(nestPosition, 0, 0.0);
 
     simTime = 0;
+    collisionDelay = 0;
 
 	// Restart the simulation with the CPFA in the REST state.
-	CPFA = RETURNING;
+	CPFA = INACTIVE;
 
 	// Reset food data for this controller.
-	holdingFood = informed = false;
+	holdingFood = false;
+    informed = false;
 }
 
 /* iAnt_controller Destroy Function
@@ -383,7 +399,7 @@ void iAnt_controller::searching() {
 		}
 		else if((simTime % 8 == 0) && (GetPosition() - targetPosition).SquareLength() < distanceTolerance) {
 			if(informed == false) {
-				// Get a random rotation angle and then add it to the getVectorToLight angle. This serves the functionality
+				// Get a random rotation angle and then add it to the heading angle. This serves the functionality
 				// of a compass and causes the rotation to be relative to the robot's current direction.
 				CRadians rotation(RNG->Gaussian(uninformedSearchCorrelation.GetValue())),
 						 angle(rotation.UnsignedNormalize() + GetRobotHeading().UnsignedNormalize());

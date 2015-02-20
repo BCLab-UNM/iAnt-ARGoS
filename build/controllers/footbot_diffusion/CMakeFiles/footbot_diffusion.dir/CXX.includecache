@@ -6,19 +6,3 @@
 
 #IncludeRegexTransform: 
 
-/home/antonio/Programming/iAnt-ARGoS/controllers/footbot_diffusion/footbot_diffusion.cpp
-footbot_diffusion.h
-/home/antonio/Programming/iAnt-ARGoS/controllers/footbot_diffusion/footbot_diffusion.h
-argos3/core/utility/configuration/argos_configuration.h
--
-argos3/core/utility/math/vector2.h
--
-
-/home/antonio/Programming/iAnt-ARGoS/controllers/footbot_diffusion/footbot_diffusion.h
-argos3/core/control_interface/ci_controller.h
--
-argos3/plugins/robots/generic/control_interface/ci_differential_steering_actuator.h
--
-argos3/plugins/robots/foot-bot/control_interface/ci_footbot_proximity_sensor.h
--
-

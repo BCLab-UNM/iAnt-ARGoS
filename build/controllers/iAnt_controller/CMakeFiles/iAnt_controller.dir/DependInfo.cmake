@@ -29,7 +29,6 @@ SET(CMAKE_C_TARGET_INCLUDE_PATH
   "/usr/include/qt4/QtCore"
   ".."
   "/usr/include/lua5.1"
-  "../controllers"
   )
 SET(CMAKE_CXX_TARGET_INCLUDE_PATH ${CMAKE_C_TARGET_INCLUDE_PATH})
 SET(CMAKE_Fortran_TARGET_INCLUDE_PATH ${CMAKE_C_TARGET_INCLUDE_PATH})

@@ -88,6 +88,7 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
         c.SetNestRadiusSquared(nestRadiusSquared);
         c.SetForageRange(forageRangeX, forageRangeY);
         c.SetFoodRadiusSquared(foodRadiusSquared);
+        c.SetLoopFunctions(this);
     }
 }
 
@@ -113,7 +114,7 @@ void iAnt_loop_functions::PreStep() {
 
 		c.SetTime(simTime);
         c.SetFoodPositions(foodPositions);
-        c.SetFidelityPositions(fidelityPositions);
+        //c.SetFidelityPositions(fidelityPositions);
 
 		// if the robot has found food and isn't already holding food
 		if(c.IsFindingFood() && !c.IsHoldingFood()) {
@@ -276,12 +277,24 @@ void iAnt_loop_functions::Reset() {
 
         c.SetFoodPositions(foodPositions);
         c.SetPheromonePositions(pheromonePositions);
-        c.SetFidelityPositions(fidelityPositions);
+        //c.SetFidelityPositions(fidelityPositions);
         c.SetForageRange(forageRangeX, forageRangeY);
         c.Reset();
     }
 
     floorEntity->SetChanged();
+}
+
+vector<CVector2> iAnt_loop_functions::GetFidelityPositions() {
+    return fidelityPositions;
+}
+
+vector<CVector2> iAnt_loop_functions::GetFoodPositions() {
+    return foodPositions;
+}
+
+vector<CVector2> iAnt_loop_functions::GetPheromonePositions() {
+    return pheromonePositions;
 }
 
 /*

@@ -6,15 +6,3 @@
 
 #IncludeRegexTransform: 
 
-/home/antonio/Programming/iAnt-ARGoS/controllers/footbot_gripping/footbot_gripping.cpp
-footbot_gripping.h
-/home/antonio/Programming/iAnt-ARGoS/controllers/footbot_gripping/footbot_gripping.h
-
-/home/antonio/Programming/iAnt-ARGoS/controllers/footbot_gripping/footbot_gripping.h
-argos3/core/control_interface/ci_controller.h
--
-argos3/plugins/robots/generic/control_interface/ci_differential_steering_actuator.h
--
-argos3/plugins/robots/foot-bot/control_interface/ci_footbot_gripper_actuator.h
--
-

@@ -1,3 +1,5 @@
+12:30 argos meeting w/ Melanie
+
 possible identification code for file output
 --> 10.29.2012.1400.1337
     |--------| |--| |--|
@@ -14,33 +16,18 @@ ideas:
     -- in the future, think about adding/implementing clustering
     -- in the future, think about adding/implementing genetic algorithm
 
-finish in 4 weeks (from 1.9.15)
-
 data to collect
------> number of tags collected in x ticks (converted to 1 hour)
------> re-introduce messy positioning for pheromones/fidelity
-
-todo, demo, Jan 30, 12-2pm
+-----> re-introduce messy/clean positioning for pheromones/fidelity
+       as a toggable feature
 
 . optimize time based parameters
-. fix clustering algorithms
+. fix clustering food distribution algorithms
+    -----> they all work, however, they may still generate bugs based on invalid XML input
 . testing
     a. using argos to replicate past experiments
+    b. make graphs and data collection examples
 . streamline definition of time vs frames, etc.
-. improve distribution functions
-    1x64, max number of other piles
 . streamline classes (variables, functions, implementation)
-. speed up painting
-
-1. implement site fidelity markers
-2. Test 1: power law distribution
-   |--force on Site fidelity (siteFidelityRate = 0)
-   |--force on pheromone (siteFidelityRate = 20), (pheromoneRate = 0), (pheromoneDecayRate = 0.5)
-   |--1 robot
-3. Test 2: power law distribution
-   |--force on pheromone, sitefidelity = 20, pheromoneRate = 0, pheromoneDecay = 0
-   |--6 robots
-
 
 sitefidelity: 0 on, 20 off, from 0 to 20
 pheromoneRate:  0 always lay pheromone, 20 never lay pheromone
@@ -51,23 +38,8 @@ pheromoneDecayRate: 0 = slow decay, 1 = fast decay
         ================
 
         [1] correct pheromone placement test: disable pheromone decay (pheromoneDecayRate = 0)
-
         [2] correct pheromone laying: [1] + enable pheromone laying (pheromoneRate = 0)
-
         [3] correct pheromone following: enable pheromone following (siteFidelityRate++)
-
         [4] correct site fidelity: (siteFidelityRate = 20)
 
         NOTES: pheromoneRate and siteFidelityRate have values from 0 (on) to 20 (off)
-
-
-
-CPFA default values
-    pheromoneRate="2.24421238899231"
-    pheromoneDecayRate="0.3821808844804764"
-    travelGiveupProbability="0.2041456252336502"
-    siteFidelityRate="2.5117506980896"
-    informedSearchDecay="0.02497878670692444"/>
-    searchGiveupProbability="0.00009405957534909248"
-    angleTolerance="22.5"
-

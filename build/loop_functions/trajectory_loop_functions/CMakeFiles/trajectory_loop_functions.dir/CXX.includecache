@@ -6,6 +6,10 @@
 
 #IncludeRegexTransform: 
 
+/home/antonio/Programming/iAnt-ARGoS/loop_functions/trajectory_loop_functions/trajectory_loop_functions.cpp
+trajectory_loop_functions.h
+/home/antonio/Programming/iAnt-ARGoS/loop_functions/trajectory_loop_functions/trajectory_loop_functions.h
+
 /home/antonio/Programming/iAnt-ARGoS/loop_functions/trajectory_loop_functions/trajectory_loop_functions.h
 argos3/core/simulator/loop_functions.h
 -

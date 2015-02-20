@@ -2,6 +2,7 @@
 #define IANT_CONTROLLER_H_
 
 #include "iAnt_pheromone.h"
+#include <loop_functions/iAnt_loop_functions/iAnt_loop_functions.h>
 #include <argos3/core/control_interface/ci_controller.h>
 #include <argos3/plugins/robots/generic/control_interface/ci_differential_steering_actuator.h>
 #include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_proximity_sensor.h>
@@ -11,6 +12,8 @@
 
 using namespace argos;
 using namespace std;
+
+class iAnt_loop_functions;
 
 class iAnt_controller : public CCI_Controller {
 
@@ -38,9 +41,10 @@ class iAnt_controller : public CCI_Controller {
     /***************************************************************************
     * Robot Setter Functions
     ***************************************************************************/
+    void SetLoopFunctions(iAnt_loop_functions *lf);
     void SetFoodPositions(vector<CVector2> fp);
     void SetPheromonePositions(vector<CVector2> pp);
-    void SetFidelityPositions(vector<CVector2> fp);
+    //void SetFidelityPositions(vector<CVector2> fp);
     void SetTime(size_t t);
     void SetNestPosition(CVector2 np);
     void SetNestRadiusSquared(Real nrs);
@@ -72,8 +76,9 @@ class iAnt_controller : public CCI_Controller {
   private:
 
     /***************************************************************************
-    * Actuators and Sensors
+    * Actuators, Sensors, and connected ARGoS class objects
     ***************************************************************************/
+    iAnt_loop_functions              *loopFunctions;
     CCI_DifferentialSteeringActuator *steeringActuator;
     CCI_FootBotProximitySensor       *proximitySensor;
     CCI_PositioningSensor            *compassSensor;
@@ -97,7 +102,7 @@ class iAnt_controller : public CCI_Controller {
     CVector2         fidelityPosition;
     vector<CVector2> foodPositions;
     vector<CVector2> pheromonePositions;
-    vector<CVector2> fidelityPositions;
+    //vector<CVector2> fidelityPositions;
     iAnt_pheromone   targetPheromone;
     iAnt_pheromone   sharedPheromone;
 

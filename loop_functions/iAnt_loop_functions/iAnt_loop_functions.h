@@ -27,6 +27,11 @@ class iAnt_loop_functions : public CLoopFunctions {
         void   PostExperiment();
 		void   Reset();
 
+        /* setter/getter functions */
+        vector<CVector2> GetFidelityPositions();
+        vector<CVector2> GetFoodPositions();
+        vector<CVector2> GetPheromonePositions();
+
 	private:
 
         void SetFoodDistribution();

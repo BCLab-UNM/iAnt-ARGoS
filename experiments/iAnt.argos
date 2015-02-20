@@ -4,7 +4,7 @@
   <!-- FRAMEWORK -->
   <framework>
     <system threads="0"/>
-    <experiment length="10" ticks_per_second="16" random_seed="100"/>
+    <experiment length="3600" ticks_per_second="16" random_seed="100"/>
   </framework>
 
   <!-- CONTROLLERS -->
@@ -56,7 +56,7 @@
     <distribute>
       <position method="uniform" min="-1, -1, 0" max="1, 1, 0"/>
       <orientation method="gaussian" mean="0, 0, 0" std_dev="360, 0, 0"/>
-      <entity quantity="2" max_trials="200">
+      <entity quantity="5" max_trials="200">
         <foot-bot id="fb">
           <controller config="iAnt_c"/>
         </foot-bot>
@@ -75,7 +75,6 @@
   </media>
 
   <!-- VISUALIZATION -->
-<!--
   <visualization>
     <qt-opengl>
       <camera>
@@ -88,5 +87,5 @@
       <user_functions label="iAnt_qt_user_functions"/>
     </qt-opengl>
   </visualization>
--->
+
 </argos-configuration>

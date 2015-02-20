@@ -1,4 +1,5 @@
-link_directories(${CMAKE_BINARY_DIR}/controllers/iAnt_controller)
+link_directories(${CMAKE_BINARY_DIR}/loop_functions/iAnt_loop_functions)
+
 set(iAnt_loop_functions_SOURCES iAnt_loop_functions.cpp)
 
 if(ARGOS_COMPILE_QTOPENGL)
@@ -8,7 +9,9 @@ if(ARGOS_COMPILE_QTOPENGL)
 endif(ARGOS_COMPILE_QTOPENGL)
 
 add_library(iAnt_loop_functions MODULE ${iAnt_loop_functions_SOURCES})
-target_link_libraries(iAnt_loop_functions
+
+target_link_libraries(
+  iAnt_loop_functions
   iAnt_controller
   argos3core_simulator
   argos3plugin_simulator_actuators
@@ -20,5 +23,5 @@ target_link_libraries(iAnt_loop_functions
   argos3plugin_simulator_sensors)
 
 if(ARGOS_COMPILE_QTOPENGL)
-target_link_libraries(iAnt_loop_functions argos3plugin_simulator_qtopengl)
+  target_link_libraries(iAnt_loop_functions argos3plugin_simulator_qtopengl)
 endif(ARGOS_COMPILE_QTOPENGL)
