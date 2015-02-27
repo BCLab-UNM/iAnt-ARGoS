@@ -6,3 +6,13 @@
 
 #IncludeRegexTransform: 
 
+/home/antonio/Programming/iAnt-ARGoS/controllers/iAnt_controller/iAnt_pheromone.cpp
+iAnt_pheromone.h
+/home/antonio/Programming/iAnt-ARGoS/controllers/iAnt_controller/iAnt_pheromone.h
+
+/home/antonio/Programming/iAnt-ARGoS/controllers/iAnt_controller/iAnt_pheromone.h
+argos3/core/utility/math/vector2.h
+-
+argos3/core/utility/logging/argos_log.h
+-
+

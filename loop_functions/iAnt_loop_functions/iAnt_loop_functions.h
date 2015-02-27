@@ -11,6 +11,8 @@
 using namespace argos;
 using namespace std;
 
+class iAnt_controller;
+
 class iAnt_loop_functions : public CLoopFunctions {
 
 	public:
@@ -47,6 +49,11 @@ class iAnt_loop_functions : public CLoopFunctions {
         Real GetNestRadius();
         Real GetFoodRadius();
 
+        vector<iAnt_pheromone> UpdatePheromoneList(iAnt_controller *c);
+        vector<CVector2>       UpdatePheromonePositions(iAnt_controller *c);
+        vector<CVector2>       UpdateFoodPositions(iAnt_controller *c);
+        vector<CVector2>       UpdateFidelityPositions();
+
         TConfigurationNode     *initNode;
 		CFloorEntity           *floorEntity;        // object for the floor graphics
 		CRandom::CRNG          *RNG;                // random number generator
@@ -57,9 +64,10 @@ class iAnt_loop_functions : public CLoopFunctions {
         size_t                  ticks_per_simulation;
         size_t                  random_seed;
 
+        vector<iAnt_controller*> iAnts;
 		vector<CVector2>        foodPositions;      // food item positions on the field
-        vector<CVector2>        fidelityPositions;  // all robot site fidelity positions
         vector<CVector2>        pheromonePositions; // pheromone positions on the field
+        vector<CVector2>        fidelityPositions;  // fidelity positions on the field
 		vector<iAnt_pheromone>  pheromoneList;      // list of pheromones to share with iAnts
 		CVector2                nestPosition;       // center of the circular nest
 
@@ -71,6 +79,7 @@ class iAnt_loop_functions : public CLoopFunctions {
 		CRange<Real>            forageRangeY;       // Cartesian Y range of arena [-y, y]
 
         bool                    variableSeed;       // random seed changes after reset
+        bool                    outputData;
 		size_t                  foodDistribution;   // 0="random", 1="cluster", 2="power law"
         size_t                  numberOfClusters;
         size_t                  clusterWidthX;

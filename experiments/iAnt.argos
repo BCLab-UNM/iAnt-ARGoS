@@ -4,7 +4,7 @@
   <!-- FRAMEWORK -->
   <framework>
     <system threads="0"/>
-    <experiment length="3600" ticks_per_second="16" random_seed="100"/>
+    <experiment length="0" ticks_per_second="16" random_seed="100"/>
   </framework>
 
   <!-- CONTROLLERS -->
@@ -17,7 +17,7 @@
         <footbot_proximity implementation="default" show_rays="false"/>
         <positioning implementation="default"/>
       </sensors>
-      <params>
+      <params> <!--
         <CPFA pheromoneRate="3.74975037574768"
               pheromoneDecayRate="0.03360721096396446"
               travelGiveupProbability="0.5044407248497009"
@@ -29,7 +29,19 @@
               searchGiveupProbability="0.0009318816591985524"
               angleTolerance="22.5"
               maxRobotSpeed="16.0"
-              uninformedSearchCorrelation="13.2744146"/>
+              uninformedSearchCorrelation="13.2744146"/> -->
+        <CPFA pheromoneRate="10"
+              pheromoneDecayRate="0.01"
+              travelGiveupProbability="0.95"
+              siteFidelityRate="10"
+              informedSearchDecay="0.01"
+              searchRadius="1"
+              searchStepSize="0.08"
+              distanceTolerance="0.1"
+              searchGiveupProbability="0.0009"
+              angleTolerance="22.5"
+              maxRobotSpeed="16.0"
+              uninformedSearchCorrelation="13.25"/>
       </params>
     </iAnt_controller>
   </controllers>
@@ -37,16 +49,17 @@
   <!-- LOOP FUNCTIONS -->
   <loop_functions library="build/loop_functions/iAnt_loop_functions/libiAnt_loop_functions.so"
                   label="iAnt_loop_functions">
-    <simulation_settings     variableSeed="1"
+    <simulation_settings     variableSeed="0"
+                             outputData="0"
                              nestPosition="0.0, 0.0"
                              nestRadius="0.5"
                              foodRadius="0.05"
                              foodItemCount="0"
                              foodDistribution="2"/>
     <random_distribution_0/> <!-- no settings for this distribution -->
-    <cluster_distribution_1  numberOfClusters="1"
-                             clusterWidthX="3"
-                             clusterLengthY="3"/>
+    <cluster_distribution_1  numberOfClusters="6"
+                             clusterWidthX="6"
+                             clusterLengthY="6"/>
     <powerLaw_distribution_2 powerRank="4"/>
   </loop_functions>
 
@@ -56,12 +69,38 @@
     <distribute>
       <position method="uniform" min="-1, -1, 0" max="1, 1, 0"/>
       <orientation method="gaussian" mean="0, 0, 0" std_dev="360, 0, 0"/>
-      <entity quantity="5" max_trials="200">
+      <entity quantity="15" max_trials="200">
         <foot-bot id="fb">
           <controller config="iAnt_c"/>
         </foot-bot>
       </entity>
     </distribute>
+
+    <!--
+        We distribute 5 boxes uniformly in position and rotation around Z.
+    --><!--
+    <distribute>
+      <position method="uniform" min="-5,-5,0" max="5,5,0" />
+      <orientation method="uniform" min="0,0,0" max="360,0,0" />
+      <entity quantity="6" max_trials="100">
+        <box id="b" size="0.3,0.3,0.25" movable="false" />
+      </entity>
+    </distribute>-->
+
+    <!--
+        We distribute cylinders uniformly in position and with
+        constant rotation (rotating a cylinder around Z does not
+        matter)
+    -->
+<!--
+    <distribute>
+      <position method="uniform" min="-5,-5,0" max="5,5,0" />
+      <orientation method="constant" values="0,0,0" />
+      <entity quantity="6" max_trials="100">
+        <cylinder id="c" height="0.25" radius="0.15" movable="true" mass="10.0"/>
+      </entity>
+    </distribute>-->
+
   </arena>
 
   <!-- PHYSICS ENGINE(S) -->

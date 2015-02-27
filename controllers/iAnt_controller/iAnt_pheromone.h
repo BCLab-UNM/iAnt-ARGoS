@@ -8,7 +8,9 @@ using namespace argos;
 using namespace std;
 
 class iAnt_pheromone {
+
 	public:
+
 		iAnt_pheromone();
 		iAnt_pheromone(const iAnt_pheromone &copy);
 		iAnt_pheromone(CVector2 loc, long int tick, double decay, double w = 1.0);
@@ -28,6 +30,7 @@ class iAnt_pheromone {
         void     PrintPheromone(); // print pheromone status
 
 	private:
+
 		CVector2 location;
 		long int lastUpdated;
 		double   decayRate;

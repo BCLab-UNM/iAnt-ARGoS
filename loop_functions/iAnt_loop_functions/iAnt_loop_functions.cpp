@@ -1,6 +1,8 @@
 #include "iAnt_loop_functions.h"
 
-// (constructor) initialize class variables, Init() function contains further setup
+/******************************************************************************/
+/* Constructor */
+/******************************************************************************/
 iAnt_loop_functions::iAnt_loop_functions():
 	floorEntity(NULL),
 	RNG(NULL),
@@ -13,6 +15,7 @@ iAnt_loop_functions::iAnt_loop_functions():
 	foodRadiusSquared(0.0),
 	nestRadiusSquared(0.0),
     variableSeed(false),
+    outputData(false),
 	foodDistribution(0),
     numberOfClusters(0),
     clusterWidthX(0),
@@ -20,42 +23,38 @@ iAnt_loop_functions::iAnt_loop_functions():
     powerRank(0)
 {}
 
+/******************************************************************************/
+/* Destructor */
+/******************************************************************************/
 iAnt_loop_functions::~iAnt_loop_functions() {}
 
+/******************************************************************************/
+/* Initialization Function */
+/******************************************************************************/
 void iAnt_loop_functions::Init(TConfigurationNode& node) {
-    initNode = &node;
-
-	// initialize floor object where food and nest objects are drawn
+    initNode    = &node;
     floorEntity = &GetSpace().GetFloorEntity();
-    arenaSize = GetSpace().GetArenaSize();
+    arenaSize   =  GetSpace().GetArenaSize();
 
-    // used to build forageRangeX and forageRangeY
-    CVector2 rangeX(-arenaSize.GetX()/2.0, arenaSize.GetX()/2.0),
-             rangeY(-arenaSize.GetY()/2.0, arenaSize.GetY()/2.0);
+    CVector2 rangeX =  CVector2(-arenaSize.GetX()/2.0, arenaSize.GetX()/2.0);
+    CVector2 rangeY =  CVector2(-arenaSize.GetY()/2.0, arenaSize.GetY()/2.0);
 
-    // use these to get simulation data from other parts of the XML file
-    // outside of the loop_functions scope
-    CSimulator      *sim     = &GetSimulator();
-    CPhysicsEngine  *pEngine = &sim->GetPhysicsEngine("default");
+    CSimulator           *sim             = &GetSimulator();
+    CPhysicsEngine       *pEngine         = &sim->GetPhysicsEngine("default");
+    Real                  foodRadius      =  0.0;
+    size_t                variableSeedInt =  0;
+    size_t                outputDataInt   =  0;
 
-    Real   foodRadius;
-    size_t variableSeedInt = 0;
-
-    /*
-     * simulator.h, space.h, and loop_functions.h, (among others) have useful
-     * functions for getting at data from other parts of the XML file outside
-     * of the node's branch
-     */
     ticks_per_simulation = sim->GetMaxSimulationClock();
     random_seed          = sim->GetRandomSeed();
     ticks_per_second     = pEngine->GetInverseSimulationClockTick();
 
-    TConfigurationNode simSettings = GetNode(node, "simulation_settings"),
-                       cluster     = GetNode(node, "cluster_distribution_1"),
-                       powerLaw    = GetNode(node, "powerLaw_distribution_2");
+    TConfigurationNode simSettings = GetNode(node, "simulation_settings");
+    TConfigurationNode cluster     = GetNode(node, "cluster_distribution_1");
+    TConfigurationNode powerLaw    = GetNode(node, "powerLaw_distribution_2");
 
-    // set XML parameters to variables
     GetNodeAttribute(simSettings, "variableSeed"    , variableSeedInt  );
+    GetNodeAttribute(simSettings, "outputData"      , outputDataInt    );
     GetNodeAttribute(simSettings, "foodItemCount"   , foodItemCount    );
     GetNodeAttribute(simSettings, "foodDistribution", foodDistribution );
     GetNodeAttribute(simSettings, "nestPosition"    , nestPosition     );
@@ -66,29 +65,34 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
     GetNodeAttribute(cluster    , "clusterLengthY"  , clusterLengthY   );
     GetNodeAttribute(powerLaw   , "powerRank"       , powerRank        );
 
-    variableSeed = (variableSeedInt == 1) ? (true) : (false);
+    RNG                = CRandom::CreateRNG("argos");
+    variableSeed       = (variableSeedInt == 1) ? (true) : (false);
+    outputData         = (outputDataInt == 1)   ? (true) : (false);
 	nestRadiusSquared *= nestRadiusSquared;
-	foodRadiusSquared = foodRadius * foodRadius;
+	foodRadiusSquared  = foodRadius * foodRadius;
+
     forageRangeX.Set(rangeX.GetX(), rangeX.GetY());
     forageRangeY.Set(rangeY.GetX(), rangeY.GetY());
-    RNG = CRandom::CreateRNG("argos");
 
     SetFoodDistribution();
 
-    // get the footbot entities
     CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
+    CSpace::TMapPerType::iterator it;
 
-    // and set the footbot's nest location and food item positions
-    for(CSpace::TMapPerType::iterator it = footbots.begin(); it != footbots.end(); it++) {
+    for(it = footbots.begin(); it != footbots.end(); it++) {
         CFootBotEntity& footBot = *any_cast<CFootBotEntity*>(it->second);
-        iAnt_controller& c = dynamic_cast<iAnt_controller&>(footBot.GetControllableEntity().GetController());
+        iAnt_controller& c = dynamic_cast<iAnt_controller&>
+                             (footBot.GetControllableEntity().GetController());
 
         c.SetFoodPositions(foodPositions);
         c.SetNestPosition(nestPosition);
         c.SetNestRadiusSquared(nestRadiusSquared);
         c.SetForageRange(forageRangeX, forageRangeY);
         c.SetFoodRadiusSquared(foodRadiusSquared);
+        c.SetFramesPerSecond(ticks_per_second);
         c.SetLoopFunctions(this);
+
+        iAnts.push_back(&c);
     }
 }
 
@@ -96,143 +100,49 @@ CColor iAnt_loop_functions::GetFloorColor(const CVector2& position) {
     return CColor::WHITE;
 }
 
-// this function is called BEFORE the ControlStep() function in the controller class
 void iAnt_loop_functions::PreStep() {
-    bool setChanged = false;
+    size_t framesPerHalfSecond = (ticks_per_second / 2);
+    simTime++;
 
-	// container for all available foot-bot controller objects
-    CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
+    for(size_t i = 0; i < iAnts.size(); i++) {
+		iAnts[i]->SetTime(simTime);
+        iAnts[i]->SetFoodPositions(foodPositions);
 
-    simTime++; // increment the frame variable
+        if(simTime % framesPerHalfSecond == 0) {
+            string CPFA_ID = iAnts[i]->Get_CPFA_ID();
 
-	for(CSpace::TMapPerType::iterator it = footbots.begin(); it != footbots.end(); it++) {
-	    // variable for the current foot-bot
-	    CFootBotEntity& footBot = *any_cast<CFootBotEntity*>(it->second);
-
-	    // variable for the current foot-bot's controller object
-		iAnt_controller& c = dynamic_cast<iAnt_controller&>(footBot.GetControllableEntity().GetController());
-
-		c.SetTime(simTime);
-        c.SetFoodPositions(foodPositions);
-        //c.SetFidelityPositions(fidelityPositions);
-
-		// if the robot has found food and isn't already holding food
-		if(c.IsFindingFood() && !c.IsHoldingFood()) {
-			vector<CVector2>::iterator i;
-
-			// check each food item position to see if the foot-bot found food
-            for(i = foodPositions.begin(); i != foodPositions.end(); i++) {
-                // if the foot-bot is within range of a food item
-                if((c.GetPosition() - *i).SquareLength() < foodRadiusSquared) {
-                    // pick up the food item and update foodData variables
-        	    	c.PickupFood();
-        	    	if(c.GetTargetPheromone().IsActive() == true) {
-
-                        // clean pheromone placement
-                        //pheromoneList.push_back(iAnt_pheromone((*i),
-                        //                        c.GetTargetPheromone().LastUpdated(),
-                        //                        c.GetTargetPheromone().DecayRate(),
-                        //                        c.GetTargetPheromone().Weight()));
-
-                        // messy pheromone placement
-                        pheromoneList.push_back(c.GetTargetPheromone());
-
-                        fidelityPositions.push_back(c.GetTargetPheromone().Location());
-                    }
-                    foodPositions.erase(i);
-                    setChanged = true;
-                    break;
+		    if(iAnts[i]->IsFindingFood() && !iAnts[i]->IsHoldingFood()) {
+                if(CPFA_ID == "SEARCHING") {
+                    foodPositions = UpdateFoodPositions(iAnts[i]);
                 }
-            }
-	    } else if(c.IsInTheNest() && c.IsHoldingFood()) {
-	    	c.DropOffFood();
-
-	    	/* needs to be weighted random selection from pheromone */
-	    	double maxStrength = 0.0;
-
-	    	for(size_t i = 0; i < pheromoneList.size(); i++) {
-                pheromoneList[i].Update(simTime);
-                if(pheromoneList[i].IsActive() == true) {
-                    maxStrength += pheromoneList[i].Weight();
-                }
-	    	}
-
-	    	double randomWeight = RNG->Uniform(CRange<double>(0.0, maxStrength));
-
-			vector<iAnt_pheromone>::iterator i;
-
-            for(i = pheromoneList.begin(); i != pheromoneList.end(); i++) {
-	    		if(randomWeight < i->Weight() && i->IsActive() == true) {
-	    			c.SetTargetPheromone(*i);
-                    setChanged = true;
-	    			break;
-	    		}
-
-	    		randomWeight -= i->Weight();
-	    	}
-        }
-
-        for(size_t i = 0; i < pheromoneList.size(); i++) {
-            if(pheromoneList[i].IsActive() == true) {
-                pheromonePositions.push_back(pheromoneList[i].Location());
+	        } else if(iAnts[i]->IsInTheNest() && iAnts[i]->IsHoldingFood()) {
+                pheromoneList = UpdatePheromoneList(iAnts[i]);
+                pheromonePositions = UpdatePheromonePositions(iAnts[i]);
             }
         }
-
-        c.SetPheromonePositions(pheromonePositions);
     }
 
-    fidelityPositions.clear();
-    pheromonePositions.clear();
-
-    if(setChanged == true) floorEntity->SetChanged();
+    fidelityPositions = UpdateFidelityPositions();
 }
 
 void iAnt_loop_functions::PostStep() {
-    CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
-
-	for(CSpace::TMapPerType::iterator it = footbots.begin(); it != footbots.end(); ++it) {
-	    // variable for the current foot-bot
-	    CFootBotEntity& footBot = *any_cast<CFootBotEntity*>(it->second);
-
-	    // variable for the current foot-bot's controller object
-		iAnt_controller& c = dynamic_cast<iAnt_controller&>(footBot.GetControllableEntity().GetController());
-
-        c.SetFoodPositions(foodPositions);
-    }
-
-    if(foodPositions.size() == 0) {
-        pheromoneList.clear();
-    }
+    // ;-(
 }
 
-
-/**
- * Returns <tt>true</tt> if the experiment is finished.
- * This method allows the user to specify experiment-specific ending conditions.
- * The default implementation of this method returns always <tt>false</tt>.
- * This means that the only ending conditions for an experiment are time limit
- * expiration or GUI shutdown.
- * @return <tt>true</tt> if the experiment is finished.
- * @see CSimulator::IsExperimentFinished()
- */
 bool iAnt_loop_functions::IsExperimentFinished() {
-    if(foodPositions.size() == 0) {
-        return true;
+    if(foodPositions.size() > 0) return false;
+
+    for(size_t i = 0; i < iAnts.size(); i++) {
+        if(iAnts[i]->IsHoldingFood() == true) return false;
+        if(iAnts[i]->IsInTheNest() == false) return false;
     }
 
-    return false;
+    return true;
 }
 
-/**
- * Executes user-defined logic when the experiment finishes.
- * This method is called within CSimulator::IsExperimentFinished()
- * as soon as its return value evaluates to <tt>true</tt>. This
- * method is executed before Destroy().
- * You can use this method to perform final calculations at the
- * end of an experiment.
- * The default implementation of this method does nothing.
- */
 void iAnt_loop_functions::PostExperiment() {
+    if(outputData == false) return;
+
     ofstream dataOutput("iAntTagData.txt", ios::app);
     size_t time_in_minutes = floor(floor(simTime / ticks_per_second) / 60);
 
@@ -260,29 +170,24 @@ void iAnt_loop_functions::PostExperiment() {
     }
 
     simCounter++;
-    foodPositions.clear();
-    pheromoneList.clear();
-    if(variableSeed) GetSimulator().SetRandomSeed(++random_seed);
 }
 
 
 void iAnt_loop_functions::Reset() {
-    CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
+    if(variableSeed) GetSimulator().SetRandomSeed(++random_seed);
+
     simTime = 0;
+    foodPositions.clear();
+    pheromoneList.clear();
+    pheromonePositions.clear();
     SetFoodDistribution();
 
-    for(CSpace::TMapPerType::iterator it = footbots.begin(); it != footbots.end(); it++) {
-        CFootBotEntity& footBot = *any_cast<CFootBotEntity*>(it->second);
-        iAnt_controller& c = dynamic_cast<iAnt_controller&>(footBot.GetControllableEntity().GetController());
-
-        c.SetFoodPositions(foodPositions);
-        c.SetPheromonePositions(pheromonePositions);
-        //c.SetFidelityPositions(fidelityPositions);
-        c.SetForageRange(forageRangeX, forageRangeY);
-        c.Reset();
+    for(size_t i = 0; i < iAnts.size(); i++) {
+        iAnts[i]->SetFoodPositions(foodPositions);
+        iAnts[i]->SetPheromonePositions(pheromonePositions);
+        iAnts[i]->SetForageRange(forageRangeX, forageRangeY);
+        iAnts[i]->Reset();
     }
-
-    floorEntity->SetChanged();
 }
 
 vector<CVector2> iAnt_loop_functions::GetFidelityPositions() {
@@ -297,13 +202,10 @@ vector<CVector2> iAnt_loop_functions::GetPheromonePositions() {
     return pheromonePositions;
 }
 
-/*
- * foodDistribution is set in the XML file
- * random    = 0
- * cluster   = 1
- * power law = 2
- *
- */
+/*******************************************************************************
+* foodDistribution is set in the XML file
+* random = 0, cluster = 1, power law = 2
+*******************************************************************************/
 void iAnt_loop_functions::SetFoodDistribution() {
     switch(foodDistribution) {
         case 0:
@@ -385,8 +287,7 @@ void iAnt_loop_functions::ClusterFoodDistribution() {
         }
     }
 
-    if(foodItemCount > foodToPlace) RandomFoodDistribution(foodItemCount - foodToPlace);
-    if(foodToPlace > foodItemCount) foodItemCount = foodToPlace;
+    if(foodToPlace > 0) RandomFoodDistribution(foodToPlace);
 }
 
 void iAnt_loop_functions::PowerLawFoodDistribution() {
@@ -491,6 +392,91 @@ Real iAnt_loop_functions::GetNestRadius() {
 
 Real iAnt_loop_functions::GetFoodRadius() {
     return sqrt(foodRadiusSquared);
+}
+
+vector<iAnt_pheromone> iAnt_loop_functions::UpdatePheromoneList(iAnt_controller *c) {
+    vector<iAnt_pheromone> newPheromoneList;
+	double                 maxStrength      = 0.0;
+
+    c->DropOffFood();
+
+	for(size_t i = 0; i < pheromoneList.size(); i++) {
+        pheromoneList[i].Update(simTime);
+
+        if(pheromoneList[i].IsActive() == true) {
+            maxStrength += pheromoneList[i].Weight();
+            newPheromoneList.push_back(pheromoneList[i]);
+        }
+    }
+
+    double randomWeight = RNG->Uniform(CRange<double>(0.0, maxStrength));
+
+    vector<iAnt_pheromone>::iterator i;
+
+    for(i = pheromoneList.begin(); i != pheromoneList.end(); i++) {
+	    if(randomWeight < i->Weight() && i->IsActive() == true) {
+	    	c->SetTargetPheromone(*i);
+	    	break;
+	    }
+
+        randomWeight -= i->Weight();
+    }
+
+    return newPheromoneList;
+}
+
+vector<CVector2> iAnt_loop_functions::UpdatePheromonePositions(iAnt_controller *c) {
+    vector<CVector2> newPheromones;
+    CVector2 p;
+
+    for(size_t i = 0; i < pheromoneList.size(); i++) {
+        p = pheromoneList[i].Location();
+
+        if(pheromoneList[i].IsActive() == true) {
+            bool duplicate = false;
+
+            for(size_t j = 0; j < newPheromones.size(); j++) {
+                if(newPheromones[j] == p) duplicate = true;
+            }
+
+            if(duplicate == false) newPheromones.push_back(p);
+        }
+    }
+
+    c->SetPheromonePositions(pheromonePositions);
+
+    return newPheromones;
+}
+
+vector<CVector2> iAnt_loop_functions::UpdateFoodPositions(iAnt_controller *c) {
+    vector<CVector2> newFoodPositions;
+    CVector2         p = c->GetPosition();
+    CVector2         f;
+
+    for(size_t i = 0; i < foodPositions.size(); i++) {
+        f = foodPositions[i];
+
+        if((p - f).SquareLength() < foodRadiusSquared) {
+            c->PickupFood();
+        }
+        else newFoodPositions.push_back(f);
+    }
+
+    if(c->GetSharedPheromone().IsActive() == true) {
+        pheromoneList.push_back(c->GetSharedPheromone());
+    }
+
+    return newFoodPositions;
+}
+
+vector<CVector2> iAnt_loop_functions::UpdateFidelityPositions() {
+    vector<CVector2> newFidelityPositions;
+
+    for(size_t i = 0; i < iAnts.size(); i++) {
+        newFidelityPositions.push_back(iAnts[i]->GetFidelityPosition());
+    }
+
+    return newFidelityPositions;
 }
 
 REGISTER_LOOP_FUNCTIONS(iAnt_loop_functions, "iAnt_loop_functions")

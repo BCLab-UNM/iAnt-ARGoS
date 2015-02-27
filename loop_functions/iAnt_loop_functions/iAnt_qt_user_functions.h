@@ -12,27 +12,22 @@ class iAnt_qt_user_functions : public CQTOpenGLUserFunctions {
 
 private:
 
-    Real             foodRadius;
-    Real             nestRadius;
-    vector<CVector2> fidelityPositions;
-    vector<CVector2> pheromonePositions;
-    vector<CVector2> foodPositions;
-    CVector2         nestPosition;
+    Real                 foodRadius;
+    Real                 nestRadius;
+    vector<CVector2>     fidelityPositions;
+    vector<CVector2>     pheromonePositions;
+    vector<CVector2>     foodPositions;
+    CVector2             nestPosition;
+    iAnt_loop_functions *loopFunctions;
 
-    bool             IsInFoodVector(CVector2 p);
-    void             UpdateDrawInWorldData(iAnt_controller& c);
+    void                 UpdateDrawInWorldData(iAnt_controller& c);
 
 public:
 
-    // constructor
     iAnt_qt_user_functions();
-
-    // destructor
     ~iAnt_qt_user_functions() {}
 
-    // draw function for adding graphics to a foot-bot
     void DrawFood(CFootBotEntity& entity);
-
     void DrawInWorld();
 };
 

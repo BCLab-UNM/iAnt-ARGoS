@@ -23,20 +23,23 @@ class iAnt_controller : public CCI_Controller {
     * Constructor And Destructor Functions
     ***************************************************************************/
     iAnt_controller();
-    ~iAnt_controller();
+    ~iAnt_controller() {}
 
     /***************************************************************************
     * Robot Status Check Functions
     ***************************************************************************/
-    bool IsInTheNest();
-    bool IsFindingFood();
-    bool IsHoldingFood();
+    bool   IsInTheNest();
+    bool   IsFindingFood();
+    bool   IsHoldingFood();
+    bool   IsInformed();
+    string Get_CPFA_ID();
 
     /***************************************************************************
     * Robot Action Functions
     ***************************************************************************/
     void PickupFood();
     void DropOffFood();
+    void SetInformed(bool i);
 
     /***************************************************************************
     * Robot Setter Functions
@@ -44,8 +47,9 @@ class iAnt_controller : public CCI_Controller {
     void SetLoopFunctions(iAnt_loop_functions *lf);
     void SetFoodPositions(vector<CVector2> fp);
     void SetPheromonePositions(vector<CVector2> pp);
-    //void SetFidelityPositions(vector<CVector2> fp);
+    void SetFidelityPositions(vector<CVector2> fp);
     void SetTime(size_t t);
+    void SetFramesPerSecond(size_t fps);
     void SetNestPosition(CVector2 np);
     void SetNestRadiusSquared(Real nrs);
     void SetFoodRadiusSquared(Real frs);
@@ -63,7 +67,8 @@ class iAnt_controller : public CCI_Controller {
     vector<CVector2> GetFoodPositions();
     vector<CVector2> GetPheromonePositions();
     vector<CVector2> GetFidelityPositions();
-    iAnt_pheromone   GetTargetPheromone();
+    iAnt_pheromone   GetSharedPheromone();
+    iAnt_loop_functions* GetLoopFunctions();
 
     /***************************************************************************
     * CCI_Controller Inherited Functions
@@ -71,27 +76,27 @@ class iAnt_controller : public CCI_Controller {
     void Init(TConfigurationNode& node);
     void ControlStep();
     void Reset();
-    void Destroy();
 
   private:
 
     /***************************************************************************
-    * Actuators, Sensors, and connected ARGoS class objects
+    * Actuators, Sensors, and ARGoS Classes
     ***************************************************************************/
-    iAnt_loop_functions              *loopFunctions;
     CCI_DifferentialSteeringActuator *steeringActuator;
     CCI_FootBotProximitySensor       *proximitySensor;
     CCI_PositioningSensor            *compassSensor;
+    iAnt_loop_functions              *loopFunctions;
 
     /***************************************************************************
     * Robot Status Variables
     ***************************************************************************/
-    bool   holdingFood;
-    bool   informed;
+    bool   isHoldingFood;
+    bool   isInformed;
     size_t resourceDensity;
     size_t collisionDelay;
     size_t simTime;
     size_t searchTime;
+    size_t framesPerSecond;
     Real   maxRobotSpeed;
 
     /***************************************************************************
@@ -102,7 +107,7 @@ class iAnt_controller : public CCI_Controller {
     CVector2         fidelityPosition;
     vector<CVector2> foodPositions;
     vector<CVector2> pheromonePositions;
-    //vector<CVector2> fidelityPositions;
+    vector<CVector2> fidelityPositions;
     iAnt_pheromone   targetPheromone;
     iAnt_pheromone   sharedPheromone;
 
@@ -130,7 +135,7 @@ class iAnt_controller : public CCI_Controller {
     Real     pheromoneDecayRate;
     CRadians uninformedSearchCorrelation;
 
-    enum CPFA { INACTIVE, DEPARTING, SEARCHING, RETURNING } CPFA;
+    enum CPFA { INACTIVE, DEPARTING, SEARCHING, RETURNING, SHUTDOWN } CPFA;
 
     /***************************************************************************
     * CPFA Functions
@@ -139,6 +144,7 @@ class iAnt_controller : public CCI_Controller {
     void departing();
     void searching();
     void returning();
+    void shutdown();
 
     /***************************************************************************
     * CPFA And Navigation Helper Functions
@@ -146,7 +152,8 @@ class iAnt_controller : public CCI_Controller {
     bool     IsCollisionDetected();
     void     SetLocalResourceDensity();
     void     SetRandomSearchLocation();
-    void     SetWheelSpeed();
+    void     SetRobotMotors();
+    void     SetTargetPosition(CVector2 p);
     CVector2 SetPositionInBounds(CVector2 p);
     CRadians GetRobotHeading();
     Real     GetExponentialDecay(Real quantity, Real time, Real lambda);
