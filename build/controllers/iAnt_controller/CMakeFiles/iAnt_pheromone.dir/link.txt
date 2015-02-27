@@ -1,1 +1,0 @@
-/usr/bin/c++  -fPIC -Wall -Werror   -shared -Wl,-soname,libiAnt_pheromone.so -o libiAnt_pheromone.so CMakeFiles/iAnt_pheromone.dir/iAnt_pheromone.cpp.o  -L/usr/lib/argos3  -L/home/antonio/Programming/iAnt-ARGoS/build/controllers/iAnt_controller 

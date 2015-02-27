@@ -9,7 +9,7 @@
 
   <!-- CONTROLLERS -->
   <controllers>
-    <iAnt_controller id="iAnt_c" library="build/controllers/iAnt_controller/libiAnt_controller.so">
+    <iAnt_controller id="iAnt_c" library="build/controllers/libiAnt_controller.so">
       <actuators>
         <differential_steering implementation="default"/>
       </actuators>
@@ -17,19 +17,7 @@
         <footbot_proximity implementation="default" show_rays="false"/>
         <positioning implementation="default"/>
       </sensors>
-      <params> <!--
-        <CPFA pheromoneRate="3.74975037574768"
-              pheromoneDecayRate="0.03360721096396446"
-              travelGiveupProbability="0.5044407248497009"
-              siteFidelityRate="4.26935863494873"
-              informedSearchDecay="0.2838849127292633"
-              searchRadius="1"
-              searchStepSize="0.08"
-              distanceTolerance="0.1"
-              searchGiveupProbability="0.0009318816591985524"
-              angleTolerance="22.5"
-              maxRobotSpeed="16.0"
-              uninformedSearchCorrelation="13.2744146"/> -->
+      <params>
         <CPFA pheromoneRate="10"
               pheromoneDecayRate="0.01"
               travelGiveupProbability="0.95"
@@ -38,7 +26,7 @@
               searchRadius="1"
               searchStepSize="0.08"
               distanceTolerance="0.1"
-              searchGiveupProbability="0.0009"
+              searchGiveupProbability="0.000001"
               angleTolerance="22.5"
               maxRobotSpeed="16.0"
               uninformedSearchCorrelation="13.25"/>
@@ -47,7 +35,7 @@
   </controllers>
 
   <!-- LOOP FUNCTIONS -->
-  <loop_functions library="build/loop_functions/iAnt_loop_functions/libiAnt_loop_functions.so"
+  <loop_functions library="build/loop_functions/libiAnt_loop_functions.so"
                   label="iAnt_loop_functions">
     <simulation_settings     variableSeed="0"
                              outputData="0"
@@ -69,7 +57,7 @@
     <distribute>
       <position method="uniform" min="-1, -1, 0" max="1, 1, 0"/>
       <orientation method="gaussian" mean="0, 0, 0" std_dev="360, 0, 0"/>
-      <entity quantity="15" max_trials="200">
+      <entity quantity="5" max_trials="200">
         <foot-bot id="fb">
           <controller config="iAnt_c"/>
         </foot-bot>

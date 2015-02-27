@@ -1,13 +1,13 @@
-include_directories(${CMAKE_SOURCE_DIR})
+# Add the iAnt controller library
+add_library(iAnt_controller SHARED iAnt_controller.cpp)
 
-add_subdirectory(footbot_diffusion)
-add_subdirectory(footbot_synchronization)
-add_subdirectory(footbot_flocking)
-add_subdirectory(footbot_gripping)
-add_subdirectory(footbot_foraging)
-add_subdirectory(iAnt_controller)
+# Add the iAnt pheromone library
+add_library(iAnt_pheromone SHARED iAnt_pheromone.cpp)
 
-# Compile the neural network controllers only if GALIB was found
-if(GALIB_FOUND)
-  add_subdirectory(footbot_nn)
-endif(GALIB_FOUND)
+# Link the controller and pheromone libraries to ARGoS
+# Additionally, we link into the generic robot and footbot libraries
+#               in order to make use of sensors and actuators
+target_link_libraries(iAnt_controller
+                      iAnt_pheromone
+                      argos3plugin_simulator_genericrobot
+                      argos3plugin_simulator_footbot)

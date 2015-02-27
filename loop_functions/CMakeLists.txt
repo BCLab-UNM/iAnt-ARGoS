@@ -1,16 +1,7 @@
-include_directories(${CMAKE_SOURCE_DIR})
+# Add the loop functions and qt user functions library
+add_library(iAnt_loop_functions SHARED iAnt_loop_functions.cpp
+                                       iAnt_qt_user_functions.cpp)
 
-# Descend into the foraging_loop_functions directory
-add_subdirectory(foraging_loop_functions)
-add_subdirectory(iAnt_loop_functions)
-
-# If Qt+OpenGL dependencies were found, descend into the
-# trajectory_loop_functions directory
-if(ARGOS_COMPILE_QTOPENGL)
-  add_subdirectory(trajectory_loop_functions)
-endif(ARGOS_COMPILE_QTOPENGL)
-
-# If GALIB was found, also descend into evolution_loop_functions
-if(GALIB_FOUND)
-  add_subdirectory(evolution_loop_functions)
-endif(GALIB_FOUND)
+# Link the loop functions library to the controller
+target_link_libraries(iAnt_loop_functions
+                      iAnt_controller)
