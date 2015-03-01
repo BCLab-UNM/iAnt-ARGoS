@@ -60,7 +60,6 @@ Once ARGoS is installed on your system. You can download the files in this repo,
   $ cmake ..                                # setup compilation with cmake
   $ make                                    # compile the iAnt CPFA code
   $ cd ..                                   # get out of the build directory
-  $ argos3 -c experiments/diffusion_1.argos # launch experiment
   ```
 
 3. Launch ARGoS with the XML configuration file for your system:
