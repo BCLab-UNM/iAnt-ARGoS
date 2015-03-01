@@ -6,13 +6,14 @@ ARGoS (Autonomous Robots Go Swarming) is a multi-physics robot simulator. iAnt-A
 
 In order to use the iAnt CPFA in ARGoS, you must first install ARGoS on your system then download and compile the code in this repo to run with ARGoS.
 
-#####Installing ARGoS
+#####1. Installing ARGoS
 
-ARGoS is available for Linux and Macintosh systems. It is currently not supported on Windows. Detailed installation instructions can be found here: http://www.argos-sim.info/user_manual.php
+ARGoS is available for Linux and Macintosh systems. It is currently not supported on Windows. Detailed installation instructions can be found on the ARGoS website: http://www.argos-sim.info/user_manual.php.
 
-######Installing on Linux
+######Linux Installation
+######Macintosh Installation
 
-#####Compiling and Running the iAnt CPFA in ARGoS
+#####2. Compiling and Running the iAnt CPFA in ARGoS
 
 TODO
 
