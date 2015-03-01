@@ -39,13 +39,17 @@ void iAnt_qt_user_functions::DrawInWorld() {
 
     CVector3 np(nestPosition.GetX(), nestPosition.GetY(), 0.001f);
     Real height = foodRadius / 2.0;
+
+#ifdef __APPLE__
     CQuaternion q;
+#endif
 
     // draw the nest
-    /* works on linux, not on Mac (beta 28 of argos) */
-    //DrawCircle(nestRadius, np, CColor::GRAY80);
-    /* new declaration for Mac (beta 30 of argos) */
+#ifdef __APPLE__
     DrawCircle(np, q, nestRadius, CColor::GRAY80);
+#else
+    DrawCircle(nestRadius, np, CColor::GRAY80);
+#endif
     
     if(foodPositions.size() > 0) {
         Real x, y;
@@ -57,8 +61,11 @@ void iAnt_qt_user_functions::DrawInWorld() {
             y = foodPositions[i].GetY();
             p3d = CVector3(x, y, 0.0);
 
-            //DrawCylinder(foodRadius, height, const CVector3(p3d), CColor::BLACK);
+#ifdef __APPLE__
             DrawCylinder(p3d, q, foodRadius, height, CColor::BLACK);
+#else
+            DrawCylinder(foodRadius, height, const CVector3(p3d), CColor::BLACK);
+#endif
         }
 
         // draw the pheromone positions
@@ -67,9 +74,12 @@ void iAnt_qt_user_functions::DrawInWorld() {
                 x = pheromonePositions[i].GetX();
                 y = pheromonePositions[i].GetY();
                 p3d = CVector3(x, y, 0.0);
-                
-                //DrawCylinder(foodRadius, height, const CVector3(p3d), CColor::RED);
+
+#ifdef __APPLE__
                 DrawCylinder(p3d, q, foodRadius, height, CColor::RED);
+#else
+                DrawCylinder(foodRadius, height, const CVector3(p3d), CColor::RED);
+#endif
             }
         }
 
@@ -80,8 +90,11 @@ void iAnt_qt_user_functions::DrawInWorld() {
                 y = fidelityPositions[i].GetY();
                 p3d = CVector3(x, y, 0.0);
 
-                //DrawCylinder(foodRadius, height, const CVector3(p3d), CColor::BLUE);
+#ifdef __APPLE__
                 DrawCylinder(p3d, q, foodRadius, height, CColor::BLUE);
+#else
+                DrawCylinder(foodRadius, height, const CVector3(p3d), CColor::BLUE);
+#endif
             }
         }
     }
