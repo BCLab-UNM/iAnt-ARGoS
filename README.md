@@ -55,11 +55,11 @@ Once ARGoS is installed on your system. You can download the files in this repo,
 
 2. From the Terminal, use the following commands to compile the iAnt CPFA code:
   ```
-  $ cd iAnt-ARGoS-master                    # go into the iAnt-ARGoS directory
-  $ cd build                                # go into the build directory
-  $ cmake ..                                # setup compilation with cmake
-  $ make                                    # compile the iAnt CPFA code
-  $ cd ..                                   # get out of the build directory
+  $ cd iAnt-ARGoS-master  # go into the iAnt-ARGoS directory
+  $ cd build              # go into the build directory
+  $ cmake ..              # setup compilation with cmake
+  $ make                  # compile the iAnt CPFA code
+  $ cd ..                 # get out of the build directory
   ```
 
 3. Launch ARGoS with the XML configuration file for your system:
