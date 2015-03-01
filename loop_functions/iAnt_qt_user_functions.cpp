@@ -27,8 +27,11 @@ void iAnt_qt_user_functions::DrawFood(CFootBotEntity& entity) {
     UpdateDrawInWorldData(c);
 
     if(c.IsHoldingFood() == true) {
-        //DrawCylinder(0.05f, 0.025f, CVector3(0.0f, 0.0f, 0.3f), CColor::BLACK);
+#ifdef __APPLE__
         DrawCylinder(CVector3(0.0f, 0.0f, 0.3f), CQuaternion(), 0.05f, 0.025f, CColor::BLACK);
+#else
+        DrawCylinder(0.05f, 0.025f, CVector3(0.0f, 0.0f, 0.3f), CColor::BLACK);
+#endif
     }
 }
 
@@ -64,7 +67,7 @@ void iAnt_qt_user_functions::DrawInWorld() {
 #ifdef __APPLE__
             DrawCylinder(p3d, q, foodRadius, height, CColor::BLACK);
 #else
-            DrawCylinder(foodRadius, height, const CVector3(p3d), CColor::BLACK);
+            DrawCylinder(foodRadius, height, p3d, CColor::BLACK);
 #endif
         }
 
@@ -78,7 +81,7 @@ void iAnt_qt_user_functions::DrawInWorld() {
 #ifdef __APPLE__
                 DrawCylinder(p3d, q, foodRadius, height, CColor::RED);
 #else
-                DrawCylinder(foodRadius, height, const CVector3(p3d), CColor::RED);
+                DrawCylinder(foodRadius, height, p3d, CColor::RED);
 #endif
             }
         }
@@ -93,7 +96,7 @@ void iAnt_qt_user_functions::DrawInWorld() {
 #ifdef __APPLE__
                 DrawCylinder(p3d, q, foodRadius, height, CColor::BLUE);
 #else
-                DrawCylinder(foodRadius, height, const CVector3(p3d), CColor::BLUE);
+                DrawCylinder(foodRadius, height, p3d, CColor::BLUE);
 #endif
             }
         }
