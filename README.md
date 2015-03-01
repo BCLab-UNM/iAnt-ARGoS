@@ -10,7 +10,7 @@ In order to use the iAnt CPFA in ARGoS, you must first install ARGoS on your sys
 
 ARGoS is available for Linux and Macintosh systems. It is currently not supported on Windows. Detailed installation instructions can be found here: http://www.argos-sim.info/user_manual.php
 
-#######Installing on Linux
+######Installing on Linux
 
 #####Compiling and Running the iAnt CPFA in ARGoS
 
