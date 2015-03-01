@@ -14,10 +14,10 @@ http://www.argos-sim.info/user_manual.php
 ######Linux Installation
 
 1. Download the appropriate binary package for your Linux system.
-    http://www.argos-sim.info/core.php
+  * http://www.argos-sim.info/core.php
 2. In Terminal, run the following command:
-    For Ubuntu and KUbuntu: $ sudo dpkg -i argos3_simulator-*.deb
-    For OpenSuse: $ sudo rpm -i argos3_simulator-*.rpm
+  * For Ubuntu and KUbuntu: $ sudo dpkg -i argos3_simulator-*.deb
+  * For OpenSuse: $ sudo rpm -i argos3_simulator-*.rpm
 
 ######Macintosh Installation
 
