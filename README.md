@@ -15,13 +15,13 @@ ARGoS is available for Linux and Macintosh systems. It is currently not supporte
 1. Download the appropriate binary package for your Linux system [here](http://www.argos-sim.info/core.php).
 2. In Terminal, run the following command in the directory of your installation file:
   * for Ubuntu and KUbuntu: ```$ sudo dpkg -i argos3_simulator-*.deb```
-  * for OpenSuse:           ```$ sudo rpm -i argos3_simulator-*.rpm```
+  * for OpenSuse: ```$ sudo rpm -i argos3_simulator-*.rpm```
 
 ######Macintosh Installation
 
 1. For quick and easy installation, the Mac OSX installation of ARGoS requires Homebrew.
   * If you don't have it, install the Homebrew Package Manager by using the following command in Terminal.
-    - $ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+```$ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"```
 2. Obtain the Homebrew Tap for ARGoS using the following command in Terminal.
   * $ brew tap ilpincy/argos3
 3. Once tapped, install ARGoS with the following command in Terminal. ARGoS and its required dependencies will be downloaded and installed using Homebrew.
