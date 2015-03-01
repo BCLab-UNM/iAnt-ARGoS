@@ -53,8 +53,8 @@ TODO
 
 ###Useful Links
 
-| Description                                | Website                             |
-|--------------------------------------------|-------------------------------------|
-| official ARGoS website and documentation   | http://www.argos-sim.info/          |
-| homebrew utility for Mac OSX installations | http://brew.sh/                     |
-| cmake utility information                  | http://www.cmake.org/documentation/ |
+| Description                                 | Website                             |
+|:--------------------------------------------|:------------------------------------|
+| official ARGoS website and documentation    | http://www.argos-sim.info/          |
+| homebrew utility for Mac OSX installations  | http://brew.sh/                     |
+| cmake utility information                   | http://www.cmake.org/documentation/ |
