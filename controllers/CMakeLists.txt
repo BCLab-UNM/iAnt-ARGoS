@@ -9,5 +9,6 @@ add_library(iAnt_pheromone SHARED iAnt_pheromone.cpp)
 #               in order to make use of sensors and actuators
 target_link_libraries(iAnt_controller
                       iAnt_pheromone
+                      argos3core_simulator
                       argos3plugin_simulator_genericrobot
                       argos3plugin_simulator_footbot)

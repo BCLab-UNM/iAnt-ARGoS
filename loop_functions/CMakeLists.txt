@@ -4,4 +4,5 @@ add_library(iAnt_loop_functions SHARED iAnt_loop_functions.cpp
 
 # Link the loop functions library to the controller
 target_link_libraries(iAnt_loop_functions
-                      iAnt_controller)
+                      iAnt_controller
+                      argos3plugin_simulator_qtopengl)

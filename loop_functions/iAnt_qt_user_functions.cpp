@@ -27,7 +27,8 @@ void iAnt_qt_user_functions::DrawFood(CFootBotEntity& entity) {
     UpdateDrawInWorldData(c);
 
     if(c.IsHoldingFood() == true) {
-        DrawCylinder(0.05f, 0.025f, CVector3(0.0f, 0.0f, 0.3f), CColor::BLACK);
+        //DrawCylinder(0.05f, 0.025f, CVector3(0.0f, 0.0f, 0.3f), CColor::BLACK);
+        DrawCylinder(CVector3(0.0f, 0.0f, 0.3f), CQuaternion(), 0.05f, 0.025f, CColor::BLACK);
     }
 }
 
@@ -38,10 +39,14 @@ void iAnt_qt_user_functions::DrawInWorld() {
 
     CVector3 np(nestPosition.GetX(), nestPosition.GetY(), 0.001f);
     Real height = foodRadius / 2.0;
+    CQuaternion q;
 
     // draw the nest
-    DrawCircle(nestRadius, np, CColor::GRAY80);
-
+    /* works on linux, not on Mac (beta 28 of argos) */
+    //DrawCircle(nestRadius, np, CColor::GRAY80);
+    /* new declaration for Mac (beta 30 of argos) */
+    DrawCircle(np, q, nestRadius, CColor::GRAY80);
+    
     if(foodPositions.size() > 0) {
         Real x, y;
         CVector3 p3d;
@@ -52,8 +57,8 @@ void iAnt_qt_user_functions::DrawInWorld() {
             y = foodPositions[i].GetY();
             p3d = CVector3(x, y, 0.0);
 
-            //DrawCircle(foodRadius, p3d, CColor::BLACK);
-            DrawCylinder(foodRadius, height, p3d, CColor::BLACK);
+            //DrawCylinder(foodRadius, height, const CVector3(p3d), CColor::BLACK);
+            DrawCylinder(p3d, q, foodRadius, height, CColor::BLACK);
         }
 
         // draw the pheromone positions
@@ -63,8 +68,8 @@ void iAnt_qt_user_functions::DrawInWorld() {
                 y = pheromonePositions[i].GetY();
                 p3d = CVector3(x, y, 0.0);
                 
-                //DrawCircle(foodRadius, p3d, CColor::RED);
-                DrawCylinder(foodRadius, height, p3d, CColor::RED);
+                //DrawCylinder(foodRadius, height, const CVector3(p3d), CColor::RED);
+                DrawCylinder(p3d, q, foodRadius, height, CColor::RED);
             }
         }
 
@@ -75,8 +80,8 @@ void iAnt_qt_user_functions::DrawInWorld() {
                 y = fidelityPositions[i].GetY();
                 p3d = CVector3(x, y, 0.0);
 
-                //DrawCircle(foodRadius, p3d, CColor::BLUE);
-                DrawCylinder(foodRadius, height, p3d, CColor::BLUE);
+                //DrawCylinder(foodRadius, height, const CVector3(p3d), CColor::BLUE);
+                DrawCylinder(p3d, q, foodRadius, height, CColor::BLUE);
             }
         }
     }

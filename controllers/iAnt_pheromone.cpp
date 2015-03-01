@@ -1,5 +1,7 @@
 #include "iAnt_pheromone.h"
 
+using namespace argos;
+
 static inline float exponentialDecay(float quantity, float time, float lambda) {
 	return (quantity * exp(-lambda * time));
 }
@@ -96,8 +98,8 @@ double iAnt_pheromone::Weight() {
 	return weight;
 }
 
-void iAnt_pheromone::PrintPheromone()
-{
+void iAnt_pheromone::PrintPheromone() {
+    /*
     LOG << "*****\n";
 	LOG << "location: "    << location    << endl;
 	LOG << "decayRate: "   << decayRate   << endl;
@@ -106,4 +108,5 @@ void iAnt_pheromone::PrintPheromone()
 	LOG << "lastUpdated: " << lastUpdated << endl;
 	LOG << "isActive: "    << isActive    << endl;
     LOG << "*****\n";
+     */
 }

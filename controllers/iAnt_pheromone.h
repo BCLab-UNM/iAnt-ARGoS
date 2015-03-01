@@ -1,12 +1,17 @@
 #ifndef IANT_PHEROMONE_H_
 #define IANT_PHEROMONE_H_
 
+namespace argos {
+    class iAnt_pheromone;
+}
+
 #include <argos3/core/utility/math/vector2.h>
 #include <argos3/core/utility/logging/argos_log.h>
 
-using namespace argos;
+// using namespace argos;
 using namespace std;
 
+namespace argos {
 class iAnt_pheromone {
 
 	public:
@@ -38,5 +43,6 @@ class iAnt_pheromone {
 		double   threshold;
 		bool     isActive;
 };
+}
 
 #endif /* IANT_PHEROMONE_H_ */

@@ -1,6 +1,8 @@
 /* Include our class definition. */
 #include "iAnt_controller.h"
 
+using namespace argos;
+
 /*******************************************************************************
 * Constructor
 ********************************************************************************
@@ -500,9 +502,10 @@ void iAnt_controller::inactive() {
 *******************************************************************************/
 void iAnt_controller::departing() {
     CVector2 distance = (GetPosition() - targetPosition);
-
+    int informedFlag = (IsInformed()) ? (1) : (0);
+    
     /* Are we informed? I.E. using site fidelity or pheromones. */
-    switch(IsInformed()) {
+    switch(informedFlag) {
         /* When informed, proceed to the target location. */
         case (true): {
             if(distance.SquareLength() < distanceTolerance) {
@@ -538,8 +541,10 @@ void iAnt_controller::departing() {
 /*******************************************************************************
 *******************************************************************************/
 void iAnt_controller::searching() {
+    int isHoldingFoodFlag = (IsHoldingFood()) ? (1) : (0);
+    
     /* Are we carrying a food item? */
-    switch(IsHoldingFood()) {
+    switch(isHoldingFoodFlag) {
         /* When not carrying food, calculate movement. */
         case (false): {
             CVector2 distance = GetPosition() - targetPosition;
