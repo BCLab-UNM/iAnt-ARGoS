@@ -26,7 +26,7 @@ ARGoS is available for Linux and Macintosh systems. It is currently not supporte
 
 ######Macintosh Installation
 
-1. For quick and easy installation, the Mac OSX installation of ARGoS requires Homebrew. If you don't have it, install the Homebrew Package Manager by using the following command in Terminal.
+1. The Mac OSX installation of ARGoS uses the Homebrew Package Manager. If you don't have it, install Homebrew by using the following command in Terminal.
   ```
   $ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
   ```
@@ -49,7 +49,30 @@ ARGoS is available for Linux and Macintosh systems. It is currently not supporte
 
 #####2. Compiling and Running the iAnt CPFA in ARGoS
 
-TODO
+Once ARGoS is installed on your system. You can download the files in this repo, compile them for your system, and run the iAnt CPFA in ARGoS.
+
+1. [Download](https://github.com/BCLab-UNM/iAnt-ARGoS/archive/master.zip) the iAnt-ARGoS files and unzip the folder in a directory of your choice.
+
+2. From the Terminal, use the following commands to compile the iAnt CPFA code:
+  ```
+  $ cd iAnt-ARGoS-master                    # go into the iAnt-ARGoS directory
+  $ cd build                                # go into the build directory
+  $ cmake ..                                # setup compilation with cmake
+  $ make                                    # compile the iAnt CPFA code
+  $ cd ..                                   # get out of the build directory
+  $ argos3 -c experiments/diffusion_1.argos # launch experiment
+  ```
+
+3. Launch ARGoS with the XML configuration file for your system:
+  * for Linux systems:
+    ```
+    $ argos3 -c experiments/iAnt_linux.argos
+    ```
+
+  * for Mac systems:
+    ```
+    $ argos3 -c experiments/iAnt_mac.argos
+    ```
 
 ###Useful Links
 
