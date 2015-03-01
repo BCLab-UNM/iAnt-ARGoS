@@ -12,7 +12,7 @@ ARGoS is available for Linux and Macintosh systems. It is currently not supporte
 
 ######Linux Installation
 
-1. Download the appropriate binary package for your Linux system [here](http://www.argos-sim.info/core.php).
+1. [Download](http://www.argos-sim.info/core.php) the appropriate binary package for your Linux system.
 2. In Terminal, run the following command in the directory of your installation file:
   * for Ubuntu and KUbuntu:
     ```
