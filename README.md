@@ -9,7 +9,9 @@ In order to use the iAnt CPFA in ARGoS, you must first install ARGoS on your sys
 #####1. Installing ARGoS
 
 ARGoS is available for Linux and Macintosh systems. It is currently not supported on Windows. Detailed installation instructions can be found on the ARGoS website.
-* http://www.argos-sim.info/user_manual.php
+'''
+http://www.argos-sim.info/user_manual.php
+'''
 
 ######Linux Installation
 
@@ -25,7 +27,7 @@ ARGoS is available for Linux and Macintosh systems. It is currently not supporte
 
 1. For quick and easy installation, the Mac OSX installation of ARGoS requires Homebrew.
   * If you don't have it, install the Homebrew Package Manager by using the following command in Terminal.
-    - ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    - $ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 2. Obtain the Homebrew Tap for ARGoS using the following command in Terminal.
   * $ brew tap ilpincy/argos3
 3. Once tapped, install ARGoS with the following command in Terminal. ARGoS and its required dependencies will be downloaded and installed using Homebrew.
