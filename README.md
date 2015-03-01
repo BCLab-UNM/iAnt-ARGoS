@@ -16,10 +16,14 @@ ARGoS is available for Linux and Macintosh systems. It is currently not supporte
 2. In Terminal, run the following command in the directory of your installation file:
   * for Ubuntu and KUbuntu:
 
-    ```$ sudo dpkg -i argos3_simulator-*.deb```
+    ```
+    $ sudo dpkg -i argos3_simulator-*.deb
+    ```
   * for OpenSuse:
 
-    ```$ sudo rpm -i argos3_simulator-*.rpm```
+    ```
+    $ sudo rpm -i argos3_simulator-*.rpm
+    ```
 
 ######Macintosh Installation
 
@@ -30,10 +34,14 @@ ARGoS is available for Linux and Macintosh systems. It is currently not supporte
   ```
 2. Obtain the Homebrew Tap for ARGoS using the following command in Terminal.
 
-  ```$ brew tap ilpincy/argos3```
+  ```
+  $ brew tap ilpincy/argos3
+  ```
 3. Once tapped, install ARGoS with the following command in Terminal. ARGoS and its required dependencies will be downloaded and installed using Homebrew.
 
-  ```$ brew install bash-completion qt lua argos3```
+  ```
+  $ brew install bash-completion qt lua argos3
+  ```
 4. Once installed, you can update ARGoS with the following two commands in Terminal.
 
   ```
