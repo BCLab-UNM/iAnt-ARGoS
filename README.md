@@ -15,7 +15,7 @@ ARGoS is available for Linux and Macintosh systems. It is currently not supporte
 1. Download the appropriate binary package for your Linux system [here](http://www.argos-sim.info/core.php).
 2. In Terminal, run the following command in the directory of your installation file:
   * for Ubuntu and KUbuntu: ```$ sudo dpkg -i argos3_simulator-*.deb```
-  * for OpenSuse: ```$ sudo rpm -i argos3_simulator-*.rpm```
+  * for OpenSuse:           ```$ sudo rpm -i argos3_simulator-*.rpm```
 
 ######Macintosh Installation
 
