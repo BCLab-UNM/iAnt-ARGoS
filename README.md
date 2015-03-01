@@ -16,12 +16,12 @@ ARGoS is available for Linux and Macintosh systems. It is currently not supporte
 2. In Terminal, run the following command in the directory of your installation file:
   * for Ubuntu and KUbuntu:
 ```
-    - $ sudo dpkg -i argos3_simulator-*.deb
+      $ sudo dpkg -i argos3_simulator-*.deb
 ```
   * for OpenSuse:
-```
-    - $ sudo rpm -i argos3_simulator-*.rpm
-```
+  ```
+      $ sudo rpm -i argos3_simulator-*.rpm
+  ```
 
 ######Macintosh Installation
 
