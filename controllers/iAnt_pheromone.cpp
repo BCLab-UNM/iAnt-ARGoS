@@ -11,7 +11,7 @@ iAnt_pheromone::iAnt_pheromone() :
 	decayRate(0.0),
 	weight(1.0),
 	threshold(0.001),
-	isActive(true)
+	isActive(false)
 {}
 
 iAnt_pheromone::iAnt_pheromone(const iAnt_pheromone &copy) {

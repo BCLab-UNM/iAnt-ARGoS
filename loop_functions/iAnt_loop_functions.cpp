@@ -113,6 +113,9 @@ void iAnt_loop_functions::PreStep() {
 
 		    if(iAnts[i]->IsFindingFood() && !iAnts[i]->IsHoldingFood()) {
                 if(CPFA_ID == "SEARCHING") {
+                    // commenting this line out will prevent food from being removed from the map
+                    //     food remains on the map, food item count un-edited
+                    //     ants will not use food pickup behavior
                     foodPositions = UpdateFoodPositions(iAnts[i]);
                 }
 	        } else if(iAnts[i]->IsInTheNest() && iAnts[i]->IsHoldingFood()) {
@@ -141,11 +144,15 @@ bool iAnt_loop_functions::IsExperimentFinished() {
 }
 
 void iAnt_loop_functions::PostExperiment() {
+    // This variable is set in XML
     if(outputData == false) return;
 
+    // This file is created in the directory where you run ARGoS
+    // it is always created and/or appended to, never overwritten, i.e. ios::app
     ofstream dataOutput("iAntTagData.txt", ios::app);
     size_t time_in_minutes = floor(floor(simTime / ticks_per_second) / 60);
 
+    // output to file
     if(dataOutput.tellp() == 0) {
         dataOutput << "tags_collected, time_in_minutes, random_seed\n";
     }
@@ -154,6 +161,7 @@ void iAnt_loop_functions::PostExperiment() {
     dataOutput << time_in_minutes << ", " << random_seed << endl;
     dataOutput.close();
 
+    // output to ARGoS GUI
     if(simCounter == 0) {
         LOG << "\ntags_collected, time_in_minutes, random_seed\n";
         LOG << foodItemCount - foodPositions.size() << ", ";
