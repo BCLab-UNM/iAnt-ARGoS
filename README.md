@@ -2,7 +2,7 @@
 
 ARGoS (Autonomous Robots Go Swarming) is a multi-physics robot simulator. iAnt-ARGoS is an extension to ARGoS that implements the iAnt CPFA algorithm and provides a mechanism for performing experiments with iAnts.
 
-**NOTE:** ARGoS is installed on the CS Linux machines. If you wish to use ARGoS here, you only need to [download and compile](https://github.com/BCLab-UNM/iAnt-ARGoS#2-compiling-and-running-the-iant-cpfa-in-argos) this repository's code.
+**NOTE:** ARGoS is installed on the CS Linux machines. If you wish to use ARGoS on those machines, you only need to [download and compile](https://github.com/BCLab-UNM/iAnt-ARGoS#2-compiling-and-running-the-iant-cpfa-in-argos) this repository's code.
 
 For more detailed information, please check the [iAnt-ARGoS wiki](https://github.com/BCLab-UNM/iAnt-ARGoS/wiki).
 
