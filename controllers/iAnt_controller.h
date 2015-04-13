@@ -108,20 +108,20 @@ class iAnt_controller : public CCI_Controller {
     vector<CVector2> foodPositions;
     vector<CVector2> pheromonePositions;
     vector<CVector2> fidelityPositions;
-    iAnt_pheromone   targetPheromone;
-    iAnt_pheromone   sharedPheromone;
+    iAnt_pheromone   targetPheromone; // pheromone I'm following right now
+    iAnt_pheromone   sharedPheromone; // pheromone I'm sharing with the colony
 
     /***************************************************************************
     * Robot Navigation Variables
     ***************************************************************************/
-    CRange<Real>      forageRangeX;
-    CRange<Real>      forageRangeY;
-    CRange<CRadians>  angleTolerance;
-    Real              nestRadiusSquared;
-    Real              foodRadiusSquared;
-    Real              searchRadiusSquared;
-    Real              distanceTolerance;
-    CRandom::CRNG    *RNG;
+    CRange<Real>     forageRangeX;
+    CRange<Real>     forageRangeY;
+    CRange<CRadians> angleTolerance;
+    Real             nestRadiusSquared;
+    Real             foodRadiusSquared;
+    Real             searchRadiusSquared;
+    Real             distanceTolerance;
+    CRandom::CRNG*   RNG;
 
     /***************************************************************************
     * CPFA Variables

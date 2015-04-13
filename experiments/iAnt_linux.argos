@@ -21,10 +21,10 @@
                 <positioning implementation="default"/>
             </sensors>
             <params>
-                <CPFA pheromoneRate="20"
+                <CPFA pheromoneRate="10.0"
                       pheromoneDecayRate="0.01"
-                      travelGiveupProbability="0.99999"
-                      siteFidelityRate="20"
+                      travelGiveupProbability="0.9999"
+                      siteFidelityRate="10.0"
                       informedSearchDecay="0.01"
                       searchRadius="1.0"
                       searchStepSize="0.08"
@@ -45,12 +45,12 @@
                                  nestPosition="0.0, 0.0"
                                  nestRadius="0.5"
                                  foodRadius="0.05"
-                                 foodItemCount="100"
+                                 foodItemCount="0"
                                  foodDistribution="2"/>
         <random_distribution_0/> <!-- no settings for this distribution -->
-        <cluster_distribution_1  numberOfClusters="10"
-                                 clusterWidthX="3"
-                                 clusterLengthY="3"/>
+        <cluster_distribution_1  numberOfClusters="1"
+                                 clusterWidthX="16"
+                                 clusterLengthY="16"/>
         <powerLaw_distribution_2 powerRank="4"/>
     </loop_functions>
 

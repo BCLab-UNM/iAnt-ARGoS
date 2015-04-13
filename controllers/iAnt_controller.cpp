@@ -552,7 +552,7 @@ void iAnt_controller::searching() {
 
             /* Randomly give up searching based on searchGiveUpProbability */
 		    if(random < searchGiveupProbability) {
-		    	SetTargetPosition(nestPosition);
+		    	//SetTargetPosition(nestPosition);
 		    	CPFA = RETURNING;
 		    }
             /* If we reached our target search location, set a new one. The 
@@ -594,7 +594,16 @@ void iAnt_controller::searching() {
         }
         /* Food has been found, change state to RETURNING and go to the nest */
         case (true): {
-		    SetTargetPosition(nestPosition);
+            /* To turn on monitoring (i.e., food collection w/o nest return)
+               replace the following code with:
+
+               // SetTargetPosition(nestPosition); comment this out
+               CPFA = RETURNING
+
+               (additional changes need to be made to the returning() function)
+            */
+
+       	    SetTargetPosition(nestPosition);
 		    CPFA = RETURNING;
             break;
         }
@@ -610,13 +619,20 @@ void iAnt_controller::returning() {
     CVector2 distance = GetPosition() - targetPosition;
 
     /* Stay in this state until the robot has returned to the nest. */
-	if(distance.SquareLength() < distanceTolerance) {
+
+    /* To turn on food monitoring (i.e. food collection w/o nest return)
+       changes need to be made to the searching() function. Also, you need
+       to comment out the if conditional for the code below.
+
+       // if(distance.SquareLength() < distanceTolerance) {
+    */
+   	if(distance.SquareLength() < distanceTolerance) {
         /* Based on a Poisson CDF, the robot may or may not create a pheromone
            located at the last place it picked up food. */
         Real poissonCDF   = GetPoissonCDF(resourceDensity, pheromoneRate);
         Real randomNumber = RNG->Uniform(CRange<Real>(0.0, 1.0));
 
-		if(poissonCDF > randomNumber) {
+		if(poissonCDF < randomNumber) {
             iAnt_pheromone p(fidelityPosition, simTime, pheromoneDecayRate);
 			sharedPheromone.Set(p);
 		}
@@ -627,7 +643,7 @@ void iAnt_controller::returning() {
         randomNumber = RNG->Uniform(CRange<Real>(0.0, 1.0));
 
         /* use site fidelity */
-		if(poissonCDF > randomNumber) {
+		if(poissonCDF < randomNumber) {
 			SetTargetPosition(fidelityPosition);
 			SetInformed(true);
 		}

@@ -118,7 +118,15 @@ void iAnt_loop_functions::PreStep() {
                     //     ants will not use food pickup behavior
                     foodPositions = UpdateFoodPositions(iAnts[i]);
                 }
-	        } else if(iAnts[i]->IsInTheNest() && iAnts[i]->IsHoldingFood()) {
+	        }
+            /* when implementing food monitoring (i.e. food collection w/o nest return)
+               this conditional must be changed to preserve pheromone behavior
+
+               change to:
+                   else if(iAnts[i]->IsHoldingFood()) {
+
+            */
+            else if(iAnts[i]->IsInTheNest() && iAnts[i]->IsHoldingFood()) {
                 pheromoneList = UpdatePheromoneList(iAnts[i]);
                 pheromonePositions = UpdatePheromonePositions(iAnts[i]);
             }
