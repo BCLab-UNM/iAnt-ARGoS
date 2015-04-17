@@ -632,7 +632,7 @@ void iAnt_controller::returning() {
         Real poissonCDF   = GetPoissonCDF(resourceDensity, pheromoneRate);
         Real randomNumber = RNG->Uniform(CRange<Real>(0.0, 1.0));
 
-		if(poissonCDF < randomNumber) {
+		if(poissonCDF > randomNumber) {
             iAnt_pheromone p(fidelityPosition, simTime, pheromoneDecayRate);
 			sharedPheromone.Set(p);
 		}
@@ -643,19 +643,22 @@ void iAnt_controller::returning() {
         randomNumber = RNG->Uniform(CRange<Real>(0.0, 1.0));
 
         /* use site fidelity */
-		if(poissonCDF < randomNumber) {
+		if(poissonCDF > randomNumber) {
 			SetTargetPosition(fidelityPosition);
 			SetInformed(true);
+            // LOG << "site fidelity\n";
 		}
         /* use pheromone waypoints */
         else if(targetPheromone.IsActive() == true) {
 			SetTargetPosition(targetPheromone.Location());
 			SetInformed(true);
+            // LOG << "pheromones\n";
 		}
         /* use random search */
         else {
 			SetRandomSearchLocation();
 			SetInformed(false);
+            // LOG << "randomSearch\n";
 		}
 
 		CPFA = DEPARTING;

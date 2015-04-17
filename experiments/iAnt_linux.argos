@@ -21,10 +21,10 @@
                 <positioning implementation="default"/>
             </sensors>
             <params>
-                <CPFA pheromoneRate="10.0"
+                <CPFA pheromoneRate="0.0"
                       pheromoneDecayRate="0.01"
                       travelGiveupProbability="0.9999"
-                      siteFidelityRate="10.0"
+                      siteFidelityRate="20.0"
                       informedSearchDecay="0.01"
                       searchRadius="1.0"
                       searchStepSize="0.08"
@@ -46,16 +46,16 @@
                                  nestRadius="0.5"
                                  foodRadius="0.05"
                                  foodItemCount="0"
-                                 foodDistribution="2"/>
+                                 foodDistribution="1"/>
         <random_distribution_0/> <!-- no settings for this distribution -->
         <cluster_distribution_1  numberOfClusters="1"
-                                 clusterWidthX="16"
-                                 clusterLengthY="16"/>
+                                 clusterWidthX="4"
+                                 clusterLengthY="4"/>
         <powerLaw_distribution_2 powerRank="4"/>
     </loop_functions>
 
     <!-- ARENA -->
-    <arena size="10.0, 10.0, 0.0" center="0.0, 0.0, 0.0">
+    <arena size="3.0, 3.0, 0.0" center="0.0, 0.0, 0.0">
 
         <!-- Testing (adding a bug trap) --> <!--
         <box id="wall_north_left" size="0.9,0.1,0.5" movable="false">
@@ -79,7 +79,7 @@
         <distribute>
             <position method="uniform" min="-1, -1, 0" max="1, 1, 0"/>
             <orientation method="gaussian" mean="0, 0, 0" std_dev="360, 0, 0"/>
-            <entity quantity="6" max_trials="200">
+            <entity quantity="1" max_trials="200">
                 <foot-bot id="fb">
                     <controller config="iAnt_c"/>
                 </foot-bot>
