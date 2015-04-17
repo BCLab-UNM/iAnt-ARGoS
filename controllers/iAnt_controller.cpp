@@ -646,19 +646,19 @@ void iAnt_controller::returning() {
 		if(poissonCDF > randomNumber) {
 			SetTargetPosition(fidelityPosition);
 			SetInformed(true);
-            // LOG << "site fidelity\n";
+            LOG << "site fidelity\n";
 		}
         /* use pheromone waypoints */
         else if(targetPheromone.IsActive() == true) {
 			SetTargetPosition(targetPheromone.Location());
 			SetInformed(true);
-            // LOG << "pheromones\n";
+            LOG << "pheromones\n";
 		}
         /* use random search */
         else {
 			SetRandomSearchLocation();
 			SetInformed(false);
-            // LOG << "randomSearch\n";
+            LOG << "randomSearch\n";
 		}
 
 		CPFA = DEPARTING;
