@@ -21,18 +21,18 @@
                 <positioning implementation="default"/>
             </sensors>
             <params>
-                <CPFA pheromoneRate="0.0"
-                      pheromoneDecayRate="0.01"
-                      travelGiveupProbability="0.9999"
-                      siteFidelityRate="20.0"
-                      informedSearchDecay="0.01"
-                      searchRadius="1.0"
+                <CPFA pheromoneRate="2.941920378"
+                      pheromoneDecayRate="0.015775124"
+                      travelGiveupProbability="0.13658521"
+                      siteFidelityRate="0.739777293"
+                      informedSearchDecay="0.292456046"
+                      searchRadius="0.23"
                       searchStepSize="0.08"
                       distanceTolerance="0.1"
-                      searchGiveupProbability="0.00001"
+                      searchGiveupProbability="0.0"
                       angleTolerance="22.5"
                       maxRobotSpeed="16.0"
-                      uninformedSearchCorrelation="13.25"/>
+                      uninformedSearchCorrelation="25.1624092"/>
             </params>
         </iAnt_controller>
     </controllers>
@@ -45,17 +45,17 @@
                                  nestPosition="0.0, 0.0"
                                  nestRadius="0.5"
                                  foodRadius="0.05"
-                                 foodItemCount="0"
-                                 foodDistribution="1"/>
+                                 foodItemCount="128"
+                                 foodDistribution="2"/>
         <random_distribution_0/> <!-- no settings for this distribution -->
         <cluster_distribution_1  numberOfClusters="1"
-                                 clusterWidthX="4"
-                                 clusterLengthY="4"/>
+                                 clusterWidthX="6"
+                                 clusterLengthY="6"/>
         <powerLaw_distribution_2 powerRank="4"/>
     </loop_functions>
 
     <!-- ARENA -->
-    <arena size="3.0, 3.0, 0.0" center="0.0, 0.0, 0.0">
+    <arena size="5.0, 5.0, 0.0" center="0.0, 0.0, 0.0">
 
         <!-- Testing (adding a bug trap) --> <!--
         <box id="wall_north_left" size="0.9,0.1,0.5" movable="false">
@@ -79,7 +79,7 @@
         <distribute>
             <position method="uniform" min="-1, -1, 0" max="1, 1, 0"/>
             <orientation method="gaussian" mean="0, 0, 0" std_dev="360, 0, 0"/>
-            <entity quantity="1" max_trials="200">
+            <entity quantity="25" max_trials="200">
                 <foot-bot id="fb">
                     <controller config="iAnt_c"/>
                 </foot-bot>
@@ -102,7 +102,7 @@
         <qt-opengl>
             <camera>
                 <placement idx="0" position="  0, 0, 10"
-                           look_at="0, 0, 0" lens_focal_length="25"/>
+                           look_at="0, 0, 0" lens_focal_length="75"/>
                 <placement idx="1" position="  0, 0, 10"
                            look_at="0, 0, 0" lens_focal_length="45"/>
                 <placement idx="2" position="  0, 0, 10"

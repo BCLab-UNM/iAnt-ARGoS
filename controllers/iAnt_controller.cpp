@@ -421,11 +421,6 @@ iAnt_loop_functions* iAnt_controller::GetLoopFunctions() {
 * controller is modeled after the Central Place Foraging Algorithm (CPFA).
 *******************************************************************************/
 void iAnt_controller::ControlStep() {
-    /* If all food is collected, return to the nest and shutdown. */
-    if(foodPositions.size() == 0 && !IsHoldingFood()) {
-        CPFA = SHUTDOWN;
-    }
-
     /* Run the CPFA based on the CPFA enumeration flag. */
     switch(CPFA) {
 	    case INACTIVE:
@@ -442,6 +437,11 @@ void iAnt_controller::ControlStep() {
             break;
         case SHUTDOWN:
             shutdown();
+    }
+
+    /* If all food is collected, return to the nest and shutdown. */
+    if(foodPositions.size() == 0 && !IsHoldingFood()) {
+        CPFA = SHUTDOWN;
     }
 }
 
@@ -646,19 +646,19 @@ void iAnt_controller::returning() {
 		if(poissonCDF > randomNumber) {
 			SetTargetPosition(fidelityPosition);
 			SetInformed(true);
-            LOG << "site fidelity\n";
+            // LOG << "site fidelity\n";
 		}
         /* use pheromone waypoints */
         else if(targetPheromone.IsActive() == true) {
 			SetTargetPosition(targetPheromone.Location());
 			SetInformed(true);
-            LOG << "pheromones\n";
+            // LOG << "pheromones\n";
 		}
         /* use random search */
         else {
 			SetRandomSearchLocation();
 			SetInformed(false);
-            LOG << "randomSearch\n";
+            // LOG << "randomSearch\n";
 		}
 
 		CPFA = DEPARTING;
@@ -694,6 +694,8 @@ void iAnt_controller::SetLocalResourceDensity()
 			resourceDensity++;
 		}
 	}
+
+    // LOG << resourceDensity << '\n';
 
     fidelityPosition = GetPosition();
 }
