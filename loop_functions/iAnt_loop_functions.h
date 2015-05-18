@@ -9,14 +9,23 @@
 using namespace argos;
 using namespace std;
 
+/*****
+ * Simulation hook functions.
+ *****/
 class iAnt_loop_functions : public CLoopFunctions {
 	public:
 
-		iAnt_loop_functions();
+		iAnt_loop_functions()  {}
 		~iAnt_loop_functions() {}
 
-		void   Init(TConfigurationNode& node);
-		void   PreStep();
+		void Init(TConfigurationNode& node);
+		void PreStep();
+		void PostStep();
+        void PostExperiment();
+		void Reset();
+
+        bool IsExperimentFinished();
+
 		CColor GetFloorColor(const CVector2& p) { return CColor::WHITE; }
 
     private:

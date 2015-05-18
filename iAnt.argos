@@ -2,57 +2,81 @@
 <argos-configuration>
 
     <!-- FRAMEWORK -->
-    <framework><experiment length="0" ticks_per_second="16" random_seed="1337"/></framework>
+    <framework>
+		<experiment length           = "3600"
+                    ticks_per_second = "16"
+					random_seed      = "1337"/>
+	</framework>
 
     <!-- CONTROLLERS -->
     <controllers>
-        <iAnt_controller id="iAnt_c" library="build/controllers/libiAnt_controller.so">
-            <actuators><differential_steering implementation="default"/></actuators>
+        <iAnt_controller id      = "iAnt_c"
+                         library = "build/controllers/libiAnt_controller.so">
+
+            <actuators>
+				<differential_steering implementation = "default"/>
+			</actuators>
+
             <sensors>
-                <footbot_proximity implementation="default" show_rays="false"/>
-                <positioning implementation="default"/>
+                <footbot_proximity implementation = "default"
+                                   show_rays      = "false"/>
+                <positioning       implementation = "default"/>
             </sensors>
-            <params searchRadius="0.23"
-                    searchStepSize="0.08"
-                    distanceTolerance="0.1"
-                    angleTolerance="22.5"
-                    maxRobotSpeed="16.0"/>
+
+            <!-- un-evolved parameters -->
+            <params>
+				<iAnt_params SearchRadius            = "0.23"
+                    		 SearchStepSize          = "0.08"
+		                     DistanceTolerance       = "0.01"
+                		     MaxRobotSpeed           = "16.0"
+        		             AngleToleranceInDegrees = "22.5"/>
+			</params>
+
         </iAnt_controller>
     </controllers>
 
     <!-- LOOP FUNCTIONS -->
-    <loop_functions library="build/loop_functions/libiAnt_loop_functions.so" label="iAnt_loop_functions">
-        <CPFA       travelProbability="0.01"
-                    searchProbability="0.99"
-                    uninformedSearchCorrelation="720.0"
-                    informedSearchDecay="0.01"
-                    pheromoneLayRate="10.0"
-                    pheromoneFollowRate="10.0"
-                    siteFidelityRate="10.0"
-                    pheromoneDecayRate="0.01"/>
-        <simulation variableSeed="1"
-                    outputData="1"
-                    nestPosition="0.0, 0.0"
-                    nestRadius="0.5"
-                    foodRadius="0.05"
-                    foodDistribution="2"/>
-        <random_0   foodItemCount="100"/>
-        <cluster_1  numberOfClusters="10"
-                    clusterWidthX="3"
-                    clusterLengthY="3"/>
-        <powerLaw_2 powerRank="5"/>
+    <loop_functions library = "build/loop_functions/libiAnt_loop_functions.so"
+                    label   = "iAnt_loop_functions">
+
+        <!-- evolvable parameters -->
+        <CPFA       ProbabilityOfSwitchingToSearching = "0.99"
+                    ProbabilityOfReturningToNest      = "0.01"
+                    UninformedSearchVariation         = "720.0"
+                    RateOfInformedSearchDecay         = "0.01"
+                    RateOfSiteFidelity                = "10.0"
+                    RateOfLayingPheromone             = "10.0"
+                    RateOfPheromoneDecay              = "0.01"/>
+
+        <!-- environment variables (un-evolved) -->
+        <simulation VariableSeed     = "1"
+                    OutputData       = "1"
+                    NestPosition     = "0.0, 0.0"
+                    NestRadius       = "0.5"
+                    FoodRadius       = "0.05"
+                    FoodDistribution = "2"/>
+
+        <FoodDistribution_Random_0   FoodItemCount    = "100"/>
+        <FoodDistribution_Cluster_1  NumberOfClusters = "10"
+                                     ClusterWidthX    = "3"
+                                     ClusterLengthY   = "3"/>
+        <FoodDistribution_PowerLaw_2 PowerRank        = "5"/>
+
     </loop_functions>
 
     <!-- ARENA -->
     <arena size="5.0, 5.0, 0.0" center="0.0, 0.0, 0.0">
+
         <floor id="floor" source="loop_functions" pixels_per_meter="1"/>
+
         <distribute>
             <position method="uniform" min="-1.0, -1.0, 0.0" max="1.0, 1.0, 0.0"/>
             <orientation method="gaussian" mean="0, 0, 0" std_dev="360, 0, 0"/>
-            <entity quantity="20" max_trials="100">
-                <foot-bot id="fb"><controller config="iAnt_c"/></foot-bot>
+            <entity quantity="5" max_trials="100">
+                <foot-bot id="fb_0"><controller config="iAnt_c"/></foot-bot>
             </entity>
         </distribute>
+
     </arena>
 
     <!-- PHYSICS ENGINE(S) -->

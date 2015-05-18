@@ -30,6 +30,7 @@ class iAnt_controller : public CCI_Controller {
         /* CCI_Controller Inherited Functions */
         void Init(TConfigurationNode& node);
         void ControlStep();
+        void Reset();
 
         /* public helper functions */
         bool       IsHoldingFood();
@@ -42,6 +43,13 @@ class iAnt_controller : public CCI_Controller {
         CCI_PositioningSensor*            compass;
         CCI_DifferentialSteeringActuator* motorActuator;
         CCI_FootBotProximitySensor*       proximitySensor;
+
+        /* iAnt controller parameters */
+        Real             SearchRadius;
+        Real             DistanceTolerance;
+        Real             SearchStepSize;
+        Real             MaxRobotSpeed;
+        CRange<CRadians> AngleToleranceInRadians;
 
         /* robot internal variables & statistics */
         CRandom::CRNG*   RNG;

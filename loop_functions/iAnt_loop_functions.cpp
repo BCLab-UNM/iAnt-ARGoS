@@ -56,7 +56,7 @@ void iAnt_loop_functions::PreStep() {
             y = RNG->Uniform(data.forageRangeY);
 
             for(size_t i = 0; i < data.foodList.size(); i++) {
-                if((CVector2(x, y) - data.foodList[i]).SquareLength() < data.distanceTolerance + 0.05)
+                if((CVector2(x, y) - data.foodList[i]).SquareLength() < /*data.distanceTolerance*/ 0.01 + 0.05)
                     isPlaced = false;
             }
 
@@ -85,5 +85,25 @@ void iAnt_loop_functions::PreStep() {
 
     ////////////////////////////////////////////////////////////////////////////
 }
+
+/*****
+ *
+ *****/
+void iAnt_loop_functions::PostStep() {}
+
+/*****
+ *
+ *****/
+void iAnt_loop_functions::PostExperiment() {}
+
+/*****
+ *
+ *****/
+void iAnt_loop_functions::Reset() {}
+
+/*****
+ *
+ *****/
+bool iAnt_loop_functions::IsExperimentFinished() {}
 
 REGISTER_LOOP_FUNCTIONS(iAnt_loop_functions, "iAnt_loop_functions")

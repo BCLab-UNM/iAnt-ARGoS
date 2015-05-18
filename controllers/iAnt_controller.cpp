@@ -8,6 +8,10 @@ iAnt_controller::iAnt_controller() :
     compass(NULL),
     motorActuator(NULL),
     proximitySensor(NULL),
+    SearchRadius(0.0),
+    DistanceTolerance(0.0),
+    SearchStepSize(0.0),
+    MaxRobotSpeed(0.0),
     RNG(NULL),
     data(NULL),
     isHoldingFood(false),
@@ -22,14 +26,33 @@ iAnt_controller::iAnt_controller() :
  * wants objects & variables initialized here instead of in the constructor(s).
  *****/
 void iAnt_controller::Init(TConfigurationNode& node) {
+    /* Shorter names, please. #This_Is_Not_Java */
     typedef CCI_PositioningSensor            CCI_PS;
     typedef CCI_DifferentialSteeringActuator CCI_DSA;
     typedef CCI_FootBotProximitySensor       CCI_FBPS;
 
-    compass         = GetSensor<CCI_PS>("positioning");
+    /* Initialize the robot's actuator and sensor objects. */
     motorActuator   = GetActuator<CCI_DSA>("differential_steering");
-    proximitySensor = GetSensor<CCI_FBPS>("footbot_proximity");
-    RNG             = CRandom::CreateRNG("argos");
+    compass         = GetSensor<CCI_PS>   ("positioning");
+    proximitySensor = GetSensor<CCI_FBPS> ("footbot_proximity");
+
+    /* Initialize the random number generator. */
+    RNG = CRandom::CreateRNG("argos");
+
+    /* CPFA node from the iAnt.argos XML file */
+    TConfigurationNode iAnt_params = GetNode(node, "iAnt_params");
+    CDegrees angleInDegrees;
+
+    /* Input from XML for iAnt parameter variables for this controller. */
+    GetNodeAttribute(iAnt_params, "SearchRadius",            SearchRadius);
+    GetNodeAttribute(iAnt_params, "DistanceTolerance",       DistanceTolerance);
+    GetNodeAttribute(iAnt_params, "SearchStepSize",          SearchStepSize);
+    GetNodeAttribute(iAnt_params, "MaxRobotSpeed",           MaxRobotSpeed);
+    GetNodeAttribute(iAnt_params, "AngleToleranceInDegrees", angleInDegrees);
+
+    /* Convert the XML Degree input into Radians. */
+    AngleToleranceInRadians.Set(-ToRadians(angleInDegrees),
+                                 ToRadians(angleInDegrees));
 }
 
 /*****
@@ -59,6 +82,24 @@ void iAnt_controller::ControlStep() {
         case SHUTDOWN:
             shutdown();
     }
+}
+
+/*****
+ * After pressing the reset button in the GUI, this controller will be set to
+ * default factory settings like at the start of a simulation.
+ *****/
+void iAnt_controller::Reset() {
+    isHoldingFood   = false;
+    isInformed      = false;
+    searchTime      = 0;
+    resourceDensity = 0;
+    CPFA            = INACTIVE;
+
+    target   = data->nestPosition;
+    fidelity = data->nestPosition;
+
+    trailToShare.clear();
+    trailToFollow.clear();
 }
 
 /*****
@@ -106,7 +147,7 @@ void iAnt_controller::departing() {
     /* Are we informed? I.E. using site fidelity or pheromones. */
     if(isInformed == true) {
         /* When informed, proceed to the target location. */
-        if(distance.SquareLength() < data->distanceTolerance) {
+        if(distance.SquareLength() < DistanceTolerance) {
             searchTime = 0;
             CPFA = SEARCHING;
             isInformed = false;
@@ -119,7 +160,7 @@ void iAnt_controller::departing() {
         if(randomNumber < data->probabilityOfSwitchingToSearching) {
             searchTime = 0;
     	    CPFA = SEARCHING;
-    	} else if(distance.SquareLength() < data->distanceTolerance) {
+    	} else if(distance.SquareLength() < DistanceTolerance) {
             SetRandomSearchLocation();
         }
     }
@@ -149,7 +190,7 @@ void iAnt_controller::searching() {
         /* If we reached our target search location, set a new one. The 
            new search location calculation is different based on wether
            we are currently using informed or uninformed search. */
-        else if(distance.SquareLength() < data->distanceTolerance) {
+        else if(distance.SquareLength() < DistanceTolerance) {
             /* uninformed search */
             if(isInformed == false) {
                 Real USCV = data->uninformedSearchVariation.GetValue();
@@ -158,7 +199,7 @@ void iAnt_controller::searching() {
 			    CRadians angle1(rotation.UnsignedNormalize());
                 CRadians angle2(GetHeading().UnsignedNormalize());
 			    CRadians t_angle(angle1 + angle2);
-                SetTargetInBounds(CVector2(data->searchStepSize, t_angle) + GetPosition());
+                SetTargetInBounds(CVector2(SearchStepSize, t_angle) + GetPosition());
 			}
             /* informed search */
             else if(isInformed == true) {
@@ -171,7 +212,7 @@ void iAnt_controller::searching() {
 				CRadians angle1(rotation.UnsignedNormalize());
 				CRadians angle2(GetHeading().UnsignedNormalize());
 				CRadians t_angle(angle1 + angle2);
-				SetTargetInBounds(CVector2(data->searchStepSize, t_angle) + GetPosition());
+				SetTargetInBounds(CVector2(SearchStepSize, t_angle) + GetPosition());
             }
         }
     }
@@ -287,7 +328,7 @@ void iAnt_controller::SetHoldingFood() {
         vector<CVector2> newFoodList;
 
         for(size_t i = 0; i < data->foodList.size(); i++) {
-            if((GetPosition() - data->foodList[i]).SquareLength() < data->distanceTolerance) {
+            if((GetPosition() - data->foodList[i]).SquareLength() < DistanceTolerance) {
                 /* We found food! Calculate the nearby food density. */
                 isHoldingFood = true;
                 SetLocalResourceDensity();
@@ -332,11 +373,11 @@ void iAnt_controller::SetRandomSearchLocation() {
     bool set_y_max = false;
 
     /* if I'm @ x_max side of arena, newX = opposite side */
-    if((p.GetX() - x_max) * (p.GetX() - x_max) < data->distanceTolerance) {
+    if((p.GetX() - x_max) * (p.GetX() - x_max) < DistanceTolerance) {
         newX = x_min;
     }
     /* if I'm @ x_min side of arena, newX = opposite side */
-    else if((p.GetX() - x_min) * (p.GetX() - x_min) < data->distanceTolerance) {
+    else if((p.GetX() - x_min) * (p.GetX() - x_min) < DistanceTolerance) {
         newX = x_max;
     }
     /* middle of arena, randomly pick newX at plus or minus x-axis edge */
@@ -352,11 +393,11 @@ void iAnt_controller::SetRandomSearchLocation() {
     }
 
     /* if I'm @ y_max side of arena, newY = opposite side */
-    if((p.GetY() - y_max) * (p.GetY() - y_max) < data->distanceTolerance) {
+    if((p.GetY() - y_max) * (p.GetY() - y_max) < DistanceTolerance) {
         newX = y_min;
     }
     /* if I'm @ y_max side of arena, newY = opposite side */
-    else if((p.GetY() - y_min) * (p.GetY() - y_min) < data->distanceTolerance) {
+    else if((p.GetY() - y_min) * (p.GetY() - y_min) < DistanceTolerance) {
         newX = y_max;
     } else if(RNG->Uniform(CRange<Real>(0.0, 1.0)) < 0.5) {
         newY = y_min;
@@ -398,7 +439,7 @@ void iAnt_controller::SetLocalResourceDensity() {
 	for(size_t i = 0; i < data->foodList.size(); i++) {
         distance = GetPosition() - data->foodList[i];
 
-		if(distance.SquareLength() < data->searchRadiusSquared) {
+		if(distance.SquareLength() < SearchRadius) {
 			resourceDensity++;
 		}
 	}
@@ -572,18 +613,18 @@ bool iAnt_controller::DetectCollisions() {
     if(collision > 0.0 && RNG->Uniform(CRange<Real>(0.0, 1.0)) < data->turnProbability) {
 
         if(left > right)
-		    motorActuator->SetLinearVelocity(data->robotSpeed, -data->robotSpeed);
+		    motorActuator->SetLinearVelocity(MaxRobotSpeed, -MaxRobotSpeed);
 
         if(right > left)
-		    motorActuator->SetLinearVelocity(-data->robotSpeed, data->robotSpeed);
+		    motorActuator->SetLinearVelocity(-MaxRobotSpeed, MaxRobotSpeed);
 
     }
     /* SECOND: Randomly decide to ignore sensors and move forward. */
     else if(collision > 0.0 && RNG->Uniform(CRange<Real>(0.0, 1.0)) < data->pushProbability)
-		motorActuator->SetLinearVelocity(data->robotSpeed, data->robotSpeed);
+		motorActuator->SetLinearVelocity(MaxRobotSpeed, MaxRobotSpeed);
     /* THIRD: Randomly decide to reverse away from (or into) a collision. */
     else if(collision > 0.0 && RNG->Uniform(CRange<Real>(0.0, 1.0)) < data->pullProbability)
-		motorActuator->SetLinearVelocity(-data->robotSpeed, -data->robotSpeed);
+		motorActuator->SetLinearVelocity(-MaxRobotSpeed, -MaxRobotSpeed);
     /* FOURTH: Randomly decide to stop. Wait for obstacles to move (or not). */
     else if(collision > 0.0 && RNG->Uniform(CRange<Real>(0.0, 1.0)) < data->waitProbability)
 		motorActuator->SetLinearVelocity(0.0, 0.0);
@@ -611,15 +652,15 @@ void iAnt_controller::ApproachTheTarget() {
     /* heading = angle1 - angle2 = 0.0 when the robot is facing its target */
 	CRadians heading = (angle1 - angle2).SignedNormalize();
 
-	if(heading <= data->angleTolerance.GetMin()) {
+	if(heading <= AngleToleranceInRadians.GetMin()) {
 		/* turn left */
-		motorActuator->SetLinearVelocity(-data->robotSpeed, data->robotSpeed);
-	} else if(heading >= data->angleTolerance.GetMax()) {
+		motorActuator->SetLinearVelocity(-MaxRobotSpeed, MaxRobotSpeed);
+	} else if(heading >= AngleToleranceInRadians.GetMax()) {
 		/* turn right */
-		motorActuator->SetLinearVelocity(data->robotSpeed, -data->robotSpeed);
+		motorActuator->SetLinearVelocity(MaxRobotSpeed, -MaxRobotSpeed);
 	} else {
 		/* go straight */
-		motorActuator->SetLinearVelocity(data->robotSpeed, data->robotSpeed);
+		motorActuator->SetLinearVelocity(MaxRobotSpeed, MaxRobotSpeed);
 	}
 }
 

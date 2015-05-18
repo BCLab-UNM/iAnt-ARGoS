@@ -29,18 +29,13 @@ class iAnt_data {
         Real     rateOfPheromoneDecay;
 
         /* iAnt_controller data */
-        Real                   robotSpeed;
         Real                   turnProbability;
         Real                   pushProbability;
         Real                   pullProbability;
         Real                   waitProbability;
-        Real                   distanceTolerance;
-        Real                   searchStepSize;
-        Real                   searchRadiusSquared;
         Real                   nestRadius;
         Real                   nestRadiusSquared;
         Real                   nestElevation;
-        CRange<CRadians>       angleTolerance;
         CRange<Real>           forageRangeX;
         CRange<Real>           forageRangeY;
         CVector2               nestPosition;
