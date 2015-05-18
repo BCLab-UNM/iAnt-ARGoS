@@ -27,11 +27,11 @@ void iAnt_qt_user_functions::DrawFood(CFootBotEntity& entity) {
     UpdateDrawInWorldData(c);
 
     if(c.IsHoldingFood() == true) {
-//#ifdef __APPLE__
+#ifdef __APPLE__
         DrawCylinder(CVector3(0.0f, 0.0f, 0.3f), CQuaternion(), 0.05f, 0.025f, CColor::BLACK);
-//#else
-//        DrawCylinder(0.05f, 0.025f, CVector3(0.0f, 0.0f, 0.3f), CColor::BLACK);
-//#endif
+#else
+        DrawCylinder(0.05f, 0.025f, CVector3(0.0f, 0.0f, 0.3f), CColor::BLACK);
+#endif
     }
 }
 
@@ -43,16 +43,16 @@ void iAnt_qt_user_functions::DrawInWorld() {
     CVector3 np(nestPosition.GetX(), nestPosition.GetY(), 0.001f);
     Real height = foodRadius / 2.0;
 
-//#ifdef __APPLE__
+#ifdef __APPLE__
     CQuaternion q;
-//#endif
+#endif
 
     // draw the nest
-//#ifdef __APPLE__
+#ifdef __APPLE__
     DrawCircle(np, q, nestRadius, CColor::GRAY80);
-//#else
-//    DrawCircle(nestRadius, np, CColor::GRAY80);
-//#endif
+#else
+    DrawCircle(nestRadius, np, CColor::GRAY80);
+#endif
     
     if(foodPositions.size() > 0) {
         Real x, y;
@@ -64,11 +64,11 @@ void iAnt_qt_user_functions::DrawInWorld() {
             y = foodPositions[i].GetY();
             p3d = CVector3(x, y, 0.0);
 
-//#ifdef __APPLE__
+#ifdef __APPLE__
             DrawCylinder(p3d, q, foodRadius, height, CColor::BLACK);
-//#else
-//            DrawCylinder(foodRadius, height, p3d, CColor::BLACK);
-//#endif
+#else
+            DrawCylinder(foodRadius, height, p3d, CColor::BLACK);
+#endif
         }
 
         // draw the pheromone positions
@@ -78,11 +78,11 @@ void iAnt_qt_user_functions::DrawInWorld() {
                 y = pheromonePositions[i].GetY();
                 p3d = CVector3(x, y, 0.0);
 
-//#ifdef __APPLE__
+#ifdef __APPLE__
                 DrawCylinder(p3d, q, foodRadius, height, CColor::RED);
-//#else
+#else
 //                DrawCylinder(foodRadius, height, p3d, CColor::RED);
-//#endif
+#endif
             }
         }
 
@@ -93,11 +93,11 @@ void iAnt_qt_user_functions::DrawInWorld() {
                 y = fidelityPositions[i].GetY();
                 p3d = CVector3(x, y, 0.0);
 
-//#ifdef __APPLE__
+#ifdef __APPLE__
                 DrawCylinder(p3d, q, foodRadius, height, CColor::BLUE);
-//#else
-//                DrawCylinder(foodRadius, height, p3d, CColor::BLUE);
-//#endif
+#else
+                DrawCylinder(foodRadius, height, p3d, CColor::BLUE);
+#endif
             }
         }
     }
