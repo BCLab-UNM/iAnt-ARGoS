@@ -2,33 +2,42 @@
 #define IANT_QT_USER_FUNCTIONS_H_
 
 #include <controllers/iAnt_controller.h>
-#include <loop_functions/iAnt_loop_functions.h>
+#include <controllers/iAnt_data.h>
 #include <argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_user_functions.h>
 #include <argos3/plugins/robots/foot-bot/simulator/footbot_entity.h>
+#include <argos3/core/simulator/entity/floor_entity.h>
 
 using namespace argos;
+using namespace std;
 
+/*****
+ * The iAnt_qt_user_functions class is used to draw food, nest, and pheromone
+ * objects onto the arena during experiments using the GUI.
+ *****/
 class iAnt_qt_user_functions : public CQTOpenGLUserFunctions {
 
-private:
+    public:
 
-    Real                 foodRadius;
-    Real                 nestRadius;
-    vector<CVector2>     fidelityPositions;
-    vector<CVector2>     pheromonePositions;
-    vector<CVector2>     foodPositions;
-    CVector2             nestPosition;
-    iAnt_loop_functions *loopFunctions;
+        /* constructor and destructor functions */
+        iAnt_qt_user_functions();
 
-    void                 UpdateDrawInWorldData(iAnt_controller& c);
+        /* interface functions between QT and ARGoS */
+        void DrawOnRobot(CFootBotEntity& entity);
+        void DrawOnArena(CFloorEntity& entity);
 
-public:
+    private:
 
-    iAnt_qt_user_functions();
-    ~iAnt_qt_user_functions() {}
+        /* private helper drawing functions */
+        void DrawNest();
+        void DrawFood();
+        void DrawFidelity();
+        void DrawPheromones();
 
-    void DrawFood(CFootBotEntity& entity);
-    void DrawInWorld();
+        /*****
+         * The iAnt_data object contains shared variables used by
+         * this class, iAnt_controller, and iAnt_loop_functions.
+         *****/
+        iAnt_data* data;
 };
 
-#endif // IANT_QT_USER_FUNCTIONS_H_
+#endif /* IANT_QT_USER_FUNCTIONS_H_ */

@@ -1,108 +1,115 @@
 #include "iAnt_qt_user_functions.h"
 
-// constructor
+/*****
+ * Constructor: In order for drawing functions in this class to be used by
+ * ARGoS it must be registered using the RegisterUserFunction function.
+ *****/
 iAnt_qt_user_functions::iAnt_qt_user_functions() :
-    foodRadius(0.0),
-    nestRadius(0.0),
-    loopFunctions(NULL)
+    data(NULL)
 {
-    // register and connect these drawing functions to Argos
-    RegisterUserFunction<iAnt_qt_user_functions, CFootBotEntity>
-                        (&iAnt_qt_user_functions::DrawFood);
+    RegisterUserFunction<iAnt_qt_user_functions, CFootBotEntity>(&iAnt_qt_user_functions::DrawOnRobot);
+    RegisterUserFunction<iAnt_qt_user_functions, CFloorEntity>(&iAnt_qt_user_functions::DrawOnArena);
 }
 
-void iAnt_qt_user_functions::UpdateDrawInWorldData(iAnt_controller& c) {
-    loopFunctions = c.GetLoopFunctions();
-    foodRadius    = c.GetFoodRadius();
-    nestRadius    = c.GetNestRadius();
-    nestPosition  = c.GetNestPosition();
-}
+void iAnt_qt_user_functions::DrawOnRobot(CFootBotEntity& entity) {
+    iAnt_controller& c = dynamic_cast<iAnt_controller&>(entity.GetControllableEntity().GetController());
 
-
-// draw function for adding graphics to a foot-bot
-void iAnt_qt_user_functions::DrawFood(CFootBotEntity& entity) {
-    iAnt_controller& c = dynamic_cast<iAnt_controller&>
-                         (entity.GetControllableEntity().GetController());
-
-    UpdateDrawInWorldData(c);
+    if(data == NULL) data = c.GetData();
 
     if(c.IsHoldingFood() == true) {
-#ifdef __APPLE__
-        DrawCylinder(CVector3(0.0f, 0.0f, 0.3f), CQuaternion(), 0.05f, 0.025f, CColor::BLACK);
-#else
-        DrawCylinder(0.05f, 0.025f, CVector3(0.0f, 0.0f, 0.3f), CColor::BLACK);
-#endif
+        DrawCylinder(CVector3(0.0, 0.0, 0.3), CQuaternion(), 0.05, 0.025, CColor::BLACK);
+    }
+}
+ 
+void iAnt_qt_user_functions::DrawOnArena(CFloorEntity& entity) {
+    if(data != NULL) {
+        DrawNest();
+        DrawFood();
+        DrawFidelity();
+        DrawPheromones();
     }
 }
 
-void iAnt_qt_user_functions::DrawInWorld() {
-    foodPositions      = loopFunctions->GetFoodPositions();
-    pheromonePositions = loopFunctions->GetPheromonePositions();
-    fidelityPositions  = loopFunctions->GetFidelityPositions();
+/*****
+ * This function is called by the DrawOnArena(...) function. If the iAnt_data
+ * object is not initialized this function should not be called.
+ *****/
+void iAnt_qt_user_functions::DrawNest() {
+    /* if the iAnt_data object is null, we cannot draw the nest */
+    if(data == NULL) return;
 
-    CVector3 np(nestPosition.GetX(), nestPosition.GetY(), 0.001f);
-    Real height = foodRadius / 2.0;
+    /* 2d cartesian coordinates of the nest */
+    Real x_coordinate = data->nestPosition.GetX();
+    Real y_coordinate = data->nestPosition.GetX();
 
-#ifdef __APPLE__
-    CQuaternion q;
-#endif
+    /* required: leaving this 0.0 will draw the nest inside of the floor */
+    Real elevation = data->nestElevation;
 
-    // draw the nest
-#ifdef __APPLE__
-    DrawCircle(np, q, nestRadius, CColor::GRAY80);
-#else
-    DrawCircle(nestRadius, np, CColor::GRAY80);
-#endif
-    
-    if(foodPositions.size() > 0) {
-        Real x, y;
-        CVector3 p3d;
+    /* 3d cartesian coordinates of the nest */
+    CVector3 nest_3d(x_coordinate, y_coordinate, elevation);
 
-        // draw the food items
-        for(size_t i = 0; i < foodPositions.size(); i++) {
-            x = foodPositions[i].GetX();
-            y = foodPositions[i].GetY();
-            p3d = CVector3(x, y, 0.0);
+    /* Draw the nest on the arena. */
+    DrawCircle(nest_3d, CQuaternion(), data->nestRadius, CColor::GRAY50);
+}
 
-#ifdef __APPLE__
-            DrawCylinder(p3d, q, foodRadius, height, CColor::BLACK);
-#else
-            DrawCylinder(foodRadius, height, p3d, CColor::BLACK);
-#endif
-        }
+void iAnt_qt_user_functions::DrawFood() {
+    /* if the iAnt_data object is null, we cannot draw the nest */
+    if(data == NULL) return;
 
-        // draw the pheromone positions
-        for(size_t i = 0; i < pheromonePositions.size(); i++) {
-            if(pheromonePositions[i] != nestPosition) {
-                x = pheromonePositions[i].GetX();
-                y = pheromonePositions[i].GetY();
-                p3d = CVector3(x, y, 0.0);
+    Real x, y;
 
-#ifdef __APPLE__
-                DrawCylinder(p3d, q, foodRadius, height, CColor::RED);
-#else
-//                DrawCylinder(foodRadius, height, p3d, CColor::RED);
-#endif
-            }
-        }
+    for(size_t i = 0; i < data->foodList.size(); i++) {
+        x = data->foodList[i].GetX();
+        y = data->foodList[i].GetY();
+        DrawCylinder(CVector3(x, y, 0.0), CQuaternion(), 0.05, 0.025, CColor::BLACK);
+    }
+}
 
-        // draw the fidelity positions
-        for(size_t i = 0; i < fidelityPositions.size(); i++) {
-            if(fidelityPositions[i] != nestPosition) {
-                x = fidelityPositions[i].GetX();
-                y = fidelityPositions[i].GetY();
-                p3d = CVector3(x, y, 0.0);
+void iAnt_qt_user_functions::DrawFidelity() {
+    /* if the iAnt_data object is null, we cannot draw the nest */
+    if(data == NULL) return;
 
-#ifdef __APPLE__
-                DrawCylinder(p3d, q, foodRadius, height, CColor::BLUE);
-#else
-                DrawCylinder(foodRadius, height, p3d, CColor::BLUE);
-#endif
+    Real x, y;
+
+    for(size_t i = 0; i < data->fidelityList.size(); i++) {
+        x = data->fidelityList[i].GetX();
+        y = data->fidelityList[i].GetY();
+        DrawCylinder(CVector3(x, y, 0.0), CQuaternion(), 0.05, 0.025, CColor::CYAN);
+    }
+}
+
+void iAnt_qt_user_functions::DrawPheromones() {
+    /* if the iAnt_data object is null, we cannot draw the nest */
+    if(data == NULL) return;
+
+    Real x, y, weight;
+    vector<CVector2> trail;
+    CColor trailColor;
+
+    for(size_t i = 0; i < data->pheromoneList.size(); i++) {
+        x = data->pheromoneList[i].GetLocation().GetX();
+        y = data->pheromoneList[i].GetLocation().GetY();
+        DrawCylinder(CVector3(x, y, 0.0), CQuaternion(), 0.05, 0.025, CColor::PURPLE);
+
+        if(data->drawTrails == true) {
+            trail  = data->pheromoneList[i].GetTrail();
+            weight = data->pheromoneList[i].GetWeight();
+
+            if(weight > 0.475 && weight <= 1.0)       // [ 100.0% , 47.5% )
+                trailColor = CColor::GREEN;
+            else if(weight > 0.05 && weight <= 0.475) // [  47.5% ,  5.0% )
+                trailColor = CColor::YELLOW;
+            else                                      // [   5.0% ,  0.0% ]
+                trailColor = CColor::RED;
+
+            for(size_t j = 0; j < trail.size(); j++) {
+                x = trail[j].GetX();
+                y = trail[j].GetY();
+
+                DrawCylinder(CVector3(x, y, 0.0), CQuaternion(), 0.05, 0.025, trailColor);
             }
         }
     }
 }
 
-// macro required for registering this class with Argos
-REGISTER_QTOPENGL_USER_FUNCTIONS(iAnt_qt_user_functions,
-                                 "iAnt_qt_user_functions")
+REGISTER_QTOPENGL_USER_FUNCTIONS(iAnt_qt_user_functions, "iAnt_qt_user_functions")
