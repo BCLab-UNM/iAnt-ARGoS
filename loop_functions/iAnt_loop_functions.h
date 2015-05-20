@@ -10,12 +10,14 @@ using namespace argos;
 using namespace std;
 
 /*****
- * Simulation hook functions.
+ * The loop functions class provides "hooks" into the simulation right before
+ * and right after each tick (or frame) of the simulation. The primary use of
+ * this class will be to maintain global status variables.
  *****/
 class iAnt_loop_functions : public CLoopFunctions {
 	public:
 
-		iAnt_loop_functions()  {}
+		iAnt_loop_functions() {}
 		~iAnt_loop_functions() {}
 
 		void Init(TConfigurationNode& node);

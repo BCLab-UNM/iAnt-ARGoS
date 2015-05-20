@@ -95,8 +95,8 @@ void iAnt_controller::Reset() {
     resourceDensity = 0;
     CPFA            = INACTIVE;
 
-    target   = data->nestPosition;
-    fidelity = data->nestPosition;
+    target   = data->NestPosition;
+    fidelity = data->NestPosition;
 
     trailToShare.clear();
     trailToFollow.clear();
@@ -157,7 +157,7 @@ void iAnt_controller::departing() {
            to the searching state. */
         Real randomNumber = RNG->Uniform(CRange<Real>(0.0, 1.0));
 
-        if(randomNumber < data->probabilityOfSwitchingToSearching) {
+        if(randomNumber < data->ProbabilityOfSwitchingToSearching) {
             searchTime = 0;
     	    CPFA = SEARCHING;
     	} else if(distance.SquareLength() < DistanceTolerance) {
@@ -183,8 +183,8 @@ void iAnt_controller::searching() {
         Real     random   = RNG->Uniform(CRange<Real>(0.0, 1.0));
 
         /* randomly give up searching */
-		if(random < data->probabilityOfReturningToNest) {
-            SetTargetInBounds(data->nestPosition);
+		if(random < data->ProbabilityOfReturningToNest) {
+            SetTargetInBounds(data->NestPosition);
             CPFA = RETURNING;
         }
         /* If we reached our target search location, set a new one. The 
@@ -193,7 +193,7 @@ void iAnt_controller::searching() {
         else if(distance.SquareLength() < DistanceTolerance) {
             /* uninformed search */
             if(isInformed == false) {
-                Real USCV = data->uninformedSearchVariation.GetValue();
+                Real USCV = data->UninformedSearchVariation.GetValue();
                 Real rand = RNG->Gaussian(USCV);
                 CRadians rotation(rand);
 			    CRadians angle1(rotation.UnsignedNormalize());
@@ -206,7 +206,7 @@ void iAnt_controller::searching() {
                 size_t   t           = searchTime++;
                 Real     twoPi       = (CRadians::TWO_PI).GetValue();
                 Real     pi          = (CRadians::PI).GetValue();
-                Real     isd         = data->rateOfInformedSearchDecay;
+                Real     isd         = data->RateOfInformedSearchDecay;
 				Real     correlation = GetExponentialDecay(twoPi, t, isd);
 				CRadians rotation(GetBound(correlation, -pi, pi));
 				CRadians angle1(rotation.UnsignedNormalize());
@@ -228,7 +228,7 @@ void iAnt_controller::searching() {
          * (additional changes need to be made to the returning() function)
          *****/
 
-       	SetTargetInBounds(data->nestPosition);
+       	SetTargetInBounds(data->NestPosition);
         CPFA = RETURNING;
     }
 
@@ -255,17 +255,17 @@ void iAnt_controller::returning() {
      *        Leave the code inside this IF as it is!
      * // }
      *****/
-   	if(distance.SquareLength() < data->nestRadiusSquared) {
+   	if(distance.SquareLength() < data->NestRadiusSquared) {
         /* Based on a Poisson CDF, the robot may or may not create a pheromone
            located at the last place it picked up food. */
-        Real poissonCDF_pLayRate    = GetPoissonCDF(resourceDensity, data->rateOfLayingPheromone);
-        Real poissonCDF_sFollowRate = GetPoissonCDF(resourceDensity, data->rateOfSiteFidelity);
+        Real poissonCDF_pLayRate    = GetPoissonCDF(resourceDensity, data->RateOfLayingPheromone);
+        Real poissonCDF_sFollowRate = GetPoissonCDF(resourceDensity, data->RateOfSiteFidelity);
         Real r1 = RNG->Uniform(CRange<Real>(0.0, 1.0));
         Real r2 = RNG->Uniform(CRange<Real>(0.0, 1.0));
 
 		if(poissonCDF_pLayRate > r1) {
-            iAnt_pheromone sharedPheromone(fidelity, trailToShare, (Real)data->simTime/data->ticks_per_second, data->rateOfPheromoneDecay);
-			data->pheromoneList.push_back(sharedPheromone);
+            iAnt_pheromone sharedPheromone(fidelity, trailToShare, (Real)data->SimTime/data->TicksPerSecond, data->RateOfPheromoneDecay);
+			data->PheromoneList.push_back(sharedPheromone);
 		}
 
         /* Determine probabilistically wether to use site fidelity, pheromone
@@ -298,14 +298,14 @@ void iAnt_controller::returning() {
  * and all iAnts are instructed to return to the nest and shut down.
  *****/
 void iAnt_controller::shutdown() {
-	target = data->nestPosition;
+	target = data->NestPosition;
     searchTime++;
 
-    if((GetPosition() - target).SquareLength() < data->nestRadiusSquared ||
-       searchTime % (data->ticks_per_second * 30) == 0) {
+    if((GetPosition() - target).SquareLength() < data->NestRadiusSquared ||
+       searchTime % (data->TicksPerSecond * 30) == 0) {
         motorActuator->SetLinearVelocity(0.0, 0.0);
         searchTime--;
-    } else if(data->foodList.size() > 0) {
+    } else if(data->FoodList.size() > 0) {
         CPFA = INACTIVE;
     } else {
         ApproachTheTarget();
@@ -327,34 +327,34 @@ void iAnt_controller::SetHoldingFood() {
 
         vector<CVector2> newFoodList;
 
-        for(size_t i = 0; i < data->foodList.size(); i++) {
-            if((GetPosition() - data->foodList[i]).SquareLength() < DistanceTolerance) {
+        for(size_t i = 0; i < data->FoodList.size(); i++) {
+            if((GetPosition() - data->FoodList[i]).SquareLength() < DistanceTolerance) {
                 /* We found food! Calculate the nearby food density. */
                 isHoldingFood = true;
                 SetLocalResourceDensity();
             } else {
                 /* No food here. Return this food position to the list */
-                newFoodList.push_back(data->foodList[i]);
+                newFoodList.push_back(data->FoodList[i]);
             }
         }
 
         /* We picked up food. Update the food list minus what we picked up. */
-        if(IsHoldingFood() == true) data->foodList = newFoodList;
+        if(IsHoldingFood() == true) data->FoodList = newFoodList;
         /* We dropped off food. Clear the built-up pheromone trail. */
         else trailToShare.clear();
     }
     /* Drop off food: We are holding food and have reached the nest. */
-    else if((GetPosition() - data->nestPosition).SquareLength() < data->nestRadiusSquared) {
+    else if((GetPosition() - data->NestPosition).SquareLength() < data->NestRadiusSquared) {
         isHoldingFood = false;
     }
     /* We are carrying food and haven't reached the nest, keep building up the
        pheromone trail attached to this found food item. */
-    else if(data->simTime % data->trailDensityRate == 0) {
+    else if(data->SimTime % data->TrailDensityRate == 0) {
             trailToShare.push_back(GetPosition());
     }
 
     /* If all food is collected, return to the nest and shutdown. */
-    if(data->foodList.size() == 0 && !IsHoldingFood()) {
+    if(data->FoodList.size() == 0 && !IsHoldingFood()) {
         searchTime = 0;
         CPFA = SHUTDOWN;
     }
@@ -366,9 +366,9 @@ void iAnt_controller::SetHoldingFood() {
 void iAnt_controller::SetRandomSearchLocation() {
     CVector2 p = GetPosition();
 
-    Real newX = RNG->Uniform(data->forageRangeX), newY = RNG->Uniform(data->forageRangeY),
-         x_max = data->forageRangeX.GetMax(), x_min = data->forageRangeX.GetMin(),
-         y_max = data->forageRangeY.GetMax(), y_min = data->forageRangeY.GetMin();
+    Real newX = RNG->Uniform(data->ForageRangeX), newY = RNG->Uniform(data->ForageRangeY),
+         x_max = data->ForageRangeX.GetMax(), x_min = data->ForageRangeX.GetMin(),
+         y_max = data->ForageRangeY.GetMax(), y_min = data->ForageRangeY.GetMin();
 
     bool set_y_max = false;
 
@@ -436,8 +436,8 @@ void iAnt_controller::SetLocalResourceDensity() {
 	resourceDensity = 0;
 
     /* Calculate resource density based on the global food list positions. */
-	for(size_t i = 0; i < data->foodList.size(); i++) {
-        distance = GetPosition() - data->foodList[i];
+	for(size_t i = 0; i < data->FoodList.size(); i++) {
+        distance = GetPosition() - data->FoodList[i];
 
 		if(distance.SquareLength() < SearchRadius) {
 			resourceDensity++;
@@ -445,17 +445,17 @@ void iAnt_controller::SetLocalResourceDensity() {
 	}
 
     /* Remove this robot's old fidelity position from the fidelity list. */
-    for(size_t i = 0; i < data->fidelityList.size(); i++) {
-        if((data->fidelityList[i] - fidelity).SquareLength() != 0.0)
-            newFidelityList.push_back(data->fidelityList[i]);
+    for(size_t i = 0; i < data->FidelityList.size(); i++) {
+        if((data->FidelityList[i] - fidelity).SquareLength() != 0.0)
+            newFidelityList.push_back(data->FidelityList[i]);
     }
 
     /* Update the global fidelity list. */
-    data->fidelityList = newFidelityList;
+    data->FidelityList = newFidelityList;
     /* Set the fidelity position to the robot's current position. */
     fidelity = GetPosition();
     /* Add the robot's new fidelity position to the global fidelity list. */
-    data->fidelityList.push_back(fidelity);
+    data->FidelityList.push_back(fidelity);
 }
 
 /*****
@@ -467,13 +467,16 @@ bool iAnt_controller::SetTargetPheromone() {
 	double maxStrength = 0.0, randomWeight = 0.0;
     bool isPheromoneSet = false;
 
+    /* update the pheromone list and remove inactive pheromones */
+    data->UpdatePheromoneList();
+
     /* default target = nest; in case we have 0 active pheromones */
-    target = data->nestPosition;
+    target = data->NestPosition;
 
     /* Calculate a maximum strength based on active pheromone weights. */
-	for(size_t i = 0; i < data->pheromoneList.size(); i++) {
-        if(data->pheromoneList[i].IsActive() == true) {
-            maxStrength += data->pheromoneList[i].GetWeight();
+	for(size_t i = 0; i < data->PheromoneList.size(); i++) {
+        if(data->PheromoneList[i].IsActive() == true) {
+            maxStrength += data->PheromoneList[i].GetWeight();
         }
     }
 
@@ -481,18 +484,18 @@ bool iAnt_controller::SetTargetPheromone() {
     randomWeight = RNG->Uniform(CRange<double>(0.0, maxStrength));
 
     /* Randomly select an active pheromone to follow. */
-    for(size_t i = 0; i < data->pheromoneList.size(); i++) {
-	    if(randomWeight < data->pheromoneList[i].GetWeight() && data->pheromoneList[i].IsActive()) {
+    for(size_t i = 0; i < data->PheromoneList.size(); i++) {
+	    if(randomWeight < data->PheromoneList[i].GetWeight()) {
             /* We've chosen a pheromone! */
-            SetTargetInBounds(data->pheromoneList[i].GetLocation());
-            trailToFollow = data->pheromoneList[i].GetTrail();
+            SetTargetInBounds(data->PheromoneList[i].GetLocation());
+            trailToFollow = data->PheromoneList[i].GetTrail();
             isPheromoneSet = true;
             /* If we pick a pheromone, break out of this loop. */
             break;
 	    }
 
         /* We didn't pick a pheromone! Remove its weight from randomWeight. */
-        randomWeight -= data->pheromoneList[i].GetWeight();
+        randomWeight -= data->PheromoneList[i].GetWeight();
     }
 
     return isPheromoneSet;
@@ -610,7 +613,7 @@ bool iAnt_controller::DetectCollisions() {
      *****/
 
     /* FIRST: Randomly decide whether to turn based on collision data. */
-    if(collision > 0.0 && RNG->Uniform(CRange<Real>(0.0, 1.0)) < data->turnProbability) {
+    if(collision > 0.0 && RNG->Uniform(CRange<Real>(0.0, 1.0)) < data->TurnProbability) {
 
         if(left > right)
 		    motorActuator->SetLinearVelocity(MaxRobotSpeed, -MaxRobotSpeed);
@@ -620,13 +623,13 @@ bool iAnt_controller::DetectCollisions() {
 
     }
     /* SECOND: Randomly decide to ignore sensors and move forward. */
-    else if(collision > 0.0 && RNG->Uniform(CRange<Real>(0.0, 1.0)) < data->pushProbability)
+    else if(collision > 0.0 && RNG->Uniform(CRange<Real>(0.0, 1.0)) < data->PushProbability)
 		motorActuator->SetLinearVelocity(MaxRobotSpeed, MaxRobotSpeed);
     /* THIRD: Randomly decide to reverse away from (or into) a collision. */
-    else if(collision > 0.0 && RNG->Uniform(CRange<Real>(0.0, 1.0)) < data->pullProbability)
+    else if(collision > 0.0 && RNG->Uniform(CRange<Real>(0.0, 1.0)) < data->PullProbability)
 		motorActuator->SetLinearVelocity(-MaxRobotSpeed, -MaxRobotSpeed);
     /* FOURTH: Randomly decide to stop. Wait for obstacles to move (or not). */
-    else if(collision > 0.0 && RNG->Uniform(CRange<Real>(0.0, 1.0)) < data->waitProbability)
+    else if(collision > 0.0 && RNG->Uniform(CRange<Real>(0.0, 1.0)) < data->WaitProbability)
 		motorActuator->SetLinearVelocity(0.0, 0.0);
 
     /* Return true if we detected collisions, false otherwise. */
@@ -672,18 +675,18 @@ void iAnt_controller::ApproachTheTarget() {
  *****/
 void iAnt_controller::SetTargetInBounds(CVector2 t) {
     /* Bound the X value based on the forage range. */
-    if(t.GetX() > data->forageRangeX.GetMax())
-        t = CVector2(data->forageRangeX.GetMax(), t.GetY());
+    if(t.GetX() > data->ForageRangeX.GetMax())
+        t = CVector2(data->ForageRangeX.GetMax(), t.GetY());
 
-    if(t.GetX() < data->forageRangeX.GetMin())
-        t = CVector2(data->forageRangeX.GetMin(), t.GetY());
+    if(t.GetX() < data->ForageRangeX.GetMin())
+        t = CVector2(data->ForageRangeX.GetMin(), t.GetY());
 
     /* Bound the Y value based on the forage range. */
-    if(t.GetY() > data->forageRangeY.GetMax())
-        t = CVector2(t.GetX(), data->forageRangeY.GetMax());
+    if(t.GetY() > data->ForageRangeY.GetMax())
+        t = CVector2(t.GetX(), data->ForageRangeY.GetMax());
 
-    if(t.GetY() < data->forageRangeY.GetMin())
-        t = CVector2(t.GetX(), data->forageRangeY.GetMin());
+    if(t.GetY() < data->ForageRangeY.GetMin())
+        t = CVector2(t.GetX(), data->ForageRangeY.GetMin());
 
     /* Set the robot's target to the bounded t position. */
     target = t;

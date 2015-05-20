@@ -11,6 +11,9 @@ iAnt_qt_user_functions::iAnt_qt_user_functions() :
     RegisterUserFunction<iAnt_qt_user_functions, CFloorEntity>(&iAnt_qt_user_functions::DrawOnArena);
 }
 
+/*****
+ *
+ *****/
 void iAnt_qt_user_functions::DrawOnRobot(CFootBotEntity& entity) {
     iAnt_controller& c = dynamic_cast<iAnt_controller&>(entity.GetControllableEntity().GetController());
 
@@ -21,12 +24,15 @@ void iAnt_qt_user_functions::DrawOnRobot(CFootBotEntity& entity) {
     }
 }
  
+/*****
+ *
+ *****/
 void iAnt_qt_user_functions::DrawOnArena(CFloorEntity& entity) {
     if(data != NULL) {
-        DrawNest();
         DrawFood();
         DrawFidelity();
         DrawPheromones();
+        DrawNest();
     }
 }
 
@@ -39,45 +45,54 @@ void iAnt_qt_user_functions::DrawNest() {
     if(data == NULL) return;
 
     /* 2d cartesian coordinates of the nest */
-    Real x_coordinate = data->nestPosition.GetX();
-    Real y_coordinate = data->nestPosition.GetX();
+    Real x_coordinate = data->NestPosition.GetX();
+    Real y_coordinate = data->NestPosition.GetX();
 
     /* required: leaving this 0.0 will draw the nest inside of the floor */
-    Real elevation = data->nestElevation;
+    Real elevation = data->NestElevation;
 
     /* 3d cartesian coordinates of the nest */
     CVector3 nest_3d(x_coordinate, y_coordinate, elevation);
 
     /* Draw the nest on the arena. */
-    DrawCircle(nest_3d, CQuaternion(), data->nestRadius, CColor::GRAY50);
+    DrawCircle(nest_3d, CQuaternion(), data->NestRadius, CColor::GRAY50);
 }
 
+/*****
+ *
+ *****/
 void iAnt_qt_user_functions::DrawFood() {
     /* if the iAnt_data object is null, we cannot draw the nest */
     if(data == NULL) return;
 
     Real x, y;
 
-    for(size_t i = 0; i < data->foodList.size(); i++) {
-        x = data->foodList[i].GetX();
-        y = data->foodList[i].GetY();
+    for(size_t i = 0; i < data->FoodList.size(); i++) {
+        x = data->FoodList[i].GetX();
+        y = data->FoodList[i].GetY();
         DrawCylinder(CVector3(x, y, 0.0), CQuaternion(), 0.05, 0.025, CColor::BLACK);
     }
 }
 
+/*****
+ *
+ *****/
 void iAnt_qt_user_functions::DrawFidelity() {
     /* if the iAnt_data object is null, we cannot draw the nest */
     if(data == NULL) return;
 
     Real x, y;
 
-    for(size_t i = 0; i < data->fidelityList.size(); i++) {
-        x = data->fidelityList[i].GetX();
-        y = data->fidelityList[i].GetY();
+    for(size_t i = 0; i < data->FidelityList.size(); i++) {
+        x = data->FidelityList[i].GetX();
+        y = data->FidelityList[i].GetY();
         DrawCylinder(CVector3(x, y, 0.0), CQuaternion(), 0.05, 0.025, CColor::CYAN);
     }
 }
 
+/*****
+ *
+ *****/
 void iAnt_qt_user_functions::DrawPheromones() {
     /* if the iAnt_data object is null, we cannot draw the nest */
     if(data == NULL) return;
@@ -86,14 +101,14 @@ void iAnt_qt_user_functions::DrawPheromones() {
     vector<CVector2> trail;
     CColor trailColor;
 
-    for(size_t i = 0; i < data->pheromoneList.size(); i++) {
-        x = data->pheromoneList[i].GetLocation().GetX();
-        y = data->pheromoneList[i].GetLocation().GetY();
+    for(size_t i = 0; i < data->PheromoneList.size(); i++) {
+        x = data->PheromoneList[i].GetLocation().GetX();
+        y = data->PheromoneList[i].GetLocation().GetY();
         DrawCylinder(CVector3(x, y, 0.0), CQuaternion(), 0.05, 0.025, CColor::PURPLE);
 
-        if(data->drawTrails == true) {
-            trail  = data->pheromoneList[i].GetTrail();
-            weight = data->pheromoneList[i].GetWeight();
+        if(data->DrawTrails == 1) {
+            trail  = data->PheromoneList[i].GetTrail();
+            weight = data->PheromoneList[i].GetWeight();
 
             if(weight > 0.475 && weight <= 1.0)       // [ 100.0% , 47.5% )
                 trailColor = CColor::GREEN;
