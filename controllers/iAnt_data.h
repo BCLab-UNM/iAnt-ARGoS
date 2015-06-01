@@ -3,9 +3,11 @@
 
 #include "iAnt_pheromone.h"
 #include <vector>
+#include <argos3/core/utility/datatypes/color.h>
 #include <argos3/core/utility/logging/argos_log.h>
 #include <argos3/core/utility/math/rng.h>
 #include <argos3/core/utility/math/vector2.h>
+#include <argos3/core/utility/math/ray3.h>
 
 using namespace std;
 using namespace argos;
@@ -22,13 +24,20 @@ class iAnt_data {
 
         /* iAnt simulation data */
         size_t SimTime;
+        size_t MaxSimTime;
         size_t TicksPerSecond;
+        size_t ResourceDensityDelay;
+
         size_t RandomSeed;
-        size_t VariableSeed;
         size_t SimCounter;
+        size_t MaxSimCounter;
+        size_t VariableSeed;
         size_t OutputData;
+
         size_t TrailDensityRate;
         size_t DrawTrails;
+        size_t DrawTargetRays;
+
         size_t FoodDistribution;
         size_t FoodItemCount;
         size_t NumberOfClusters;
@@ -48,21 +57,28 @@ class iAnt_data {
         Real     RateOfPheromoneDecay;
 
         /* iAnt_controller data */
+/*
         Real                   TurnProbability;
         Real                   PushProbability;
         Real                   PullProbability;
         Real                   WaitProbability;
+*/
         Real                   NestRadius;
         Real                   NestRadiusSquared;
         Real                   NestElevation;
+        Real                   SearchRadius;
         Real                   FoodRadius;
         Real                   FoodRadiusSquared;
         CRange<Real>           ForageRangeX;
         CRange<Real>           ForageRangeY;
         CVector2               NestPosition;
+
+        /* position vectors */
         vector<CVector2>       FoodList;
+        vector<CColor>         FoodColoringList;
         vector<CVector2>       FidelityList;
         vector<iAnt_pheromone> PheromoneList;
+        vector<CRay3>          TargetRayList;
 
     private:
 
