@@ -3,7 +3,7 @@
 
     <!-- FRAMEWORK -->
     <framework>
-		<experiment length           = "0"
+		<experiment length           = "3600"
                     ticks_per_second = "16"
 					random_seed      = "1337"/>
 	</framework>
@@ -39,14 +39,6 @@
                     label   = "iAnt_loop_functions">
 
         <!-- evolvable parameters -->
-        <CPFA       ProbabilityOfSwitchingToSearching = "0.51964199542999268"
-                    ProbabilityOfReturningToNest      = "8.1630147178657353e-05"
-                    UninformedSearchVariation         = "11.033935"
-                    RateOfInformedSearchDecay         = "0.37007546424865723"
-                    RateOfSiteFidelity                = "7.79852294921875"
-                    RateOfLayingPheromone             = "10.791043281555176"
-                    RateOfPheromoneDecay              = "0.15931577980518341"/>
-<!--
         <CPFA       ProbabilityOfSwitchingToSearching = "0.99999"
                     ProbabilityOfReturningToNest      = "0.00001"
                     UninformedSearchVariation         = "15.0"
@@ -54,10 +46,10 @@
                     RateOfSiteFidelity                = "10.0"
                     RateOfLayingPheromone             = "10.0"
                     RateOfPheromoneDecay              = "0.05"/>
--->
+
         <!-- un-evolvable environment variables -->
-        <simulation MaxSimCounter    = "5"
-                    VariableSeed     = "1"
+        <simulation MaxSimCounter    = "1"
+                    VariableSeed     = "0"
                     OutputData       = "0"
                     NestPosition     = "0.0, 0.0"
                     NestRadius       = "0.25"
