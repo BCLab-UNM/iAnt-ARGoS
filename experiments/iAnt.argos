@@ -11,7 +11,7 @@
     <!-- CONTROLLERS -->
     <controllers>
         <iAnt_controller id      = "iAnt_c"
-                         library = "build/controllers/libiAnt_controller.so">
+                         library = "build/source/libiAnt_controller.so">
 
             <actuators>
 				<differential_steering implementation = "default"/>
@@ -28,14 +28,15 @@
             <params>
 				<iAnt_params SearchStepSize          = "0.175"
 		                     DistanceTolerance       = "0.01"
-                		     MaxRobotSpeed           = "16.0"
+                		     RobotForwardSpeed       = "16.0"
+                             RobotRotationSpeed      = "13.3"
         		             AngleToleranceInDegrees = "22.5"/>
 			</params>
         </iAnt_controller>
     </controllers>
 
     <!-- LOOP FUNCTIONS -->
-    <loop_functions library = "build/loop_functions/libiAnt_loop_functions.so"
+    <loop_functions library = "build/source/libiAnt_loop_functions.so"
                     label   = "iAnt_loop_functions">
 
         <!-- evolvable parameters -->
@@ -89,7 +90,6 @@
     <media><led id="leds"/></media>
 
     <!-- VISUALIZATION -->
-<!--
     <visualization>
         <qt-opengl>
             <camera>
@@ -107,6 +107,5 @@
             <user_functions label="iAnt_qt_user_functions"/>
         </qt-opengl>
     </visualization>
--->
 
 </argos-configuration>

@@ -2,7 +2,7 @@
 # Compile each iAnt-ARGoS class into a shared object file.
 ################################################################################
 add_library(iAnt_controller SHARED iAnt_controller.cpp)
-add_library(iAnt_loop_functions SHARED iAnt_loop_functions.cpp)
+add_library(iAnt_loop_functions SHARED iAnt_loop_functions.cpp iAnt_qt_user_functions.cpp)
 add_library(iAnt_data SHARED iAnt_data.cpp)
 add_library(iAnt_qt_user_functions SHARED iAnt_qt_user_functions.cpp)
 add_library(iAnt_pheromone SHARED iAnt_pheromone.cpp)
@@ -18,8 +18,7 @@ target_link_libraries(iAnt_controller
 
 target_link_libraries(iAnt_loop_functions
                       iAnt_controller
-                      iAnt_data
-                      iAnt_qt_user_functions)
+                      iAnt_data)
 
 target_link_libraries(iAnt_data
                       iAnt_pheromone
