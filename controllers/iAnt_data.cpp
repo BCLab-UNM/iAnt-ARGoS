@@ -15,8 +15,8 @@ iAnt_data::iAnt_data() :
     VariableSeed(0),
     OutputData(0),
     TrailDensityRate(6),
-    DrawTrails(0),
-    DrawTargetRays(0),
+    DrawTrails(1),
+    DrawTargetRays(1),
     FoodDistribution(0),
 
     FoodItemCount(256),

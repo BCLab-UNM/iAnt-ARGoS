@@ -9,3 +9,5 @@ tags_collected, time_in_minutes, random_seed
 183, 60, 1338
 209, 60, 1339
 181, 60, 1340
+178, 60, 1337
+183, 60, 1338
