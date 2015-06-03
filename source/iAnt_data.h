@@ -9,8 +9,8 @@
 #include <argos3/core/utility/math/vector2.h>
 #include <argos3/core/utility/math/ray3.h>
 
-using namespace std;
 using namespace argos;
+using namespace std;
 
 class iAnt_data {
 
