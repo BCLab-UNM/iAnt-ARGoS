@@ -1,8 +1,9 @@
 #ifndef IANT_LOOP_FUNCTIONS_H_
 #define IANT_LOOP_FUNCTIONS_H_
 
-#include <controllers/iAnt_controller.h>
+#include <source/iAnt_controller.h>
 #include <vector>
+#include <argos3/core/utility/datatypes/color.h>
 #include <argos3/core/simulator/loop_functions.h>
 #include <argos3/plugins/robots/foot-bot/simulator/footbot_entity.h>
 

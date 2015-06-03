@@ -1,8 +1,8 @@
 #ifndef IANT_QT_USER_FUNCTIONS_H_
 #define IANT_QT_USER_FUNCTIONS_H_
 
-#include <controllers/iAnt_controller.h>
-#include <controllers/iAnt_data.h>
+#include <source/iAnt_controller.h>
+#include <source/iAnt_data.h>
 #include <argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_user_functions.h>
 #include <argos3/plugins/robots/foot-bot/simulator/footbot_entity.h>
 #include <argos3/core/simulator/entity/floor_entity.h>
