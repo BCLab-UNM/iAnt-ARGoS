@@ -19,7 +19,8 @@
             <!-- remember: a footbot's radius = 8.5 cm / 0.085 m -->
             <params>
 				<iAnt_params DistanceTolerance       = "0.01"
-                		     RobotForwardSpeed       = "16.0"/>
+                		     RobotForwardSpeed       = "16.0"
+                             RobotTurningSpeed       = "13.3"/>
 			</params>
         </iAnt_controller>
     </controllers>
