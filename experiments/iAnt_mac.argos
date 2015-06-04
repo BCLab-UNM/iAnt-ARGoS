@@ -20,7 +20,7 @@
 				<iAnt_params SearchStepSize          = "0.175"
 		                     DistanceTolerance       = "0.01"
                 		     RobotForwardSpeed       = "16.0"
-                                     RobotRotationSpeed       = "13.3"
+                             RobotRotationSpeed      = "13.3"
         		             AngleToleranceInDegrees = "22.5"/>
 			</params>
         </iAnt_controller>
