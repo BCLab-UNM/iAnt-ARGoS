@@ -8,7 +8,8 @@ iAnt_controller::iAnt_controller() :
     compass(NULL),
     motorActuator(NULL),
     proximitySensor(NULL),
-    data(NULL)
+    data(NULL),
+    RobotForwardSpeed(0.0)
 {}
 
 /*****
@@ -25,6 +26,9 @@ void iAnt_controller::Init(TConfigurationNode& node) {
     motorActuator   = GetActuator<CCI_DSA>("differential_steering");
     compass         = GetSensor<CCI_PS>   ("positioning");
     proximitySensor = GetSensor<CCI_FBPS> ("footbot_proximity");
+
+    TConfigurationNode iAnt_params = GetNode(node, "iAnt_params");
+    GetNodeAttribute(iAnt_params, "RobotForwardSpeed", RobotForwardSpeed);
 }
 
 /*****
@@ -32,6 +36,9 @@ void iAnt_controller::Init(TConfigurationNode& node) {
  * the CPFA logic using the CPFA enumeration flag once per frame.
  *****/
 void iAnt_controller::ControlStep() {
+
+    motorActuator->SetLinearVelocity(RobotForwardSpeed, RobotForwardSpeed);
+
 }
 
 /*****

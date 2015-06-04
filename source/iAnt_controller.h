@@ -48,6 +48,7 @@ class iAnt_controller : public CCI_Controller {
 
         /* data pipeline to qt_user_functions */
         iAnt_data* data;
+        Real       RobotForwardSpeed;
 };
 
 #endif /* IANT_CONTROLLER_H_ */
