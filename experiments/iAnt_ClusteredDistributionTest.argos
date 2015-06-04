@@ -11,7 +11,7 @@
     <!-- CONTROLLERS -->
     <controllers>
         <iAnt_controller id      = "iAnt_c"
-                         library = "build/controllers/libiAnt_controller.so">
+                         library = "build/source/libiAnt_controller.so">
 
             <actuators>
 				<differential_steering implementation = "default"/>
@@ -37,7 +37,7 @@
     </controllers>
 
     <!-- LOOP FUNCTIONS -->
-    <loop_functions library = "build/loop_functions/libiAnt_loop_functions.so"
+    <loop_functions library = "build/source/libiAnt_loop_functions.so"
                     label   = "iAnt_loop_functions">
 
         <!-- evolvable parameters -->
@@ -50,7 +50,7 @@
                     RateOfPheromoneDecay              = "0.03821808844804764"/>
 
         <!-- un-evolvable environment variables -->
-        <simulation MaxSimCounter    = "10"
+        <simulation MaxSimCounter    = "100"
                     VariableSeed     = "1"
                     OutputData       = "1"
                     NestPosition     = "0.0, 0.0"
