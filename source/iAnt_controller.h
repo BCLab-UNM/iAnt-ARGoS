@@ -6,6 +6,7 @@
 #include <argos3/core/utility/logging/argos_log.h>
 #include <argos3/core/utility/math/rng.h>
 #include <argos3/core/utility/math/vector2.h>
+#include <argos3/core/utility/math/ray3.h>
 #include <argos3/plugins/robots/generic/control_interface/ci_positioning_sensor.h>
 #include <argos3/plugins/robots/generic/control_interface/ci_differential_steering_actuator.h>
 #include <argos3/plugins/robots/foot-bot/simulator/footbot_entity.h>
@@ -23,7 +24,7 @@ class iAnt_controller : public CCI_Controller {
 
     public:
 
-        /* constructors */
+        /* constructor and destructor */
         iAnt_controller();
         ~iAnt_controller() {}
 
@@ -34,8 +35,11 @@ class iAnt_controller : public CCI_Controller {
 
         /* public helper functions */
         bool       IsHoldingFood();
+        bool       IsInTheNest();
         void       SetData(iAnt_data* dataPointer);
         iAnt_data* GetData();
+        CVector2   GetPosition();
+        CVector2   GetTarget();
 
     private:
 
@@ -45,10 +49,10 @@ class iAnt_controller : public CCI_Controller {
         CCI_FootBotProximitySensor*       proximitySensor;
 
         /* iAnt controller parameters */
-        Real             SearchRadius;
         Real             DistanceTolerance;
         Real             SearchStepSize;
-        Real             MaxRobotSpeed;
+        Real             RobotForwardSpeed;
+        Real             RobotRotationSpeed;
         CRange<CRadians> AngleToleranceInRadians;
 
         /* robot internal variables & statistics */
@@ -60,7 +64,10 @@ class iAnt_controller : public CCI_Controller {
         vector<CVector2> trailToFollow;
         bool             isHoldingFood;
         bool             isInformed;
+        bool             isUsingSiteFidelity;
         size_t           searchTime;
+        size_t           waitTime;
+        size_t           collisionDelay;
         size_t           resourceDensity;
 
         /* iAnt CPFA state variable */
@@ -83,11 +90,11 @@ class iAnt_controller : public CCI_Controller {
         Real GetPoissonCDF(Real k, Real lambda);
 
         /* navigation helper functions */
-        CVector2 GetPosition();
         CRadians GetHeading();
-        bool     DetectCollisions();
+        bool     IsCollisionDetected();
         void     ApproachTheTarget();
         void     SetTargetInBounds(CVector2 newTarget);
+
 };
 
 #endif /* IANT_CONTROLLER_H_ */

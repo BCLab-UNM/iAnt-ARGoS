@@ -7,9 +7,9 @@ using namespace argos;
 using namespace std;
 
 /*****
- * Implementation of the iAnt Pheromone object used by the iAnt CPFA.
- * iAnts build and maintain a list of these pheromone waypoint objects
- * to use during the informed search component of the CPFA algorithm.
+ * Implementation of the iAnt Pheromone object used by the iAnt CPFA. iAnts
+ * build and maintain a list of these pheromone waypoint objects to use during
+ * the informed search component of the CPFA algorithm.
  *****/
 class iAnt_pheromone {
 
@@ -39,6 +39,7 @@ class iAnt_pheromone {
 		Real decayRate;
 		Real weight;
 		Real threshold;
+
 };
 
 #endif /* IANT_PHEROMONE_H_ */
