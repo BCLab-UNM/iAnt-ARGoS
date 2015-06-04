@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <argos-configuration>
-    <framework><experiment length="3600" ticks_per_second="1" random_seed="1337"/></framework>
+    <framework><experiment length="3600" ticks_per_second="16" random_seed="1337"/></framework>
 
     <controllers>
         <iAnt_controller id="iAnt_c" library="build/source/libiAnt_controller.so">
@@ -20,7 +20,8 @@
             <!-- robot speed is in cm/sec -->
             <params>
 				<iAnt_params DistanceTolerance       = "0.01"
-                		     RobotForwardSpeed       = "10.0"/>
+                		     RobotForwardSpeed       = "16.0"
+                             RobotTurningSpeed       = "13.3"/>
 			</params>
         </iAnt_controller>
     </controllers>
@@ -45,7 +46,7 @@
     </loop_functions>
 
     <!-- ARENA -->
-    <arena size="10, 10, 0.0" center="0.0, 0.0, 0.0">
+    <arena size="5, 5, 0.0" center="0.0, 0.0, 0.0">
 
         <floor id="floor" source="loop_functions" pixels_per_meter="1"/>
 

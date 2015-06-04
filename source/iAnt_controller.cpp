@@ -9,7 +9,8 @@ iAnt_controller::iAnt_controller() :
     motorActuator(NULL),
     proximitySensor(NULL),
     data(NULL),
-    RobotForwardSpeed(0.0)
+    RobotForwardSpeed(0.0),
+    RobotTurningSpeed(0.0)
 {}
 
 /*****
@@ -29,6 +30,7 @@ void iAnt_controller::Init(TConfigurationNode& node) {
 
     TConfigurationNode iAnt_params = GetNode(node, "iAnt_params");
     GetNodeAttribute(iAnt_params, "RobotForwardSpeed", RobotForwardSpeed);
+    GetNodeAttribute(iAnt_params, "RobotTurningSpeed", RobotTurningSpeed);
 }
 
 /*****
@@ -37,8 +39,41 @@ void iAnt_controller::Init(TConfigurationNode& node) {
  *****/
 void iAnt_controller::ControlStep() {
 
-    motorActuator->SetLinearVelocity(RobotForwardSpeed, RobotForwardSpeed);
+    CRadians heading = GetHeading();
+    LOG << heading.UnsignedNormalize() << endl;
 
+    // [ + , + ] move forward
+    //motorActuator->SetLinearVelocity(RobotForwardSpeed, RobotForwardSpeed);
+
+    // [ + , - ] move right
+    //motorActuator->SetLinearVelocity(RobotForwardSpeed, -RobotForwardSpeed);
+
+    if(south() == true) {
+        motorActuator->SetLinearVelocity(RobotForwardSpeed, RobotForwardSpeed);        
+    }
+}
+
+
+/*****
+ *
+ *****/
+bool iAnt_controller::south() {
+    bool amIGoingSouth = true;
+    CRadians heading = GetHeading().UnsignedNormalize();
+    CRadians tolerance(0.09);
+
+    if(heading < CRadians::PI - tolerance) {
+        motorActuator->SetLinearVelocity(-RobotTurningSpeed, RobotTurningSpeed);
+        amIGoingSouth = false;
+    } else if(heading > CRadians::PI + tolerance) {
+        motorActuator->SetLinearVelocity(RobotTurningSpeed, -RobotTurningSpeed);
+        amIGoingSouth = false;
+    }else {
+        motorActuator->SetLinearVelocity(0.0, 0.0);
+        amIGoingSouth = true;
+    }
+
+    return amIGoingSouth;
 }
 
 /*****
