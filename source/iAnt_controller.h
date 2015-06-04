@@ -51,7 +51,11 @@ class iAnt_controller : public CCI_Controller {
         Real       RobotForwardSpeed;
         Real       RobotTurningSpeed;
 
+<<<<<<< HEAD
         /*movement functions*/
+=======
+        /* movement functions */
+>>>>>>> 3a6c9bd19f4be902cb33173125f1c4f06ef07c47
         bool south();
 };
 

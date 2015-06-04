@@ -11,7 +11,10 @@ iAnt_controller::iAnt_controller() :
     data(NULL),
     RobotForwardSpeed(0.0),
     RobotTurningSpeed(0.0)
+<<<<<<< HEAD
 
+=======
+>>>>>>> 3a6c9bd19f4be902cb33173125f1c4f06ef07c47
 {}
 
 /*****
@@ -40,6 +43,7 @@ void iAnt_controller::Init(TConfigurationNode& node) {
  *****/
 void iAnt_controller::ControlStep() {
 
+<<<<<<< HEAD
     LOG << GetHeading() << endl;
 
     //[ + + ] move foward
@@ -68,7 +72,43 @@ bool iAnt_controller::south() {
     else {
              motorActuator->SetLinearVelocity(0.0,0.0);
     }
+=======
+    CRadians heading = GetHeading();
+    LOG << heading.UnsignedNormalize() << endl;
+>>>>>>> 3a6c9bd19f4be902cb33173125f1c4f06ef07c47
 
+    // [ + , + ] move forward
+    //motorActuator->SetLinearVelocity(RobotForwardSpeed, RobotForwardSpeed);
+
+    // [ + , - ] move right
+    //motorActuator->SetLinearVelocity(RobotForwardSpeed, -RobotForwardSpeed);
+
+    if(south() == true) {
+        motorActuator->SetLinearVelocity(RobotForwardSpeed, RobotForwardSpeed);        
+    }
+}
+
+
+/*****
+ *
+ *****/
+bool iAnt_controller::south() {
+    bool amIGoingSouth = true;
+    CRadians heading = GetHeading().UnsignedNormalize();
+    CRadians tolerance(0.09);
+
+    if(heading < CRadians::PI - tolerance) {
+        motorActuator->SetLinearVelocity(-RobotTurningSpeed, RobotTurningSpeed);
+        amIGoingSouth = false;
+    } else if(heading > CRadians::PI + tolerance) {
+        motorActuator->SetLinearVelocity(RobotTurningSpeed, -RobotTurningSpeed);
+        amIGoingSouth = false;
+    }else {
+        motorActuator->SetLinearVelocity(0.0, 0.0);
+        amIGoingSouth = true;
+    }
+
+    return amIGoingSouth;
 }
 
 /*****
