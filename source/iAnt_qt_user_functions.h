@@ -31,9 +31,6 @@ class iAnt_qt_user_functions : public CQTOpenGLUserFunctions {
         /* private helper drawing functions */
         void DrawNest();
         void DrawFood();
-        void DrawFidelity();
-        void DrawPheromones();
-        void DrawTargetRays();
 
         /*****
          * The iAnt_data object contains shared variables used by

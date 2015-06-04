@@ -4,73 +4,21 @@
  *
  *****/
 iAnt_data::iAnt_data() :
-
-    SimTime(0),
-    MaxSimTime(57600),
-    TicksPerSecond(16),
-    ResourceDensityDelay(0),
-    RandomSeed(1337),
-    SimCounter(0),
-    MaxSimCounter(1),
-    VariableSeed(0),
-    OutputData(0),
-    TrailDensityRate(6),
-    DrawTrails(1),
-    DrawTargetRays(1),
+    RNG(NULL),
     FoodDistribution(0),
-
     FoodItemCount(256),
     NumberOfClusters(4),
     ClusterWidthX(8),
     ClusterLengthY(8),
     PowerRank(4),
-
-    ProbabilityOfSwitchingToSearching(0.99999),
-    ProbabilityOfReturningToNest(0.00001),
-    UninformedSearchVariation(0.231256126),
-    RateOfInformedSearchDecay(0.05),
-    RateOfSiteFidelity(10.0),
-    RateOfLayingPheromone(10.0),
-    RateOfPheromoneDecay(0.05),
-
-    /*
-    TurnProbability(0.1),
-    PushProbability(0.5),
-    PullProbability(0.1),
-    WaitProbability(0.1),
-    */
-
     NestRadius(0.25),
     NestRadiusSquared(0.0625),
     NestElevation(0.01),
-
-    SearchRadius(0.0),
     FoodRadius(0.05),
     FoodRadiusSquared(0.0025),
-
     ForageRangeX(-10.0, 10.0),
     ForageRangeY(-10.0, 10.0)
-
 {}
-
-/*****
- *
- *****/
-void iAnt_data::UpdatePheromoneList() {
- 
-   vector<iAnt_pheromone> new_p_list;
-
-	for(size_t i = 0; i < PheromoneList.size(); i++) {
-
-        PheromoneList[i].Update((Real)(SimTime / TicksPerSecond));
-
-        if(PheromoneList[i].IsActive() == true) {
-            new_p_list.push_back(PheromoneList[i]);
-        }
-    }
-
-    PheromoneList = new_p_list;
-}
 
 /*****
  *
@@ -109,7 +57,6 @@ void iAnt_data::RandomFoodDistribution() {
         }
 
         FoodList.push_back(placementPosition);
-        FoodColoringList.push_back(CColor::BLACK);
     }
 }
 
@@ -133,7 +80,6 @@ void iAnt_data::ClusterFoodDistribution() {
         for(size_t j = 0; j < ClusterLengthY; j++) {
             for(size_t k = 0; k < ClusterWidthX; k++) {
                 FoodList.push_back(placementPosition);
-                FoodColoringList.push_back(CColor::BLACK);
                 placementPosition.SetX(placementPosition.GetX() + foodOffset);
             }
 
@@ -185,7 +131,6 @@ void iAnt_data::PowerLawFoodDistribution() {
                 for(size_t k = 0; k < clusterSides[h]; k++) {
                     foodPlaced++;
                     FoodList.push_back(placementPosition);
-                    FoodColoringList.push_back(CColor::BLACK);
                     placementPosition.SetX(placementPosition.GetX() + foodOffset);
                 }
 

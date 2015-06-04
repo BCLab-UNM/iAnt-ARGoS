@@ -33,9 +33,9 @@ class iAnt_loop_functions : public CLoopFunctions {
 
     private:
 
-        vector<iAnt_controller*> iAnts;
-        CRandom::CRNG*           RNG;
-        iAnt_data                data;
+        vector<iAnt_controller*>  iAnts;
+        CRandom::CRNG            *RNG;
+        iAnt_data                 data;
 };
 
 #endif /* IANT_LOOP_FUNCTIONS_H_ */

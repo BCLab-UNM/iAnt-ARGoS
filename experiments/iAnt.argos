@@ -1,21 +1,13 @@
 <?xml version="1.0"?>
 <argos-configuration>
+    <framework><experiment length="3600" ticks_per_second="16" random_seed="1337"/></framework>
 
-    <!-- FRAMEWORK -->
-    <framework>
-		<experiment length           = "3600"
-                    ticks_per_second = "16"
-					random_seed      = "1337"/>
-	</framework>
-
-    <!-- CONTROLLERS -->
     <controllers>
-        <iAnt_controller id      = "iAnt_c"
-                         library = "build/source/libiAnt_controller.so">
+        <iAnt_controller id="iAnt_c" library="build/source/libiAnt_controller.so">
 
             <actuators>
-				<differential_steering implementation = "default"/>
-			</actuators>
+                <differential_steering implementation = "default"/>
+            </actuators>
 
             <sensors>
                 <footbot_proximity implementation = "default"
@@ -26,11 +18,8 @@
             <!-- un-evolvable parameters -->
             <!-- remember: a footbot's radius = 8.5 cm / 0.085 m -->
             <params>
-				<iAnt_params SearchStepSize          = "0.175"
-		                     DistanceTolerance       = "0.01"
-                		     RobotForwardSpeed       = "16.0"
-                             RobotRotationSpeed      = "13.3"
-        		             AngleToleranceInDegrees = "22.5"/>
+				<iAnt_params DistanceTolerance       = "0.01"
+                		     RobotForwardSpeed       = "16.0"/>
 			</params>
         </iAnt_controller>
     </controllers>
@@ -39,20 +28,8 @@
     <loop_functions library = "build/source/libiAnt_loop_functions.so"
                     label   = "iAnt_loop_functions">
 
-        <!-- evolvable parameters -->
-        <CPFA       ProbabilityOfSwitchingToSearching = "0.99999"
-                    ProbabilityOfReturningToNest      = "0.00001"
-                    UninformedSearchVariation         = "15.0"
-                    RateOfInformedSearchDecay         = "0.05"
-                    RateOfSiteFidelity                = "10.0"
-                    RateOfLayingPheromone             = "5.0"
-                    RateOfPheromoneDecay              = "0.05"/>
-
         <!-- un-evolvable environment variables -->
-        <simulation MaxSimCounter    = "1"
-                    VariableSeed     = "0"
-                    OutputData       = "0"
-                    NestPosition     = "0.0, 0.0"
+        <simulation NestPosition     = "0.0, 0.0"
                     NestRadius       = "0.25"
                     FoodRadius       = "0.05"
                     FoodDistribution = "1"/>
@@ -71,15 +48,22 @@
 
         <floor id="floor" source="loop_functions" pixels_per_meter="1"/>
 
+<!--
         <distribute>
             <position method = "uniform"
-                      min    = "-5, -5, 0"
-                      max    = "5, 5, 0"/>
+                      min    = "-1, -1, 0"
+                      max    = "1, 1, 0"/>
             <orientation method="gaussian" mean="0, 0, 0" std_dev="360, 0, 0"/>
-            <entity quantity="50" max_trials="100">
+            <entity quantity="1" max_trials="100">
                 <foot-bot id="fb_0"><controller config="iAnt_c"/></foot-bot>
             </entity>
         </distribute>
+-->
+
+        <foot-bot id="fb0">
+            <body position="0.0, 0.0, 0.0" orientation="0, 0, 0"/>
+            <controller config="iAnt_c"/>
+        </foot-bot>
 
     </arena>
 
@@ -94,7 +78,7 @@
         <qt-opengl>
             <camera>
                 <placement idx="0" position="  0, 0, 10" look_at="0, 0, 0"
-                           lens_focal_length="90"/>
+                           lens_focal_length="25"/>
                 <placement idx="1" position="  0, 0, 10" look_at="0, 0, 0"
                            lens_focal_length="45"/>
                 <placement idx="2" position="  0, 0, 10" look_at="0, 0, 0"

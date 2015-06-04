@@ -62,6 +62,7 @@
 
         <floor id="floor" source="loop_functions" pixels_per_meter="1"/>
 
+<!--
         <distribute>
             <position method = "uniform"
                       min    = "-1, -1, 0"
@@ -71,6 +72,12 @@
                 <foot-bot id="fb_0"><controller config="iAnt_c"/></foot-bot>
             </entity>
         </distribute>
+-->
+
+        <foot-bot id="fb0">
+            <body position="0.0, 0.0, 0.0" orientation="0, 0, 0"/>
+            <controller config="iAnt_c"/>
+        </foot-bot>
 
     </arena>
 

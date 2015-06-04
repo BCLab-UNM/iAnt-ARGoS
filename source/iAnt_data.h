@@ -1,7 +1,6 @@
 #ifndef IANT_DATA_H_
 #define IANT_DATA_H_
 
-#include "iAnt_pheromone.h"
 #include <vector>
 #include <argos3/core/utility/datatypes/color.h>
 #include <argos3/core/utility/logging/argos_log.h>
@@ -19,25 +18,9 @@ class iAnt_data {
         iAnt_data();
 
         /* public helper functions */
-        void UpdatePheromoneList();
         void SetFoodDistribution();
 
         /* iAnt simulation data */
-        size_t SimTime;
-        size_t MaxSimTime;
-        size_t TicksPerSecond;
-        size_t ResourceDensityDelay;
-
-        size_t RandomSeed;
-        size_t SimCounter;
-        size_t MaxSimCounter;
-        size_t VariableSeed;
-        size_t OutputData;
-
-        size_t TrailDensityRate;
-        size_t DrawTrails;
-        size_t DrawTargetRays;
-
         size_t FoodDistribution;
         size_t FoodItemCount;
         size_t NumberOfClusters;
@@ -45,28 +28,10 @@ class iAnt_data {
         size_t ClusterLengthY;
         size_t PowerRank;
 
-		CRandom::CRNG *RNG;
-
-        /* CPFA variables and settings */
-        Real     ProbabilityOfSwitchingToSearching;
-        Real     ProbabilityOfReturningToNest;
-        CRadians UninformedSearchVariation;
-        Real     RateOfInformedSearchDecay;
-        Real     RateOfSiteFidelity;
-        Real     RateOfLayingPheromone;
-        Real     RateOfPheromoneDecay;
-
         /* iAnt_controller data */
-/*
-        Real                   TurnProbability;
-        Real                   PushProbability;
-        Real                   PullProbability;
-        Real                   WaitProbability;
-*/
         Real                   NestRadius;
         Real                   NestRadiusSquared;
         Real                   NestElevation;
-        Real                   SearchRadius;
         Real                   FoodRadius;
         Real                   FoodRadiusSquared;
         CRange<Real>           ForageRangeX;
@@ -75,10 +40,9 @@ class iAnt_data {
 
         /* position vectors */
         vector<CVector2>       FoodList;
-        vector<CColor>         FoodColoringList;
-        vector<CVector2>       FidelityList;
-        vector<iAnt_pheromone> PheromoneList;
-        vector<CRay3>          TargetRayList;
+
+        /* random number generator */
+        CRandom::CRNG* RNG;
 
     private:
 

@@ -34,12 +34,10 @@ class iAnt_controller : public CCI_Controller {
         void Reset();
 
         /* public helper functions */
-        bool       IsHoldingFood();
-        bool       IsInTheNest();
         void       SetData(iAnt_data* dataPointer);
         iAnt_data* GetData();
         CVector2   GetPosition();
-        CVector2   GetTarget();
+        CRadians   GetHeading();
 
     private:
 
@@ -48,53 +46,8 @@ class iAnt_controller : public CCI_Controller {
         CCI_DifferentialSteeringActuator* motorActuator;
         CCI_FootBotProximitySensor*       proximitySensor;
 
-        /* iAnt controller parameters */
-        Real             DistanceTolerance;
-        Real             SearchStepSize;
-        Real             RobotForwardSpeed;
-        Real             RobotRotationSpeed;
-        CRange<CRadians> AngleToleranceInRadians;
-
-        /* robot internal variables & statistics */
-        CRandom::CRNG*   RNG;
-        iAnt_data*       data;
-        CVector2         target;
-        CVector2         fidelity;
-        vector<CVector2> trailToShare;
-        vector<CVector2> trailToFollow;
-        bool             isHoldingFood;
-        bool             isInformed;
-        bool             isUsingSiteFidelity;
-        size_t           searchTime;
-        size_t           waitTime;
-        size_t           collisionDelay;
-        size_t           resourceDensity;
-
-        /* iAnt CPFA state variable */
-        enum CPFA { INACTIVE, DEPARTING, SEARCHING, RETURNING, SHUTDOWN } CPFA;
-
-        /* iAnt CPFA state functions */
-        void inactive();
-        void departing();
-        void searching();
-        void returning();
-        void shutdown();
-
-        /* CPFA helper functions */
-        void SetHoldingFood();
-        void SetRandomSearchLocation();
-        void SetLocalResourceDensity();
-        bool SetTargetPheromone();
-        Real GetExponentialDecay(Real value, Real time, Real lambda);
-        Real GetBound(Real x, Real min, Real max);
-        Real GetPoissonCDF(Real k, Real lambda);
-
-        /* navigation helper functions */
-        CRadians GetHeading();
-        bool     IsCollisionDetected();
-        void     ApproachTheTarget();
-        void     SetTargetInBounds(CVector2 newTarget);
-
+        /* data pipeline to qt_user_functions */
+        iAnt_data* data;
 };
 
 #endif /* IANT_CONTROLLER_H_ */
