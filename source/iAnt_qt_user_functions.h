@@ -1,11 +1,12 @@
 #ifndef IANT_QT_USER_FUNCTIONS_H_
 #define IANT_QT_USER_FUNCTIONS_H_
 
-#include <controllers/iAnt_controller.h>
-#include <controllers/iAnt_data.h>
+#include <source/iAnt_controller.h>
+#include <source/iAnt_data.h>
 #include <argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_user_functions.h>
 #include <argos3/plugins/robots/foot-bot/simulator/footbot_entity.h>
 #include <argos3/core/simulator/entity/floor_entity.h>
+#include <argos3/core/utility/math/ray3.h>
 
 using namespace argos;
 using namespace std;
@@ -32,6 +33,7 @@ class iAnt_qt_user_functions : public CQTOpenGLUserFunctions {
         void DrawFood();
         void DrawFidelity();
         void DrawPheromones();
+        void DrawTargetRays();
 
         /*****
          * The iAnt_data object contains shared variables used by

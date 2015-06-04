@@ -27,18 +27,17 @@ iAnt_pheromone::iAnt_pheromone(CVector2         newLocation,
 }
 
 /*****
- * Pheromone objects are updated by the iAnt_loop_functions class.
- * The pheromones slowly decay and eventually become inactive which
- * simulates the effect of a chemical pheromone trail that dissipates
- * over time. Pheromones decay exponentially.
+ * The pheromones slowly decay and eventually become inactive. This simulates
+ * the effect of a chemical pheromone trail that dissipates over time.
  *****/
 void iAnt_pheromone::Update(Real time) {
+    /* pheromones experience exponential decay with time */
     weight *= exp(-decayRate * (time - lastUpdated));
     lastUpdated = time;
 }
 
 /*****
- * Return the pheromone's location in the arena.
+ * Return the pheromone's location.
  *****/
 CVector2 iAnt_pheromone::GetLocation() {
     return location;
