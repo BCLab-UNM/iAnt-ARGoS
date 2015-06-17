@@ -2,6 +2,7 @@
 #define IANT_DATA_H_
 
 #include "iAnt_pheromone.h"
+#include "iAnt_food_type.h"
 #include <vector>
 #include <argos3/core/utility/logging/argos_log.h>
 #include <argos3/core/utility/math/rng.h>
@@ -35,7 +36,8 @@ class iAnt_data {
         size_t ClusterWidthX;
         size_t ClusterLengthY;
         size_t PowerRank;
-
+        vector<iAnt_food_type>        food_details;      // food item positions on the field
+        CVector2 FoodItemInHold;
 		CRandom::CRNG *RNG;
 
         /* CPFA variables and settings */

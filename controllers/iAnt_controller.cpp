@@ -227,7 +227,7 @@ void iAnt_controller::searching() {
          *
          * (additional changes need to be made to the returning() function)
          *****/
-
+	LOG<<"Testing\n";
        	SetTargetInBounds(data->NestPosition);
         CPFA = RETURNING;
     }
@@ -319,6 +319,7 @@ void iAnt_controller::shutdown() {
  *****/
 void iAnt_controller::SetHoldingFood() {
 
+	
     /* Is the iAnt already holding food? */
     if(IsHoldingFood() == false) {
 
@@ -332,6 +333,16 @@ void iAnt_controller::SetHoldingFood() {
                 /* We found food! Calculate the nearby food density. */
                 isHoldingFood = true;
                 SetLocalResourceDensity();
+                data->FoodItemInHold=data->FoodList[i];
+				LOG<<"Pick Up "<<data->SimTime<<"\n"; //Pickup Time
+				size_t foodIdx;
+				for(foodIdx=0;foodIdx<data->food_details.size();foodIdx++)
+				{
+					if(data->food_details[foodIdx].getPosition()==data->FoodItemInHold)
+						break;
+				
+				}
+				data->food_details[foodIdx].setPickUpTime(data->SimTime);
             } else {
                 /* No food here. Return this food position to the list */
                 newFoodList.push_back(data->FoodList[i]);
@@ -346,6 +357,22 @@ void iAnt_controller::SetHoldingFood() {
     /* Drop off food: We are holding food and have reached the nest. */
     else if((GetPosition() - data->NestPosition).SquareLength() < data->NestRadiusSquared) {
         isHoldingFood = false;
+        /*Added By Safeeul Bashir Safee
+	 	 *Searching the food_details array with the position of the food that is in Robots hand.
+	 	* */
+	 	
+		size_t foodIdx;
+		for(foodIdx=0;foodIdx<data->food_details.size();foodIdx++)
+		{
+			if(data->food_details[foodIdx].getPosition()==data->FoodItemInHold)
+				break;
+				
+		}
+		data->food_details[foodIdx].setCollectionTime(data->SimTime);
+		//food_details[foodIdx].setAntId(antId);
+    
+		LOG<<"Drop Off "<<data->SimTime<<"\n";  //Drop off Time
+		/*Adding Ends here*/
     }
     /* We are carrying food and haven't reached the nest, keep building up the
        pheromone trail attached to this found food item. */

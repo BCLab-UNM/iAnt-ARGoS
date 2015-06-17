@@ -129,6 +129,18 @@ void iAnt_loop_functions::PostExperiment() {
 
         dataInput.close();
     }
+    ofstream dataOutputPosition("iAntFoodPosition.txt", ios::out);
+        dataOutputPosition
+                << "Pile ID\tDistribution Type\tX-Position\tY-Position\tPickup Time\tDrop Off Time\tAnt ID\n";
+        for (int i = 0; i <data.food_details.size(); i++) {
+            dataOutputPosition << data.food_details[i].getPileId() << "\t"
+                    << data.food_details[i].getDistributionType() << "\t"
+                    << data.food_details[i].getPosition().GetX() << "\t"
+                    << data.food_details[i].getPosition().GetY() << "\t"
+                    <<data.food_details[i].getPickUpTime()<<"\t"
+                    << data.food_details[i].getCollectionTime() << "\t"
+                    << data.food_details[i].getAntId() << "\n";
+        }
 
     data.SimCounter++;
 }

@@ -109,17 +109,97 @@ void iAnt_data::RandomFoodDistribution() {
  *
  *****/
 void iAnt_data::ClusterFoodDistribution() {
+    Real     foodOffset  = 3.0 * FoodRadius;
+    size_t   foodToPlace = NumberOfClusters * ClusterWidthX * ClusterLengthY;
+    CVector2 placementPosition;
+
+    FoodItemCount = foodToPlace;
+
+    for(size_t i = 0; i < NumberOfClusters; i++) {
+        placementPosition.Set(RNG->Uniform(ForageRangeX), RNG->Uniform(ForageRangeY));
+
+        while(IsOutOfBounds(placementPosition, ClusterLengthY, ClusterWidthX)) {
+            placementPosition.Set(RNG->Uniform(ForageRangeX), RNG->Uniform(ForageRangeY));
+        }
+
+        for(size_t j = 0; j < ClusterLengthY; j++) {
+            for(size_t k = 0; k < ClusterWidthX; k++) {
+                FoodList.push_back(placementPosition);
+                //FoodColoringList.push_back(CColor::BLACK);
+                placementPosition.SetX(placementPosition.GetX() + foodOffset);
+            }
+
+            placementPosition.SetX(placementPosition.GetX() - (ClusterWidthX * foodOffset));
+            placementPosition.SetY(placementPosition.GetY() + foodOffset);
+        }
+    }
 }
 
 /*****
  *
  *****/
 void iAnt_data::PowerLawFoodDistribution() {
+    Real   foodOffset     = 3.0 * FoodRadius;
+    size_t foodPlaced     = 0;
+    size_t powerLawLength = 1;
+    size_t maxTrials      = 200;
+    size_t trialCount     = 0;
+    iAnt_food_type food;
+
+    vector<size_t> powerLawClusters;
+    vector<size_t> clusterSides;
+    CVector2       placementPosition;
+
+    for(size_t i = 0; i < PowerRank; i++) {
+        powerLawClusters.push_back(powerLawLength * powerLawLength);
+        powerLawLength *= 2;
+    }
+
+    for(size_t i = 0; i < PowerRank; i++) {
+        powerLawLength /= 2;
+        clusterSides.push_back(powerLawLength);
+    }
+
+    for(size_t h = 0; h < powerLawClusters.size(); h++) {
+        for(size_t i = 0; i < powerLawClusters[h]; i++) {
+            placementPosition.Set(RNG->Uniform(ForageRangeX), RNG->Uniform(ForageRangeY));
+
+            while(IsOutOfBounds(placementPosition, clusterSides[h], clusterSides[h])) {
+                trialCount++;
+                placementPosition.Set(RNG->Uniform(ForageRangeX), RNG->Uniform(ForageRangeY));
+
+                if(trialCount > maxTrials) {
+                    LOGERR << "PowerLawDistribution(): Max trials exceeded!\n";
+                    break;
+                }
+            }
+
+            for(size_t j = 0; j < clusterSides[h]; j++) {
+                for(size_t k = 0; k < clusterSides[h]; k++) {
+                    foodPlaced++;
+                    food.setCollectionTime(-1);
+					food.setAntId(-1);
+					food.setPosition(placementPosition);
+					food.setDistributionType(powerLawClusters[h]);
+					food.setPileId(i);
+					food.setPickUpTime(-1);
+					food_details.push_back(food);
+                    FoodList.push_back(placementPosition);
+                    //FoodColoringList.push_back(CColor::BLACK);
+                    placementPosition.SetX(placementPosition.GetX() + foodOffset);
+                }
+
+                placementPosition.SetX(placementPosition.GetX() - (clusterSides[h] * foodOffset));
+                placementPosition.SetY(placementPosition.GetY() + foodOffset);
+
+		//LOG<<"X Positions: "<<placementPosition.GetX()<<"\n";
+            }
+        }
+    }
+
+    FoodItemCount = foodPlaced;
 }
 
-/*****
- *
- *****/
 bool iAnt_data::IsOutOfBounds(CVector2 p, size_t length, size_t width) {
     CVector2 placementPosition = p;
 
