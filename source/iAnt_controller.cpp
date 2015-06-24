@@ -1,5 +1,5 @@
 #include "iAnt_controller.h"
-
+#include <stdlib.h>
 /*****
  * Initialize most basic variables and objects here. Most of the setup should
  * be done in the Init(...) function instead of here where possible.
@@ -11,10 +11,6 @@ iAnt_controller::iAnt_controller() :
     data(NULL),
     RobotForwardSpeed(0.0),
     RobotTurningSpeed(0.0)
-<<<<<<< HEAD
-
-=======
->>>>>>> 3a6c9bd19f4be902cb33173125f1c4f06ef07c47
 {}
 
 /*****
@@ -35,6 +31,47 @@ void iAnt_controller::Init(TConfigurationNode& node) {
     TConfigurationNode iAnt_params = GetNode(node, "iAnt_params");
     GetNodeAttribute(iAnt_params, "RobotForwardSpeed", RobotForwardSpeed);
     GetNodeAttribute(iAnt_params, "RobotTurningSpeed", RobotTurningSpeed);
+    GetNodeAttribute(iAnt_params, "AngleToleranceInDegrees", angleInDegrees);
+
+    AngleToleranceInRadians.Set(-ToRadians(angleInDegrees),ToRadians(angleInDegrees));
+    
+    stepSize = 0.2; /* Assigns the robot's stepSize */
+    
+    /***** 
+     * Initializes the pattern here by reading pattern from
+     * a text file. 
+    *****/
+    ReadFile();
+    reverse(pattern.begin(),pattern.end());/* Reverses the pattern */
+}
+
+/*****
+ * Reads the pattern from a text file.
+ *****/
+ void iAnt_controller::ReadFile(){
+    ifstream inFile;
+
+    /* Specify the file to open. */
+    //"DiamondPatternOutPut.txt"
+    //"SquarePatternOutPut.txt"
+    inFile.open("SquarePatternOutPut.txt");
+    string sPattern;
+
+     
+    if(inFile.fail()){
+        cerr << "Error in opening file.";
+        exit(1);
+    }
+    
+    if (inFile.is_open()){
+        while (getline (inFile,sPattern)){
+            /*copies the string into a vector<char> */
+            copy(sPattern.begin(),
+                 sPattern.end(),back_inserter(pattern));
+        }
+        cout<< "Pattern: "<< sPattern << endl;
+       inFile.close();
+    }
 }
 
 /*****
@@ -43,79 +80,153 @@ void iAnt_controller::Init(TConfigurationNode& node) {
  *****/
 void iAnt_controller::ControlStep() {
 
-<<<<<<< HEAD
-    LOG << GetHeading() << endl;
+    CVector3 position3d(GetPosition().GetX(), GetPosition().GetY(), 0.02);
+    CVector3 target3d(GetTarget().GetX(), GetTarget().GetY(), 0.02);
+    CRay3 targetRay(target3d, position3d);
+    data->TargetRayList.push_back(targetRay);
 
-    //[ + + ] move foward
-
-    /*motorActuator->SetLinearVelocity(RobotForwardSpeed, RobotForwardSpeed);
-    motorActuator->SetLinearVelocity(RobotForwardSpeed, RobotForwardSpeed);
-    motorActuator->SetLinearVelocity(RobotForwardSpeed, RobotForwardSpeed);*/
-
-    //[ + - ] rotates to the right
-    //motorActuator->SetLinearVelocity(RobotForwardSpeed, -RobotForwardSpeed);
-    //[ +  0] spins 
-    //motorActuator->SetLinearVelocity(RobotForwardSpeed, 0.0);
-    //motorActuator->SetLinearVelocity(RobotTurningSpeed, -RobotTurningSpeed);
-    south();
+    GetTargets(); /* Initializes targets positions. */
+}   
+/*****
+ * Sets target North of the robot's current target.
+ *****/
+void iAnt_controller::SetTargetN(char x){
+    CVector2 position = GetTarget();
+    target = CVector2(position.GetX()+stepSize,position.GetY());
 }
 
-bool iAnt_controller::south() {
-    bool amIGoingSouth = true;
-    CRadians heading = GetHeading().UnsignedNormalize();
-    CRadians tolerance(0.09);
-
-
-    if(heading < CRadians::PI - tolearance) {
-        motorActuator->SetLinearVelocity(RobotTurningSpeed, -RobotTurningSpeed);
-    }   else if (heading > CRadians::PI + tolearance)
-    else {
-             motorActuator->SetLinearVelocity(0.0,0.0);
-    }
-=======
-    CRadians heading = GetHeading();
-    LOG << heading.UnsignedNormalize() << endl;
->>>>>>> 3a6c9bd19f4be902cb33173125f1c4f06ef07c47
-
-    // [ + , + ] move forward
-    //motorActuator->SetLinearVelocity(RobotForwardSpeed, RobotForwardSpeed);
-
-    // [ + , - ] move right
-    //motorActuator->SetLinearVelocity(RobotForwardSpeed, -RobotForwardSpeed);
-
-    if(south() == true) {
-        motorActuator->SetLinearVelocity(RobotForwardSpeed, RobotForwardSpeed);        
-    }
+/*****
+ * Sets target South of the robot's current target.
+ *****/
+void iAnt_controller::SetTargetS(char x){
+    CVector2 position = GetTarget();
+    target = CVector2(position.GetX()-stepSize,position.GetY());
 }
 
+/*****
+ * Sets target East of the robot's current target.
+ *****/
+void iAnt_controller::SetTargetE(char x){
+   CVector2 position = GetTarget();
+   target = CVector2(position.GetX(),position.GetY()-stepSize);
+}
+
+/*****
+ * Sets target West of the robot's current target.
+ *****/
+void iAnt_controller::SetTargetW(char x){
+    CVector2 position = GetTarget();
+    target = CVector2(position.GetX(),position.GetY()+stepSize);
+}
+
+///*****
+// *
+// *****/
+//  void iAnt_controller::SetTarget0(){
+//     CVector2 position = GetTarget();
+//     target = CVector2(position.GetX()-(1.5*5),position.GetY()-(1.5*5));
+//     //if((position-target).SquareLength() < 0.01){
+//  }
+
+/*****
+ * Controls the robot's motor to go in the correct angle relative to the target.
+ *****/
+void iAnt_controller::ApproachTheTarget(){
+
+    /* angle of the robot's direction relative to the arena's origin */
+    CRadians angle1  = GetHeading();
+
+    /* angle from the target to the robot's position */
+    CRadians angle2  = (target - GetPosition()).Angle();
+
+    /* heading = angle1 - angle2 = 0.0 when the robot is facing its target */
+    CRadians heading = (angle1 - angle2).SignedNormalize();
+
+    if(heading <= AngleToleranceInRadians.GetMin()) {
+        /* turn left */
+        motorActuator->SetLinearVelocity(-RobotTurningSpeed, 
+                                          RobotTurningSpeed);
+    } else if(heading >= AngleToleranceInRadians.GetMax()){
+        /* turn right */
+        motorActuator->SetLinearVelocity( RobotTurningSpeed, 
+                                         -RobotTurningSpeed);
+    } else {
+        /* go straight */
+        motorActuator->SetLinearVelocity(RobotForwardSpeed, 
+                                         RobotForwardSpeed);
+    }
+}
 
 /*****
  *
  *****/
-bool iAnt_controller::south() {
-    bool amIGoingSouth = true;
-    CRadians heading = GetHeading().UnsignedNormalize();
-    CRadians tolerance(0.09);
-
-    if(heading < CRadians::PI - tolerance) {
-        motorActuator->SetLinearVelocity(-RobotTurningSpeed, RobotTurningSpeed);
-        amIGoingSouth = false;
-    } else if(heading > CRadians::PI + tolerance) {
-        motorActuator->SetLinearVelocity(RobotTurningSpeed, -RobotTurningSpeed);
-        amIGoingSouth = false;
-    }else {
-        motorActuator->SetLinearVelocity(0.0, 0.0);
-        amIGoingSouth = true;
-    }
-
-    return amIGoingSouth;
+CVector2 iAnt_controller::GetTarget() {
+    return target;
 }
+
+/*****
+ * Helper function that reads vector <char> pattern
+ * and sets the target's direction base on the 
+ * char at the current vector index.
+ *****/
+ void iAnt_controller::GetTargets(){
+
+    /* Finds the last direction of the pattern. */
+    char direction_last = pattern[pattern.size() - 1]; 
+   
+    /* If the robot hit target and the patter size >0
+       then find the next direction. */
+    if(TargetHit() == true && pattern.size() > 0) {
+        pattern.pop_back();
+
+        switch(direction_last)
+        {
+            case 'N':
+                SetTargetN('N');
+                break;
+            case 'S':
+                SetTargetS('S');
+                break;
+            case 'E':
+                SetTargetE('E');
+                break;
+            case 'W':
+                SetTargetW('W');
+                break;
+            default:
+                /*  SetTarget0(); */
+                /* LOG << GetTarget() << endl; */
+
+            	/* Robot stops and stays inside nest once
+                   done with pattern. */
+                motorActuator->SetLinearVelocity(0.0, 0.0);
+               
+        }
+    /* Otherwise we continue to approach the target. */
+    } else ApproachTheTarget();
+ }
+
+/*****
+ * Returns a boolean based on weather the robot is with 0.01 
+ * distance tolerance. Declares that the robot had reached 
+ * current target.
+ *****/
+ bool iAnt_controller::TargetHit(){
+    CVector2 position = GetPosition();
+    bool hit = false;
+     
+    if((position-target).SquareLength() < 0.01){
+        hit = true;
+    }
+    return hit;
+ }
 
 /*****
  * After pressing the reset button in the GUI, this controller will be set to
  * default factory settings like at the start of a simulation.
  *****/
 void iAnt_controller::Reset() {
+    CVector2 target = data->NestPosition;
 }
 
 /*****

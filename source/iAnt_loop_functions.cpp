@@ -61,12 +61,16 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
  * This hook function is called before iAnts call their ControlStep() function.
  *****/
 void iAnt_loop_functions::PreStep() {
+    
+    
 }
 
 /*****
  * This hook function is called after iAnts call their ControlStep() function.
  *****/
 void iAnt_loop_functions::PostStep() {
+    //////////////ADDED///////////////////
+    size_t collectedFood = data.FoodItemCount - data.FoodList.size();
 }
 
 /*****
@@ -81,6 +85,10 @@ void iAnt_loop_functions::PostExperiment() {
  * conditions set in the XML file.
  *****/
 void iAnt_loop_functions::Reset() {
+    //////////////ADDED////////////
+    if(data.FoodList.size() == 0){
+        data.TargetRayList.clear();
+    }
 }
 
 /*****

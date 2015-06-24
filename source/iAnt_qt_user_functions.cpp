@@ -27,6 +27,8 @@ void iAnt_qt_user_functions::DrawOnArena(CFloorEntity& entity) {
     if(data != NULL) {
         DrawNest();
         DrawFood();
+        //////////////////ADDED///////////////////////
+        if(data->DrawTargetRays == 1) DrawTargetRays();
     }
 }
 
@@ -39,7 +41,7 @@ void iAnt_qt_user_functions::DrawNest() {
     if(data == NULL) return;
 
     /* 2d cartesian coordinates of the nest */
-    Real x_coordinate = data->NestPosition.GetX();
+    Real x_coordinate = data->NestPosition.GetX(); 
     Real y_coordinate = data->NestPosition.GetX();
 
     /* required: leaving this 0.0 will draw the nest inside of the floor */
@@ -67,5 +69,14 @@ void iAnt_qt_user_functions::DrawFood() {
         DrawCylinder(CVector3(x, y, 0.0), CQuaternion(), data->FoodRadius, 0.025, CColor::BLACK);
     }
 }
+//////////////////ADDED////////////////////////////
+void iAnt_qt_user_functions::DrawTargetRays() {
+    for(size_t i = 0; i < data->TargetRayList.size(); i++) {
+        DrawRay(data->TargetRayList[i], CColor::BLUE);
+    }
+    
+    //data->TargetRayList.clear();
+}
+
 
 REGISTER_QTOPENGL_USER_FUNCTIONS(iAnt_qt_user_functions, "iAnt_qt_user_functions")

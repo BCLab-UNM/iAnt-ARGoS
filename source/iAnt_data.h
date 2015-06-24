@@ -21,6 +21,10 @@ class iAnt_data {
         void SetFoodDistribution();
 
         /* iAnt simulation data */
+    
+        ////////ADDED//////////
+        size_t DrawTargetRays;
+    
         size_t FoodDistribution;
         size_t FoodItemCount;
         size_t NumberOfClusters;
@@ -40,6 +44,9 @@ class iAnt_data {
 
         /* position vectors */
         vector<CVector2>       FoodList;
+    
+        ///////ADDED////////////////
+        vector<CRay3>          TargetRayList;
 
         /* random number generator */
         CRandom::CRNG* RNG;

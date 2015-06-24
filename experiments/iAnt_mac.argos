@@ -11,7 +11,7 @@
 
             <sensors>
                 <footbot_proximity implementation = "default"
-                                   show_rays      = "false"/>
+                                   show_rays      = "true"/>
                 <positioning       implementation = "default"/>
             </sensors>
 
@@ -20,7 +20,8 @@
             <params>
 				<iAnt_params DistanceTolerance       = "0.01"
                 		     RobotForwardSpeed       = "16.0"
-                             RobotTurningSpeed       = "13.3"/>
+                             RobotTurningSpeed       = "13.3"
+                             AngleToleranceInDegrees = "3.0"/>
 			</params>
         </iAnt_controller>
     </controllers>

@@ -17,7 +17,10 @@ iAnt_data::iAnt_data() :
     FoodRadius(0.05),
     FoodRadiusSquared(0.0025),
     ForageRangeX(-10.0, 10.0),
-    ForageRangeY(-10.0, 10.0)
+    ForageRangeY(-10.0, 10.0),
+
+    ////////ADDED/////////
+    DrawTargetRays(1)
 {}
 
 /*****

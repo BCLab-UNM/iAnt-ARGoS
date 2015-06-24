@@ -12,6 +12,13 @@
 #include <argos3/plugins/robots/foot-bot/simulator/footbot_entity.h>
 #include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_proximity_sensor.h>
 
+#include <algorithm>    // std::reverse
+#include <fstream>     
+#include <vector>
+#include <iterator>
+#include <iostream>
+#include <string>
+
 using namespace argos;
 using namespace std;
 
@@ -38,7 +45,7 @@ class iAnt_controller : public CCI_Controller {
         iAnt_data* GetData();
         CVector2   GetPosition();
         CRadians   GetHeading();
-
+    
     private:
 
         /* foot-bot components: sensors and actuators */
@@ -47,17 +54,50 @@ class iAnt_controller : public CCI_Controller {
         CCI_FootBotProximitySensor*       proximitySensor;
 
         /* data pipeline to qt_user_functions */
-        iAnt_data* data;
+        //iAnt_data* data;
         Real       RobotForwardSpeed;
         Real       RobotTurningSpeed;
 
-<<<<<<< HEAD
-        /*movement functions*/
-=======
+ 
+        /* robot internal variables & statistics */
+        CRandom::CRNG*   RNG;
+        iAnt_data*       data;
+        CVector2         target;
+//        CVector2         fidelity;
+//        vector<CVector2> trailToShare;
+//        vector<CVector2> trailToFollow;
+//        bool             isHoldingFood;
+//        bool             isInformed;
+//        bool             isUsingSiteFidelity;
+//        size_t           searchTime;
+//        size_t           waitTime;
+//        size_t           collisionDelay;
+//        size_t           resourceDensity;
+    
+        ////////ADDED///////////////
+//        bool SetTargetPheromone();
+        CRange<CRadians> AngleToleranceInRadians;
+        CRange<CRadians> Tolerance;
+    
+        CVector2 newTarget;
+        vector<char> pattern;
+        float stepSize;
+    
         /* movement functions */
->>>>>>> 3a6c9bd19f4be902cb33173125f1c4f06ef07c47
-        bool south();
-};
+        CDegrees angleInDegrees;
+        void SetTargetN(char x);
+        void SetTargetS(char x);
+        void SetTargetE(char x);
+        void SetTargetW(char x);
+    
+        /* movement helper functions */
+//        void SetTarget0();
+        CVector2 GetTarget();
+        void ApproachTheTarget();
+        void GetTargets();
+        void ReadFile();
+        bool TargetHit();
+    
+};      
 
 #endif /* IANT_CONTROLLER_H_ */
-    //void north();
