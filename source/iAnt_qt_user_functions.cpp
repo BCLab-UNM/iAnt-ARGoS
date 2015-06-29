@@ -18,6 +18,9 @@ void iAnt_qt_user_functions::DrawOnRobot(CFootBotEntity& entity) {
     iAnt_controller& c = dynamic_cast<iAnt_controller&>(entity.GetControllableEntity().GetController());
 
     if(data == NULL) data = c.GetData();
+    if(c.IsHoldingFood() == true) {
+        DrawCylinder(CVector3(0.0, 0.0, 0.3), CQuaternion(), data->FoodRadius, 0.025, CColor::BLACK);
+    }
 }
  
 /*****
@@ -66,13 +69,19 @@ void iAnt_qt_user_functions::DrawFood() {
     for(size_t i = 0; i < data->FoodList.size(); i++) {
         x = data->FoodList[i].GetX();
         y = data->FoodList[i].GetY();
-        DrawCylinder(CVector3(x, y, 0.0), CQuaternion(), data->FoodRadius, 0.025, CColor::BLACK);
+        if(i%2 ==0){
+            DrawCylinder(CVector3(x, y, 0.0), CQuaternion(), data->FoodRadius, 0.025, CColor::MAGENTA);
+         }
+        else{
+            DrawCylinder(CVector3(x, y, 0.0), CQuaternion(), data->FoodRadius, 0.025, CColor::BLUE);
+        }
+        
     }
 }
 //////////////////ADDED////////////////////////////
 void iAnt_qt_user_functions::DrawTargetRays() {
     for(size_t i = 0; i < data->TargetRayList.size(); i++) {
-        DrawRay(data->TargetRayList[i], CColor::BLUE);
+        DrawRay(data->TargetRayList[i], CColor::GREEN);
     }
     
     //data->TargetRayList.clear();

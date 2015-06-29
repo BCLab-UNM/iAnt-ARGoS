@@ -133,7 +133,7 @@ void writeToFile(vector <char>& pattern, int levels){
 int main () 
 {
 	/* Initialize number of levels, initial direction, pattern. */
-	int levels = 10;
+	int levels = 30;
 	char initDir = 'S';
 	string initSPattern = "NE";
 

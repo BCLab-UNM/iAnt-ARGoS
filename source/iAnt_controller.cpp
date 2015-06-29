@@ -57,7 +57,6 @@ void iAnt_controller::Init(TConfigurationNode& node) {
     inFile.open("SquarePatternOutPut.txt");
     string sPattern;
 
-     
     if(inFile.fail()){
         cerr << "Error in opening file.";
         exit(1);
@@ -85,7 +84,18 @@ void iAnt_controller::ControlStep() {
     CRay3 targetRay(target3d, position3d);
     data->TargetRayList.push_back(targetRay);
 
-    GetTargets(); /* Initializes targets positions. */
+    /* Checks if the robot found a food */
+    SetHoldingFood();
+
+    /* If it didn't continue in a sprial */
+    if(IsHoldingFood() == false){
+       GetTargets(); /* Initializes targets positions. */
+
+    } else { /* Check if it is near the nest then set isHoldingFood to false */
+        if((GetPosition() - data->NestPosition).SquareLength() < data->NestRadiusSquared) {
+            isHoldingFood = false;
+        } else ApproachTheTarget(data->NestPosition);
+    }
 }   
 /*****
  * Sets target North of the robot's current target.
@@ -119,15 +129,6 @@ void iAnt_controller::SetTargetW(char x){
     target = CVector2(position.GetX(),position.GetY()+stepSize);
 }
 
-///*****
-// *
-// *****/
-//  void iAnt_controller::SetTarget0(){
-//     CVector2 position = GetTarget();
-//     target = CVector2(position.GetX()-(1.5*5),position.GetY()-(1.5*5));
-//     //if((position-target).SquareLength() < 0.01){
-//  }
-
 /*****
  * Controls the robot's motor to go in the correct angle relative to the target.
  *****/
@@ -157,6 +158,31 @@ void iAnt_controller::ApproachTheTarget(){
     }
 }
 
+void iAnt_controller::ApproachTheTarget(CVector2 myTarget){
+
+    /* angle of the robot's direction relative to the arena's origin */
+    CRadians angle1  = GetHeading();
+
+    /* angle from the target to the robot's position */
+    CRadians angle2  = (myTarget - GetPosition()).Angle();
+
+    /* heading = angle1 - angle2 = 0.0 when the robot is facing its target */
+    CRadians heading = (angle1 - angle2).SignedNormalize();
+
+    if(heading <= AngleToleranceInRadians.GetMin()) {
+        /* turn left */
+        motorActuator->SetLinearVelocity(-RobotTurningSpeed, 
+                                          RobotTurningSpeed);
+    } else if(heading >= AngleToleranceInRadians.GetMax()){
+        /* turn right */
+        motorActuator->SetLinearVelocity( RobotTurningSpeed, 
+                                         -RobotTurningSpeed);
+    } else {
+        /* go straight */
+        motorActuator->SetLinearVelocity(RobotForwardSpeed, 
+                                         RobotForwardSpeed);
+    }
+}
 /*****
  *
  *****/
@@ -194,15 +220,14 @@ CVector2 iAnt_controller::GetTarget() {
                 SetTargetW('W');
                 break;
             default:
-                /*  SetTarget0(); */
-                /* LOG << GetTarget() << endl; */
-
-            	/* Robot stops and stays inside nest once
-                   done with pattern. */
-                motorActuator->SetLinearVelocity(0.0, 0.0);
-               
+                /* ????? */
+                motorActuator->SetLinearVelocity(0.0, 0.0);       
         }
-    /* Otherwise we continue to approach the target. */
+    }
+    /* If the robot is down traversing the pattern, then return home */
+    else if(pattern.size() == 0){
+        ApproachTheTarget(data->NestPosition);
+    /* Otherwise we continue to approach the target. */  
     } else ApproachTheTarget();
  }
 
@@ -221,6 +246,42 @@ CVector2 iAnt_controller::GetTarget() {
     return hit;
  }
 
+/*****
+ * Check if the iAnt is finding food. This is defined as the iAnt being within
+ * the distance tolerance of the position of a food item. If the iAnt has found
+ * food then the appropriate boolean flags are triggered.
+ *****/
+void iAnt_controller::SetHoldingFood(){
+    /* Is the iAnt already holding food? */
+    if(IsHoldingFood() == false) {
+        vector <CVector2> newFoodList; 
+        size_t i = 0; 
+
+        /* No, the iAnt isn't holding food. Check if we have found food at our
+           current position and update the food list if we have. */
+
+        for (i = 0; i < data->FoodList.size(); i++){
+            /* We found food! */
+            if ((GetPosition()-data->FoodList[i]).SquareLength() < data->FoodRadiusSquared){
+                isHoldingFood = true;
+            }
+            /* Else push the that current food onto the newFoodList. */
+            else {
+                /* Return this unfound-food position to the list */
+                newFoodList.push_back(data->FoodList[i]);
+            }
+        } 
+        data->FoodList = newFoodList;
+    }
+}
+/*****
+ * Is this iAnt_controller holding food?
+ *     true  = yes
+ *     false = no
+ *****/
+bool iAnt_controller::IsHoldingFood() {
+    return isHoldingFood;
+}
 /*****
  * After pressing the reset button in the GUI, this controller will be set to
  * default factory settings like at the start of a simulation.

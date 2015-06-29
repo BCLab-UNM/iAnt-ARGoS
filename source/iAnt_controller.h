@@ -42,10 +42,12 @@ class iAnt_controller : public CCI_Controller {
 
         /* public helper functions */
         void       SetData(iAnt_data* dataPointer);
+        bool       IsHoldingFood();
         iAnt_data* GetData();
         CVector2   GetPosition();
         CRadians   GetHeading();
-    
+
+
     private:
 
         /* foot-bot components: sensors and actuators */
@@ -54,34 +56,19 @@ class iAnt_controller : public CCI_Controller {
         CCI_FootBotProximitySensor*       proximitySensor;
 
         /* data pipeline to qt_user_functions */
-        //iAnt_data* data;
         Real       RobotForwardSpeed;
         Real       RobotTurningSpeed;
 
- 
         /* robot internal variables & statistics */
         CRandom::CRNG*   RNG;
         iAnt_data*       data;
         CVector2         target;
-//        CVector2         fidelity;
-//        vector<CVector2> trailToShare;
-//        vector<CVector2> trailToFollow;
-//        bool             isHoldingFood;
-//        bool             isInformed;
-//        bool             isUsingSiteFidelity;
-//        size_t           searchTime;
-//        size_t           waitTime;
-//        size_t           collisionDelay;
-//        size_t           resourceDensity;
-    
-        ////////ADDED///////////////
-//        bool SetTargetPheromone();
+        CVector2         newTarget;
+        vector<char>     pattern;
+        float            stepSize;
+        bool             isHoldingFood;
         CRange<CRadians> AngleToleranceInRadians;
         CRange<CRadians> Tolerance;
-    
-        CVector2 newTarget;
-        vector<char> pattern;
-        float stepSize;
     
         /* movement functions */
         CDegrees angleInDegrees;
@@ -91,12 +78,17 @@ class iAnt_controller : public CCI_Controller {
         void SetTargetW(char x);
     
         /* movement helper functions */
-//        void SetTarget0();
         CVector2 GetTarget();
         void ApproachTheTarget();
+        void ApproachTheTarget(CVector2 myTarget);
         void GetTargets();
         void ReadFile();
         bool TargetHit();
+
+        /*moving states */
+        //void searching();
+        void SetHoldingFood();
+        
     
 };      
 

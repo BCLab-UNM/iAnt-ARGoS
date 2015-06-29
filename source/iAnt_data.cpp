@@ -4,6 +4,8 @@
  *
  *****/
 iAnt_data::iAnt_data() :
+    SimTime(0),
+    TicksPerSecond(16),
     RNG(NULL),
     FoodDistribution(0),
     FoodItemCount(256),
@@ -18,7 +20,6 @@ iAnt_data::iAnt_data() :
     FoodRadiusSquared(0.0025),
     ForageRangeX(-10.0, 10.0),
     ForageRangeY(-10.0, 10.0),
-
     ////////ADDED/////////
     DrawTargetRays(1)
 {}
