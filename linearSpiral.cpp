@@ -121,7 +121,7 @@ void writeToFile(vector <char>& pattern, int levels){
 		/* write each element to outFile. */
 		outFile << pattern[i]; 
 	}
-
+	outFile << levels;
 	cout << endl;
 	outFile.close();
 }

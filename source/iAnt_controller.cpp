@@ -35,7 +35,7 @@ void iAnt_controller::Init(TConfigurationNode& node) {
 
     AngleToleranceInRadians.Set(-ToRadians(angleInDegrees),ToRadians(angleInDegrees));
     
-    stepSize = 0.2; /* Assigns the robot's stepSize */
+    stepSize = 0.08; /* Assigns the robot's stepSize */
     
     /***** 
      * Initializes the pattern here by reading pattern from
@@ -43,6 +43,7 @@ void iAnt_controller::Init(TConfigurationNode& node) {
     *****/
     ReadFile();
     reverse(pattern.begin(),pattern.end());/* Reverses the pattern */
+    //MoveTo(CVector3(0.0, 0.0, 0.0), CQuaternion());
 }
 
 /*****
@@ -68,7 +69,7 @@ void iAnt_controller::Init(TConfigurationNode& node) {
             copy(sPattern.begin(),
                  sPattern.end(),back_inserter(pattern));
         }
-        cout<< "Pattern: "<< sPattern << endl;
+        //cout<< "Pattern: "<< sPattern << endl;
        inFile.close();
     }
 }
@@ -79,10 +80,12 @@ void iAnt_controller::Init(TConfigurationNode& node) {
  *****/
 void iAnt_controller::ControlStep() {
 
-    CVector3 position3d(GetPosition().GetX(), GetPosition().GetY(), 0.02);
-    CVector3 target3d(GetTarget().GetX(), GetTarget().GetY(), 0.02);
-    CRay3 targetRay(target3d, position3d);
-    data->TargetRayList.push_back(targetRay);
+    if(isHoldingFood == false) {
+        CVector3 position3d(GetPosition().GetX(), GetPosition().GetY(), 0.02);
+        CVector3 target3d(GetTarget().GetX(), GetTarget().GetY(), 0.02);
+        CRay3 targetRay(target3d, position3d);
+        data->TargetRayList.push_back(targetRay);
+    }
 
     /* Checks if the robot found a food */
     SetHoldingFood();
@@ -288,6 +291,8 @@ bool iAnt_controller::IsHoldingFood() {
  *****/
 void iAnt_controller::Reset() {
     CVector2 target = data->NestPosition;
+    // ReadFile();
+    // reverse(pattern.begin(),pattern.end());/* Reverses the pattern */
 }
 
 /*****

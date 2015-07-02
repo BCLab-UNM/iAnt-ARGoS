@@ -61,7 +61,7 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
  * This hook function is called before iAnts call their ControlStep() function.
  *****/
 void iAnt_loop_functions::PreStep() {
-    
+    data.SimTime++;
     
 }
 
@@ -70,7 +70,7 @@ void iAnt_loop_functions::PreStep() {
  *****/
 void iAnt_loop_functions::PostStep() {
     //////////////ADDED///////////////////
-    size_t collectedFood = data.FoodItemCount - data.FoodList.size();
+    //size_t collectedFood = data.FoodItemCount - data.FoodList.size();
 }
 
 /*****
@@ -78,6 +78,47 @@ void iAnt_loop_functions::PostStep() {
  * time limit imposed in the XML file has been reached.
  *****/
 void iAnt_loop_functions::PostExperiment() {
+    size_t time_in_minutes = floor(floor(data.SimTime/data.TicksPerSecond)/60);
+    size_t collectedFood = data.FoodItemCount - data.FoodList.size();
+
+    // This variable is set in XML
+    if(data.OutputData == 1) {
+        // This file is created in the directory where you run ARGoS
+        // it is always created or appended to, never overwritten, i.e. ios::app
+        ofstream dataOutput("iAntSpiralTagData.txt", ios::app);
+
+        // output to file
+        if(dataOutput.tellp() == 0) {
+            dataOutput << "tags_collected, time_in_minutes, random_seed\n";
+        }
+
+        dataOutput << collectedFood << ", ";
+        dataOutput << time_in_minutes << ", " << data.RandomSeed << endl;
+        dataOutput.close();
+    }
+
+     // output to ARGoS GUI
+    if(data.SimCounter == 0) {
+        LOG << "\ntags_collected, time_in_minutes, random_seed\n";
+        LOG << collectedFood << ", ";
+        LOG << time_in_minutes << ", " << data.RandomSeed << endl;
+    } else {
+        LOG << collectedFood << ", ";
+        LOG << time_in_minutes << ", " << data.RandomSeed << endl;
+
+        /*
+        ifstream dataInput("iAntTagData.txt");
+        string s;
+
+        while(getline(dataInput, s)) {
+            LOG << s << endl;
+        }
+
+        dataInput.close();
+        */
+    }
+
+    data.SimCounter++;
 }
 
 /*****
@@ -86,8 +127,24 @@ void iAnt_loop_functions::PostExperiment() {
  *****/
 void iAnt_loop_functions::Reset() {
     //////////////ADDED////////////
-    if(data.FoodList.size() == 0){
-        data.TargetRayList.clear();
+    // if(data.FoodList.size() == 0){
+    //     data.TargetRayList.clear();
+    // }
+
+    if(data.VariableSeed == 1) GetSimulator().SetRandomSeed(++data.RandomSeed);
+
+    //GetSimulator().Reset();
+    GetSpace().Reset();
+    data.SimTime = 0;
+    data.ResourceDensityDelay = 0;
+    data.FoodList.clear();
+    //data.PheromoneList.clear();
+    //data.FidelityList.clear();
+    data.TargetRayList.clear();
+    data.SetFoodDistribution();
+
+    for(size_t i = 0; i < iAnts.size(); i++) {
+        iAnts[i]->Reset();
     }
 }
 
@@ -97,7 +154,28 @@ void iAnt_loop_functions::Reset() {
  * time limit in the XML file and will stop the experiment at that time limit.
  *****/
 bool iAnt_loop_functions::IsExperimentFinished() {
-    return false;
+    //return false;
+    bool isFinished = false;
+
+    if(data.FoodList.size() == 0 || data.SimTime >= data.MaxSimTime) {
+        isFinished = true;
+    }
+
+    if(isFinished == true && data.MaxSimCounter > 1) {
+        size_t newSimCounter = data.SimCounter + 1;
+        size_t newMaxSimCounter = data.MaxSimCounter - 1;
+
+        // LOG << endl << "FINISHED RUN: " << data.SimCounter << endl;
+
+        PostExperiment();
+        Reset();
+
+        data.SimCounter    = newSimCounter;
+        data.MaxSimCounter = newMaxSimCounter;
+        isFinished         = false;
+    }
+
+    return isFinished;
 }
 
 REGISTER_LOOP_FUNCTIONS(iAnt_loop_functions, "iAnt_loop_functions")

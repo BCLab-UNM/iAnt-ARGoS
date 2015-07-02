@@ -5,19 +5,30 @@
  *****/
 iAnt_data::iAnt_data() :
     SimTime(0),
+    MaxSimTime(57600),
     TicksPerSecond(16),
+    ResourceDensityDelay(0),
+    RandomSeed(1337),
     RNG(NULL),
+    SimCounter(0),
+    MaxSimCounter(1),
+    VariableSeed(0),
+    OutputData(0),
     FoodDistribution(0),
+
     FoodItemCount(256),
     NumberOfClusters(4),
     ClusterWidthX(8),
     ClusterLengthY(8),
     PowerRank(4),
+
     NestRadius(0.25),
     NestRadiusSquared(0.0625),
     NestElevation(0.01),
+
     FoodRadius(0.05),
     FoodRadiusSquared(0.0025),
+
     ForageRangeX(-10.0, 10.0),
     ForageRangeY(-10.0, 10.0),
     ////////ADDED/////////

@@ -21,10 +21,18 @@ class iAnt_data {
         void SetFoodDistribution();
 
         /* iAnt simulation data */
-        size_t DrawTargetRays;
         size_t SimTime;
+        size_t MaxSimTime;
+        size_t DrawTargetRays;
         size_t TicksPerSecond;
-    
+        size_t ResourceDensityDelay;
+        
+        size_t RandomSeed;
+        size_t SimCounter;
+        size_t MaxSimCounter;
+        size_t VariableSeed;
+        size_t OutputData;
+
         size_t FoodDistribution;
         size_t FoodItemCount;
         size_t NumberOfClusters;
