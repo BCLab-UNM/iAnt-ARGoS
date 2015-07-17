@@ -1,0 +1,73 @@
+<?xml version="1.0" ?><argos-configuration>
+<framework><experiment length="36000" random_seed="690305" ticks_per_second="16"/></framework>
+<controllers>
+<iAnt_controller id="iAnt_c" library="build/source/libiAnt_controller.dylib">
+
+            <actuators>
+                <differential_steering implementation="default"/>
+            </actuators>
+
+            <sensors>
+                <footbot_proximity implementation="default" show_rays="false"/>
+                <positioning implementation="default"/>
+            </sensors>
+
+            <!-- un-evolvable parameters -->
+            <!-- remember: a footbot's radius = 8.5 cm / 0.085 m -->
+            <params>
+				<iAnt_params AngleToleranceInDegrees="22.5" DistanceTolerance="0.01" RobotForwardSpeed="16.0" RobotRotationSpeed="13.3" SearchStepSize="0.175"/>
+			</params>
+        </iAnt_controller>
+    </controllers>
+
+    <!-- LOOP FUNCTIONS -->
+    <loop_functions label="iAnt_loop_functions" library="build/source/libiAnt_loop_functions.dylib">
+
+        <!-- evolvable parameters -->
+        <CPFA ProbabilityOfReturningToNest="0.00001" ProbabilityOfSwitchingToSearching="0.99999" RateOfInformedSearchDecay="0.05" RateOfLayingPheromone="10.0" RateOfPheromoneDecay="0.05" RateOfSiteFidelity="10.0" UninformedSearchVariation="15.0"/>
+
+        <!-- un-evolvable environment variables -->
+        <simulation FoodDistribution="2" FoodRadius="0.05" MaxSimCounter="1" NestPosition="0.0, 0.0" NestRadius="0.25" OutputData="1" VariableSeed="0"/>
+
+		<!-- un-evolvable food distribution parameters -->
+        <_0_FoodDistribution_Random FoodItemCount="256"/>
+        <_1_FoodDistribution_Cluster ClusterLengthY="8" ClusterWidthX="8" NumberOfClusters="4"/>
+        <_2_FoodDistribution_PowerLaw PowerRank="5"/>
+
+    </loop_functions>
+
+    <!-- ARENA -->
+    <arena center="0.0, 0.0, 0.0" size="20, 20, 0.0">
+
+        <floor id="floor" pixels_per_meter="1" source="loop_functions"/>
+
+        <distribute>
+            <position max="4.0 , 4.0 , 0.0" method="uniform" min="-4.0 , -4.0 , 0.0"/>
+            <orientation mean="0, 0, 0" method="gaussian" std_dev="360, 0, 0"/>
+            <entity max_trials="100" quantity="96">
+                <foot-bot id="fb_0"><controller config="iAnt_c"/></foot-bot>
+            </entity>
+        </distribute>
+
+    </arena>
+
+    <!-- PHYSICS ENGINE(S) -->
+    <physics_engines><dynamics2d id="dyn2d"/></physics_engines>
+
+    <!-- MEDIA -->
+    <media><led id="leds"/></media>
+
+    <!-- VISUALIZATION -->
+  <visualization>
+        <qt-opengl>
+            <camera>
+                <placement idx="0" lens_focal_length="90" look_at="0, 0, 0" position="  0, 0, 10"/>
+                <placement idx="1" lens_focal_length="45" look_at="0, 0, 0" position="  0, 0, 10"/>
+                <placement idx="2" lens_focal_length="120" look_at="0, 0, 0" position="  0, 0, 10"/>
+                <placement idx="3" lens_focal_length="180" look_at="0, 0, 0" position="-30, 0, 10"/>
+                <placement idx="4" lens_focal_length="240" look_at="0, 0, 0" position="-30, 0, 10"/>
+            </camera>
+            <user_functions label="iAnt_qt_user_functions"/>
+        </qt-opengl>
+    </visualization>
+</argos-configuration>
