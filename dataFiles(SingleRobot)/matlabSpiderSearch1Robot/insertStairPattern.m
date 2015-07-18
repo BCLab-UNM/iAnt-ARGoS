@@ -3,6 +3,7 @@
 %This function will be called by linearSpiral and 
 %returns a string pattern.
 %e.g. insertStairPattern('NSESWSNWN',3)
+%Uses a helper function called patternHelper().
 %05/29/15
 function pattern = insertStairPattern(seq,n)
 

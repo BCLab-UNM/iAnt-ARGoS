@@ -5,6 +5,7 @@
 %This function will be called by linearSpiral and 
 %returns a string of coordinate directions.
 %e.g. insertSqPattern('S','NE',3)
+%Use a helper called findNextDirSq(curDir,change).
 %05/29/15
 
 %PATTERN 
