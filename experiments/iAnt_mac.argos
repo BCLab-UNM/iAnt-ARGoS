@@ -40,13 +40,13 @@
                     RateOfPheromoneDecay              = "0.05"/> -->
 
         <!-- un-evolvable environment variables -->
-        <simulation MaxSimCounter    = "10"
+        <simulation MaxSimCounter    = "1"
                     VariableSeed     = "1"
-                    OutputData       = "0"
+                    OutputData       = "1"
                     NestPosition     = "0.0, 0.0"
                     NestRadius       = "0.25"
                     FoodRadius       = "0.05"
-                    FoodDistribution = "0"/>
+                    FoodDistribution = "2"/>
 
         <!-- un-evolvable food distribution parameters -->
         <_0_FoodDistribution_Random   FoodItemCount    = "256"/>

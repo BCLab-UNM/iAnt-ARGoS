@@ -18,6 +18,8 @@
 #include <iterator>
 #include <iostream>
 #include <string>
+#include <stdio.h>
+#include <ctype.h>
 
 using namespace argos;
 using namespace std;
@@ -47,6 +49,8 @@ class iAnt_controller : public CCI_Controller {
         CVector2   GetPosition();
         CRadians   GetHeading();
 
+        /* public variables */
+        // extern int        levels;
 
     private:
 
@@ -65,8 +69,11 @@ class iAnt_controller : public CCI_Controller {
         CVector2         target;
         CVector2         newTarget;
         vector<char>     pattern;
+        vector<char>     tempPattern;
+        int              levels;
         float            stepSize;
         bool             isHoldingFood;
+        bool             goingHome;
         CRange<CRadians> AngleToleranceInRadians;
         CRange<CRadians> Tolerance;
     
@@ -83,10 +90,10 @@ class iAnt_controller : public CCI_Controller {
         void ApproachTheTarget(CVector2 myTarget);
         void GetTargets();
         void ReadFile();
+        void CopyPatterntoTemp();
         bool TargetHit();
 
         /*moving states */
-        //void searching();
         void SetHoldingFood();
         
     

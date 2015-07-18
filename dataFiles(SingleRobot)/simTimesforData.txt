@@ -1,0 +1,9 @@
+TimeinSeconds * TicksPerSeconds = maxTimeSim;
+
+Minutes     StimulationTime
+10			9600			
+20			19200
+30			28800
+40			38400
+50			48000
+60			57600

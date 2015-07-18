@@ -1,2 +1,0 @@
-tags_collected, time_in_minutes, random_seed
-178, 60, 1337

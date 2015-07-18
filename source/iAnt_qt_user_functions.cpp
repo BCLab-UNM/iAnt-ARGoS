@@ -30,7 +30,7 @@ void iAnt_qt_user_functions::DrawOnArena(CFloorEntity& entity) {
     if(data != NULL) {
         DrawNest();
         DrawFood();
-        //////////////////ADDED///////////////////////
+
         if(data->DrawTargetRays == 1) DrawTargetRays();
     }
 }
@@ -78,13 +78,14 @@ void iAnt_qt_user_functions::DrawFood() {
         
     }
 }
-//////////////////ADDED////////////////////////////
+
+/*****
+ *
+ *****/
 void iAnt_qt_user_functions::DrawTargetRays() {
     for(size_t i = 0; i < data->TargetRayList.size(); i++) {
         DrawRay(data->TargetRayList[i], CColor::GREEN);
     }
-    
-    //data->TargetRayList.clear();
 }
 
 

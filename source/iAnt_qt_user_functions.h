@@ -31,7 +31,6 @@ class iAnt_qt_user_functions : public CQTOpenGLUserFunctions {
         /* private helper drawing functions */
         void DrawNest();
         void DrawFood();
-        /////////ADDED///////////
         void DrawTargetRays();
 
         /*****

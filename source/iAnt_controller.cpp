@@ -36,13 +36,16 @@ void iAnt_controller::Init(TConfigurationNode& node) {
     AngleToleranceInRadians.Set(-ToRadians(angleInDegrees),ToRadians(angleInDegrees));
     
     stepSize = 0.08; /* Assigns the robot's stepSize */
-    
+    //goingHome = false;
     /***** 
      * Initializes the pattern here by reading pattern from
      * a text file. 
     *****/
     ReadFile();
-    reverse(pattern.begin(),pattern.end());/* Reverses the pattern */
+    CopyPatterntoTemp();
+    //reverse(pattern.begin(),pattern.end());/* Reverses the pattern */
+    // copy(pattern.begin(),pattern.end(),back_inserter(tempPattern));
+    // reverse(tempPattern.begin(),tempPattern.end());/* Reverses the tempPattern */
     //MoveTo(CVector3(0.0, 0.0, 0.0), CQuaternion());
 }
 
@@ -57,6 +60,8 @@ void iAnt_controller::Init(TConfigurationNode& node) {
     //"SquarePatternOutPut.txt"
     inFile.open("SquarePatternOutPut.txt");
     string sPattern;
+    string delimiter = " ";
+    int indx;
 
     if(inFile.fail()){
         cerr << "Error in opening file.";
@@ -66,13 +71,31 @@ void iAnt_controller::Init(TConfigurationNode& node) {
     if (inFile.is_open()){
         while (getline (inFile,sPattern)){
             /*copies the string into a vector<char> */
-            copy(sPattern.begin(),
+            // if (isspace(sPattern)){
+                
+            // }
+            indx = sPattern.find(delimiter);
+            string l = sPattern.substr(0, indx);
+            levels = atoi(sPattern.c_str()); 
+
+            copy(sPattern.begin()+indx+1,
                  sPattern.end(),back_inserter(pattern));
         }
+        cout << "Pattern" << "(" << levels << ")" << endl;
         //cout<< "Pattern: "<< sPattern << endl;
        inFile.close();
     }
 }
+
+/*****
+ *
+ *****/
+void iAnt_controller::CopyPatterntoTemp() {
+    copy(pattern.begin(),pattern.end(),back_inserter(tempPattern));
+    reverse(tempPattern.begin(),tempPattern.end());/* Reverses the tempPattern */
+}
+
+
 
 /*****
  * Primary control loop for this controller object. This function will execute
@@ -80,12 +103,15 @@ void iAnt_controller::Init(TConfigurationNode& node) {
  *****/
 void iAnt_controller::ControlStep() {
 
+    //LOG << target << endl;
+    //LOG << //goingHome << endl;
     if(isHoldingFood == false) {
         CVector3 position3d(GetPosition().GetX(), GetPosition().GetY(), 0.02);
         CVector3 target3d(GetTarget().GetX(), GetTarget().GetY(), 0.02);
         CRay3 targetRay(target3d, position3d);
         data->TargetRayList.push_back(targetRay);
     }
+
 
     /* Checks if the robot found a food */
     SetHoldingFood();
@@ -97,7 +123,10 @@ void iAnt_controller::ControlStep() {
     } else { /* Check if it is near the nest then set isHoldingFood to false */
         if((GetPosition() - data->NestPosition).SquareLength() < data->NestRadiusSquared) {
             isHoldingFood = false;
-        } else ApproachTheTarget(data->NestPosition);
+        } else {
+            ApproachTheTarget(data->NestPosition);
+            //goingHome = true;
+        }
     }
 }   
 /*****
@@ -201,12 +230,12 @@ CVector2 iAnt_controller::GetTarget() {
  void iAnt_controller::GetTargets(){
 
     /* Finds the last direction of the pattern. */
-    char direction_last = pattern[pattern.size() - 1]; 
+    char direction_last = tempPattern[tempPattern.size() - 1]; 
    
     /* If the robot hit target and the patter size >0
        then find the next direction. */
-    if(TargetHit() == true && pattern.size() > 0) {
-        pattern.pop_back();
+    if(TargetHit() == true && tempPattern.size() > 0) {
+        tempPattern.pop_back();
 
         switch(direction_last)
         {
@@ -224,12 +253,14 @@ CVector2 iAnt_controller::GetTarget() {
                 break;
             default:
                 /* ????? */
-                motorActuator->SetLinearVelocity(0.0, 0.0);       
+                motorActuator->SetLinearVelocity(0.0, 0.0);        
         }
     }
-    /* If the robot is down traversing the pattern, then return home */
-    else if(pattern.size() == 0){
+    /* If the robot is down traversing the tempPattern, then return home */
+    else if(tempPattern.size() == 0){
         ApproachTheTarget(data->NestPosition);
+        //goingHome = true;
+        Reset();
     /* Otherwise we continue to approach the target. */  
     } else ApproachTheTarget();
  }
@@ -267,6 +298,7 @@ void iAnt_controller::SetHoldingFood(){
             /* We found food! */
             if ((GetPosition()-data->FoodList[i]).SquareLength() < data->FoodRadiusSquared){
                 isHoldingFood = true;
+                //goingHome = true;
             }
             /* Else push the that current food onto the newFoodList. */
             else {
@@ -290,9 +322,11 @@ bool iAnt_controller::IsHoldingFood() {
  * default factory settings like at the start of a simulation.
  *****/
 void iAnt_controller::Reset() {
-    CVector2 target = data->NestPosition;
-    // ReadFile();
-    // reverse(pattern.begin(),pattern.end());/* Reverses the pattern */
+    target = data->NestPosition;
+    tempPattern.clear();
+    CopyPatterntoTemp();
+    //goingHome = false;
+
 }
 
 /*****

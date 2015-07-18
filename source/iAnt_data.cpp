@@ -31,7 +31,7 @@ iAnt_data::iAnt_data() :
 
     ForageRangeX(-10.0, 10.0),
     ForageRangeY(-10.0, 10.0),
-    ////////ADDED/////////
+    
     DrawTargetRays(1)
 {}
 

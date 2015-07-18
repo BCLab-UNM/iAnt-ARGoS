@@ -19,6 +19,9 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
     TConfigurationNode cluster  = GetNode(node, "_1_FoodDistribution_Cluster");
     TConfigurationNode powerLaw = GetNode(node, "_2_FoodDistribution_PowerLaw");
 
+    GetNodeAttribute(simNode,  "MaxSimCounter",    data.MaxSimCounter);
+    GetNodeAttribute(simNode,  "VariableSeed",     data.VariableSeed);
+    GetNodeAttribute(simNode,  "OutputData",       data.OutputData);
     GetNodeAttribute(simNode,  "NestPosition",     data.NestPosition);
     GetNodeAttribute(simNode,  "NestRadius",       data.NestRadius);
     GetNodeAttribute(simNode,  "FoodRadius",       data.FoodRadius);
@@ -69,8 +72,7 @@ void iAnt_loop_functions::PreStep() {
  * This hook function is called after iAnts call their ControlStep() function.
  *****/
 void iAnt_loop_functions::PostStep() {
-    //////////////ADDED///////////////////
-    //size_t collectedFood = data.FoodItemCount - data.FoodList.size();
+
 }
 
 /*****
@@ -89,22 +91,22 @@ void iAnt_loop_functions::PostExperiment() {
 
         // output to file
         if(dataOutput.tellp() == 0) {
-            dataOutput << "tags_collected, time_in_minutes, random_seed\n";
+            dataOutput << "tags_collected, time_in_minutes, random_seed\n"; //, levels\n";
         }
 
         dataOutput << collectedFood << ", ";
-        dataOutput << time_in_minutes << ", " << data.RandomSeed << endl;
+        dataOutput << time_in_minutes << ", " << data.RandomSeed << endl; //<< ", " << levels << endl;
         dataOutput.close();
     }
 
      // output to ARGoS GUI
     if(data.SimCounter == 0) {
-        LOG << "\ntags_collected, time_in_minutes, random_seed\n";
+        LOG << "\ntags_collected, time_in_minutes, random_seed\n"; //, levels\n";
         LOG << collectedFood << ", ";
-        LOG << time_in_minutes << ", " << data.RandomSeed << endl;
+        LOG << time_in_minutes << ", " << data.RandomSeed << endl; //<< ", " << levels << endl;
     } else {
         LOG << collectedFood << ", ";
-        LOG << time_in_minutes << ", " << data.RandomSeed << endl;
+        LOG << time_in_minutes << ", " << data.RandomSeed << endl; // <<", " << levels << endl;
 
         /*
         ifstream dataInput("iAntTagData.txt");
@@ -116,6 +118,7 @@ void iAnt_loop_functions::PostExperiment() {
 
         dataInput.close();
         */
+        
     }
 
     data.SimCounter++;
@@ -126,11 +129,6 @@ void iAnt_loop_functions::PostExperiment() {
  * conditions set in the XML file.
  *****/
 void iAnt_loop_functions::Reset() {
-    //////////////ADDED////////////
-    // if(data.FoodList.size() == 0){
-    //     data.TargetRayList.clear();
-    // }
-
     if(data.VariableSeed == 1) GetSimulator().SetRandomSeed(++data.RandomSeed);
 
     //GetSimulator().Reset();
@@ -154,7 +152,6 @@ void iAnt_loop_functions::Reset() {
  * time limit in the XML file and will stop the experiment at that time limit.
  *****/
 bool iAnt_loop_functions::IsExperimentFinished() {
-    //return false;
     bool isFinished = false;
 
     if(data.FoodList.size() == 0 || data.SimTime >= data.MaxSimTime) {

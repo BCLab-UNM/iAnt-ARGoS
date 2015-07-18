@@ -84,7 +84,6 @@ char findNextDir (char curDir, int change){
 			break;
 		}
 	}
-
 	else{
 		newDir = curDir;
 	}
@@ -107,7 +106,7 @@ void printPattern(const vector<char>& myPattern, int levels){
  * Once done with building the pattern, fucntion is 
  * is called to write pattern as a string to a text file.
  *****/
-void writeToFile(vector <char>& pattern, int levels){
+void writeToFile(vector<char>& pattern, int levels){
 	
 	ofstream outFile; /* Make an instance of ofstream */
 
@@ -116,12 +115,11 @@ void writeToFile(vector <char>& pattern, int levels){
 
 	/* Ensure that string is the correct size */
 	pattern.resize(pattern.size()); 
-	
+	outFile << levels << " ";
 	for (unsigned int i = 0; i < pattern.size(); i++){
 		/* write each element to outFile. */
 		outFile << pattern[i]; 
 	}
-	outFile << levels;
 	cout << endl;
 	outFile.close();
 }
@@ -133,18 +131,18 @@ void writeToFile(vector <char>& pattern, int levels){
 int main () 
 {
 	/* Initialize number of levels, initial direction, pattern. */
-	int levels = 30;
+	int levels = 100;
 	char initDir = 'S';
 	string initSPattern = "NE";
-
+	cout << "Pattern" << "(" << levels << ")" << endl;
 	/* Converts initSPattern into a vector <char> pattern. */
 	vector<char> pattern (initSPattern.begin(), initSPattern.end());
-	
+
 	/* Call insertSquarePattern to build pattern. */
 	insertSquarePattern(initDir,pattern,levels);
 	
 	/* Prints pattern when finished building. */
-	printPattern(pattern, levels);
+	//printPattern(pattern, levels);
 
 	/* Write pattern to a text file. */
 	writeToFile(pattern,levels);	
