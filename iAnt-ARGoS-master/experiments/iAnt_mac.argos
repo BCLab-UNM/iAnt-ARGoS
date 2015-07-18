@@ -1,0 +1,105 @@
+<?xml version="1.0" ?><argos-configuration>
+
+  <!-- FRAMEWORK -->
+  <framework>
+    <system threads="0"/>
+    <!--length: zero sets no time limit -->
+    <!--ticks_per_second: frames per second in the graphical user interface -->
+    <!-- random_seed: seed fro random number generator -->
+    <experiment length="3600" random_seed="935626" ticks_per_second="16"/>
+  </framework>
+
+  <!-- CONTROLLERS -->
+  <controllers>
+    <iAnt_controller id="iAnt_c" library="build/controllers/libiAnt_controller.dylib">
+      <actuators>
+        <!-- implementation: don't change, leave it as "default" -->
+        <differential_steering implementation="default"/>
+      </actuators>
+      <sensors>
+        <!-- show-rays: Graphically displays collsion detecion in the GUI: set to "true" to turn this on. -->
+        <footbot_proximity implementation="default" show_rays="true"/>
+        <positioning implementation="default"/>
+      </sensors>
+      <params>
+        <CPFA angleTolerance="11.07534" distanceTolerance="0.24478" informedSearchDecay="0.09928" maxRobotSpeed="16.0" pheromoneDecayRate="0.37855" pheromoneRate="5.25921" searchGiveupProbability="0.0" searchRadius="0.23" searchStepSize="0.97377" siteFidelityRate="6.42677" travelGiveupProbability="0.09305" uninformedSearchCorrelation="48.9785"/>
+      </params>
+    </iAnt_controller>
+  </controllers>
+
+  <!-- LOOP FUNCTIONS -->
+  <loop_functions label="iAnt_loop_functions" library="build/loop_functions/libiAnt_loop_functions.dylib">
+    <simulation_settings foodDistribution="0" foodItemCount="256" foodRadius="0.05" nestPosition="0.0, 0.0" nestRadius="0.5" outputData="1" variableSeed="0"/>
+    <random_distribution_0/> <!-- no settings for this distribution -->
+    <cluster_distribution_1 clusterLengthY="8" clusterWidthX="8" numberOfClusters="4"/>
+    <powerLaw_distribution_2 powerRank="4"/>
+  </loop_functions>
+
+  <!-- ARENA -->
+  <arena center="0.0, 0.0, 0.0" size="10.0, 10.0, 0.0">
+    <floor id="floor" pixels_per_meter="50" source="loop_functions"/>
+    <distribute>
+      <position max="1, 1, 0" method="uniform" min="-1, -1, 0"/>
+      <orientation mean="0, 0, 0" method="gaussian" std_dev="360, 0, 0"/>
+       <!-- The number of robots -->
+      <entity max_trials="200" quantity="6">
+        <foot-bot id="fb">
+          <controller config="iAnt_c"/>
+        </foot-bot>
+      </entity>
+    </distribute>
+
+    <!--
+        We distribute 5 boxes uniformly in position and rotation around Z.
+    --><!--
+    <distribute>
+      <position method="uniform" min="-5,-5,0" max="5,5,0" />
+      <orientation method="uniform" min="0,0,0" max="360,0,0" />
+      <entity quantity="6" max_trials="100">
+        <box id="b" size="0.3,0.3,0.25" movable="false" />
+      </entity>
+    </distribute>-->
+
+    <!--
+        We distribute cylinders uniformly in position and with
+        constant rotation (rotating a cylinder around Z does not
+        matter)
+    -->
+<!--
+    <distribute>
+      <position method="uniform" min="-5,-5,0" max="5,5,0" />
+      <orientation method="constant" values="0,0,0" />
+      <entity quantity="6" max_trials="100">
+        <cylinder id="c" height="0.25" radius="0.15" movable="true" mass="10.0"/>
+      </entity>
+    </distribute>-->
+
+  </arena>
+
+  <!-- PHYSICS ENGINE(S) -->
+  <physics_engines>
+    <dynamics2d id="dyn2d"/>
+  </physics_engines>
+
+  <!-- MEDIA -->
+  <media>
+    <led id="leds"/>
+  </media>
+
+  <!-- VISUALIZATION -->
+  <!--
+  <visualization>
+    <qt-opengl>
+      <camera>
+        <placement idx="0" lens_focal_length="25" look_at="0, 0, 0" position="  0, 0, 10"/>
+        <placement idx="1" lens_focal_length="45" look_at="0, 0, 0" position="  0, 0, 10"/>
+        <placement idx="2" lens_focal_length="120" look_at="0, 0, 0" position="  0, 0, 10"/>
+        <placement idx="3" lens_focal_length="180" look_at="0, 0, 0" position="-30, 0, 10"/>
+        <placement idx="4" lens_focal_length="240" look_at="0, 0, 0" position="-30, 0, 10"/>
+      </camera>
+      <user_functions label="iAnt_qt_user_functions"/>
+    </qt-opengl>
+  </visualization>
+-->
+
+</argos-configuration>

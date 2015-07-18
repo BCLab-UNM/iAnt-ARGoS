@@ -1,0 +1,8 @@
+1.
+	$ cd iAnt-ARGoS-master  # go into the iAnt-ARGoS directory
+	$ cd build              # go into the build directory
+	$ cmake ..              # setup compilation with cmake
+	$ make                  # compile the iAnt CPFA code
+	$ cd ..                 # get out of the build directory
+
+2. $ argos3 -c experiments/iAnt_mac.argos

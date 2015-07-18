@@ -1,0 +1,110 @@
+READ ME
+
+CONTENTS OF THIS FILE
+---------------------
+   
+ * Introduction
+ * Requirements & Installation
+ * Configuration
+ * Troubleshooting
+ * FAQ
+
+
+
+INTRODUCTION
+------------
+The file summarizes the process and requirements for running stimulations for ARGos (Old Version) Program. This file also entails how to use the bash script to run the ARGOs code for an n number of times with constant parameters all except the "random_seed" variable.
+
+REQUIREMENTS & INSTALLATION
+-----------------------------
+Here are the list of necessary supplements necessary to run the
+bash script and Argos XML file.
+
+1. Install ARGos using installation guide 
+	(for Macs & Linux machines only)
+	https://github.com/BCLab-UNM/iAnt-ARGoS/wiki/%5B4%5D-ARGoS-Installation-Guide
+
+2. Download the iAnt-ARGos-master from:
+	https://github.com/BCLab-UNM/iAnt-ARGoS/wiki/%5B3%5D-Compiling-iAnt-Code
+
+3. Put argosBashScript.sh and random_argos.py 
+	inside the iAnt-AGGos-master directory
+
+CONFIGURATION
+-------------
+
+Here are the list of configurations necessary to get correct data output.
+
+1. Set Default Parameters 
+	Refer to ARGos Wiki Page for more specification about these parameters:
+
+	https://github.com/BCLab-UNM/iAnt-ARGoS/wiki/%5B2%5D-XML-Configuration-File
+
+	experiment length="3600" ticks_per_second="16" random_seed="1337" (random_seed varies using bash-script)
+
+	 pheromoneRate="10"
+	 pheromoneDecayRate="0.01"
+	 travelGiveupProbability="0.999999"
+	 siteFidelityRate="10"
+	 informedSearchDecay="0.001"
+	 searchRadius="0.23"
+	 searchStepSize="0.08"
+	 distanceTolerance="0.1"
+	 searchGiveupProbability="0.000001"
+	 angleTolerance="22.5"
+	 maxRobotSpeed="16.0"
+	 uninformedSearchCorrelation="13.25"
+
+	 variableSeed="1"
+	 outputData="1"
+	 nestPosition="0.0, 0.0"
+	 nestRadius="0.5"
+	 foodRadius="0.05"
+	 foodItemCount="100"
+	 foodDistribution="2"
+
+	 (food Distribution could vary from 0,1,or2 depending on the desire food distribution)
+
+	 foodDistribution="0" foodItemCount="256" foodRadius="0.05" nestPosition="0.0, 0.0" nestRadius="0.5" outputData="1" variableSeed="0"/>
+     clusterLengthY="8" clusterWidthX="8" numberOfClusters="4"
+     powerLaw_distribution_2 powerRank="4"
+
+     size="10.0, 10.0, 0.0"
+
+2.	To ensure maximized run time efficency comment out the visualation section 
+	using these symbols <-- -->, before and after the visualization tag name.
+
+3.	Save both the argosBashScript and random_seed.py files in the iAnt-ARGos-master directory
+
+4.  Compile Code in Bash Script using the following command:
+
+	*Note Bash script currently runs 100 experiments using different
+	 random_seed each time using the random_seed.py script.
+	 if you want to adjust the number of experiments produce 
+	 change the terminating for loop variable (100) to what ever you like.
+
+	./argosBashScript.hs (NameofOutputfile).txt
+
+5. Outfile will appear in the iAnt-ARGoS-master file, as the name you specified
+	from step 2.
+
+
+TROUBLESHOOTING
+---------------
+
+Refer to Wiki-page or iAnt-ARGoS web page
+https://github.com/BCLab-UNM/iAnt-ARGoS/wiki
+
+Report the issue on GitHub
+https://github.com/BCLab-UNM/iAnt-ARGoS/issues
+
+Contact the ARGoS-Master, Antonio Griego at deano505@unm.edu
+
+FAQ
+---
+
+The purpose of having the bash script file is to eliminate the time-consuming process of running multiple experiments and allows for an output file to be generated so that a list of mnay data points are generated and the mean and standard deviation could be created using Matalab.
+
+
+
+	

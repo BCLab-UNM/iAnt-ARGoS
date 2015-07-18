@@ -1,0 +1,43 @@
+#!/bin/bash
+# This script runs the XML file/ argos file x100 with a new random seed each time by using
+# the random_argos.py by Jeffrey Nicholos.
+
+
+#Generate Data for Random Distribution Stimulation
+for _ in {1..100}; do python random_argos.py; done #command to run file n times
+
+open -a TextEdit  iAntTagData.txt #open data file
+
+cp iAntTagData.txt/RandomDistribData.txt
+ 
+echo "DONE Running stimulation for Random Distribution data"
+
+
+#Generate Data for Cluster Distribution Stimulation
+rm iAntTagData.txt
+
+for _ in {1..100}; do python random_argos.py; done #command to run file n times
+
+open -a TextEdit  iAntTagData.txt #open data file
+
+cp iAntTagData.txt/ClusterDistribData.txt
+
+echo "DONE Running stimulation for Cluster Distribution data"
+
+
+#Generate Data for Power Law Distribution Stimulation
+rm iAntTagData.txt
+
+for _ in {1..100}; do python random_argos.py; done #command to run file n times
+
+open -a TextEdit  iAntTagData.txt #open data file
+
+cp iAntTagData.txt/PowerLawDistribData.txt
+
+echo "DONE Running stimulation for Power Law Distribution data"
+
+
+
+
+
+
