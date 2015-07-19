@@ -254,6 +254,7 @@ void iAnt_controller::searching() {
     /* Food has been found, change state to RETURNING and go to the nest */
     else {
        	target=data->NestPosition; //qilu 07/17
+       	SetLocalResourceDensity();    //qilu 07/17
         CPFA = RETURNING;
         }
 
@@ -354,7 +355,7 @@ void iAnt_controller::shutdown() {
 void iAnt_controller::SetHoldingFood() {
 	//LOG<<"set holding food..."<<endl;
     /* Is the iAnt already holding food? */
-    if(IsHoldingFood() == false) {
+    if(!IsHoldingFood()) {
 		//LOG<<"IsHoldingFood() == false"<<endl;
         /* No, the iAnt isn't holding food. Check if we have found food at our
            current position and update the food list if we have. */
@@ -368,7 +369,6 @@ void iAnt_controller::SetHoldingFood() {
 					/* We found food! Calculate the nearby food density. */
 					isHoldingFood = true;
 					//LOG<<"Calculate the nearby food density"<<endl;
-					//SetLocalResourceDensity();
 					j = i + 1;
 					break;
 				} else {
@@ -379,16 +379,17 @@ void iAnt_controller::SetHoldingFood() {
 				}
 			}
 		}
-        for( ; j < data->FoodList.size(); j++) {
-            newFoodList.push_back(data->FoodList[j]);
-            newFoodColoringList.push_back(CColor::BLACK);
-        }
-
+		if(j>0){ //qilu 07/19 avoid unneccessary iteration
+			for( ; j < data->FoodList.size(); j++) {
+				newFoodList.push_back(data->FoodList[j]);
+				newFoodColoringList.push_back(CColor::BLACK);
+			}
+		}
         /* We picked up food. Update the food list minus what we picked up. */
-        if(IsHoldingFood() == true) {
+        if(IsHoldingFood()) {
 			//LOG<<"We picked up food. Update the food list minus what we picked up..."<<endl;
             data->FoodList = newFoodList;
-            SetLocalResourceDensity();
+            //SetLocalResourceDensity(); //qilu 07/19 move this to the branch of discovered food in searching() 
         }
         /* We dropped off food. Clear the built-up pheromone trail. */
         //else trailToShare.clear(); //qilu 07/17

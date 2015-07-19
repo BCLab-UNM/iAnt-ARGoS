@@ -38,7 +38,7 @@
 
 		<!-- un-evolvable food distribution parameters -->
         <_0_FoodDistribution_Random FoodItemCount="256"/>
-        <_1_FoodDistribution_Cluster ClusterLengthY="8" ClusterWidthX="8" NumberOfClusters="16"/>
+        <_1_FoodDistribution_Cluster ClusterLengthY="4" ClusterWidthX="4" NumberOfClusters="2"/>
         <_2_FoodDistribution_PowerLaw PowerRank="4"/>
 
     </loop_functions>
@@ -51,7 +51,7 @@
         <distribute>
             <position max="2.0 , 2.0 , 0.0" method="uniform" min="-2.0 , -2.0 , 0.0"/>
             <orientation mean="0, 0, 0" method="gaussian" std_dev="360, 0, 0"/>
-            <entity max_trials="100" quantity="2">
+            <entity max_trials="100" quantity="16">
                 <foot-bot id="fb_0"><controller config="iAnt_c"/></foot-bot>
             </entity>
         </distribute>
