@@ -513,7 +513,7 @@ void iAnt_controller::SetLocalResourceDensity() {
 
     /* Set the fidelity position to the robot's current position. */
     fidelity = GetPosition();
-	
+	trailToShare.push_back(fidelity);//qilu 07/19 
     /* Add the robot's new fidelity position to the global fidelity list. */
 	data->FidelityList[controllerID] =fidelity; //qilu 07/17
     //data->FidelityList.push_back(fidelity); //qilu 07/17
