@@ -1,0 +1,1 @@
+/usr/bin/c++  -fPIC    -shared -Wl,-soname,libiAnt_data.so -o libiAnt_data.so CMakeFiles/iAnt_data.dir/iAnt_data.cpp.o  -L/usr/lib/argos3 libiAnt_nest.so libiAnt_pheromone.so -largos3core_simulator -Wl,-rpath,/usr/lib/argos3:/home/lukey15/Research/iAnt-repo/iAnt-ARGoS/MPFA/build/source 

@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/lukey15/Research/iAnt-repo/iAnt-ARGoS/MPFA/source/iAnt_nest.cpp
+iAnt_nest.h
+/home/lukey15/Research/iAnt-repo/iAnt-ARGoS/MPFA/source/iAnt_nest.h
+
+/home/lukey15/Research/iAnt-repo/iAnt-ARGoS/MPFA/source/iAnt_nest.h
+argos3/core/utility/math/vector2.h
+-
+argos3/core/utility/math/ray3.h
+-
+iAnt_pheromone.h
+/home/lukey15/Research/iAnt-repo/iAnt-ARGoS/MPFA/source/iAnt_pheromone.h
+
+/home/lukey15/Research/iAnt-repo/iAnt-ARGoS/MPFA/source/iAnt_pheromone.h
+argos3/core/utility/math/vector2.h
+-
+
