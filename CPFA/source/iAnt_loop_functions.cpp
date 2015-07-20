@@ -51,7 +51,7 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
     GetNodeAttribute(powerLaw, "PowerRank",        data.PowerRank);
 
     /* Convert and calculate additional values. */
-    data.MaxSimTime                = simulator->GetMaxSimulationClock();
+    //data.MaxSimTime                = simulator->GetMaxSimulationClock(); //qilu 07/19
     data.RandomSeed                = simulator->GetRandomSeed();
     data.TicksPerSecond            = physicsEngine->GetInverseSimulationClockTick();
     data.UninformedSearchVariation = ToRadians(USV_InDegrees);
@@ -192,7 +192,8 @@ bool iAnt_loop_functions::IsExperimentFinished() {
             isFinished=false;
             return isFinished;}
     }
-    if(data.FoodList.size() == 0 || data.SimTime >= data.MaxSimTime) {
+    //if(data.FoodList.size() == 0 || data.SimTime >= data.MaxSimTime) {//qilu 07/19 no need the MaxSimTime
+    if(data.FoodList.size() == 0) {
         isFinished = true;
     }
 

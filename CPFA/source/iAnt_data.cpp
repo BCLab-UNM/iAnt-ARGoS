@@ -6,7 +6,7 @@
 iAnt_data::iAnt_data() :
 
     SimTime(0),
-    MaxSimTime(28800),
+    //MaxSimTime(28800), //qilu 07/19 no need 
     TicksPerSecond(16),
     ResourceDensityDelay(0),
     RandomSeed(1337),

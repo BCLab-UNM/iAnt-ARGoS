@@ -26,7 +26,7 @@ class iAnt_data {
 		size_t ArenaX; //qilu 06/07
         size_t ArenaY;
         size_t SimTime;
-        size_t MaxSimTime;
+        size_t MaxSimTime; //qilu 07/19
         size_t TicksPerSecond;
         size_t ResourceDensityDelay;
 
