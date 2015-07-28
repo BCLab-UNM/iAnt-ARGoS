@@ -165,7 +165,7 @@ void iAnt_controller::departing() {
     CVector2 distance = (GetPosition() - target);
     
     /* Are we informed? I.E. using site fidelity or pheromones. */
-    if(isInformed == true) {
+    if(isInformed) {
         /* When informed, proceed to the target location. */
         if(distance.SquareLength() < DistanceTolerance) {
             searchTime = 0;
@@ -215,6 +215,10 @@ void iAnt_controller::searching() {
             //SetTargetInBounds(data->NestPosition);
             target = data->NestPosition;//qilu 07/16
 			CPFA = RETURNING;
+			if(isUsingSiteFidelity){ //qilu 07/27 remove the site fidelity if it is used and the robot can not find food 
+				data->FidelityList.erase(controllerID); //qilu 07/27
+				fidelity= CVector2(10000,10000); //qilu 07/27
+				}
             LOG<<"give up and return...."<<endl;
         }
         /* If we reached our target search location, set a new one. The 
@@ -235,7 +239,7 @@ void iAnt_controller::searching() {
                 SetTargetInBounds(turn_vector + GetPosition());
 			}
             /* informed search */
-            else if(isInformed == true) {
+            else if(isInformed) {
 				LOG<<"informed search...."<<endl;
                 size_t   t           = searchTime++;
                 Real     twoPi       = (CRadians::TWO_PI).GetValue();
@@ -291,11 +295,14 @@ void iAnt_controller::returning() {
 										trailToShare,
                                            timeInSeconds,
                                            data->RateOfPheromoneDecay);
-				data->PheromoneList.push_back(sharedPheromone);
-				trailToShare.clear();
+				data->PheromoneList.push_back(sharedPheromone); 
+				LOG<<"create a pheromone trail..."<<endl;
 			}
 		}
-
+		trailToShare.clear(); /* qilu 07/27 move it to here. If it does not creat a trail, 
+		then it creates one at the second site fidelity, the trail is accumulated. 
+		It needs to reset at each iteration */
+		
         /* Determine probabilistically wether to use site fidelity, pheromone
            trails, or random search. */
 
@@ -310,11 +317,13 @@ void iAnt_controller::returning() {
         else if(SetTargetPheromone()) {
             LOG<<"return: Use pheromone waypoints..."<<endl;
 			isInformed = true;
+			isUsingSiteFidelity = false; //qilu 07/27
 		}
         /* use random search */
         else {
 			SetRandomSearchLocation();
 			isInformed = false;
+			isUsingSiteFidelity = false; //qilu 07/27
 			LOG<<"return: Use random search..."<<endl;
 		}
 
@@ -530,6 +539,7 @@ void iAnt_controller::SetLocalResourceDensity() {
 bool iAnt_controller::SetTargetPheromone() {
 	double maxStrength = 0.0, randomWeight = 0.0;
     bool isPheromoneSet = false;
+    LOG<<"data->PheromoneList.size()="<<data->PheromoneList.size()<<endl;
 	if(data->PheromoneList.size()==0) return isPheromoneSet; //qilu 07/04 the case of no pheromone. 
     /* update the pheromone list and remove inactive pheromones */
     // data->UpdatePheromoneList();
