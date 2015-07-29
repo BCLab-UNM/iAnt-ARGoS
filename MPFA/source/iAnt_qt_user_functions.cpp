@@ -104,7 +104,9 @@ void iAnt_qt_user_functions::DrawPheromones() {
     vector<CVector2> trail;
     CColor trailColor = CColor::GREEN, pColor = CColor::GREEN;
     for(size_t n=0; n<data->nests.size(); n++){//qilu 07/06
-    for(size_t i = 0; i < data->nests[n].PheromoneList.size(); i++) { //qilu 07/05
+		//LOG<<"data->nests["<<n<<"].PheromoneList.size()"<<data->nests[n].PheromoneList.size()<<endl;
+		for(size_t i = 0; i < data->nests[n].PheromoneList.size(); i++) { //qilu 07/05
+		
 		x = data->nests[n].PheromoneList[i].GetLocation().GetX();
         y = data->nests[n].PheromoneList[i].GetLocation().GetY();
 		if(data->DrawTrails == 1) {

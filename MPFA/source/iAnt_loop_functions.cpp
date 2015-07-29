@@ -79,7 +79,7 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
     GetNodeAttribute(powerLaw, "PowerRank",        data.PowerRank);
     
     /* Convert and calculate additional values. */
-    //data.MaxSimTime                = 2*simulator->GetMaxSimulationClock(); //qilu 07/19 times by 2
+    //data.MaxSimTime                = simulator->GetMaxSimulationClock(); //qilu 07/19 
     data.RandomSeed                = simulator->GetRandomSeed();
     data.TicksPerSecond            = physicsEngine->GetInverseSimulationClockTick();
     data.UninformedSearchVariation = ToRadians(USV_InDegrees);
@@ -213,13 +213,15 @@ bool iAnt_loop_functions::IsExperimentFinished() {
     }
     
     //if(data.FoodList.size() == 0 || data.SimTime >= data.MaxSimTime) { //qilu 07/19 no need MaxSimTime
-    if(data.FoodList.size() == 0) isFinished = true;
+    if(data.FoodList.size() == 0) 
+    isFinished = true;
+    //}
     
     if(isFinished == true && data.MaxSimCounter > 1) {
         size_t newSimCounter = data.SimCounter + 1;
         size_t newMaxSimCounter = data.MaxSimCounter - 1;
 
-        LOG << endl << "FINISHED RUN: " << data.SimCounter << endl;
+        //LOG << endl << "FINISHED RUN: " << data.SimCounter << endl;
 
         PostExperiment();
         Reset();

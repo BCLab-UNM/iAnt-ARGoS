@@ -64,6 +64,7 @@ class iAnt_controller : public CCI_Controller {
         iAnt_data*       data;
         CVector2         target;
         CVector2         fidelity;
+        bool			 updateFidelity; //qilu 07/29
         vector<CVector2> trailToShare;
         vector<CVector2> trailToFollow;
         bool             isHoldingFood;

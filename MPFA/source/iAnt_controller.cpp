@@ -22,7 +22,8 @@ iAnt_controller::iAnt_controller() :
     waitTime(0),
     collisionDelay(0),
     resourceDensity(0),
-    fidelity(10000,10000), 
+    fidelity(10000,10000),
+    updateFidelity(false), //qilu 07/29 
     MPFA(INACTIVE)
 {}
 
@@ -46,7 +47,7 @@ void iAnt_controller::Init(TConfigurationNode& node) {
 
     /* MPFA node from the iAnt.argos XML file */
     TConfigurationNode iAnt_params = GetNode(node, "iAnt_params");
-
+    
     /* Temporary variable, XML accepts input in degrees, but that is converted
        and used as radians internally within ARGoS. */
     CDegrees angleInDegrees;
@@ -56,8 +57,9 @@ void iAnt_controller::Init(TConfigurationNode& node) {
     GetNodeAttribute(iAnt_params, "SearchStepSize",          SearchStepSize);
     GetNodeAttribute(iAnt_params, "RobotForwardSpeed",       RobotForwardSpeed);
     GetNodeAttribute(iAnt_params, "RobotRotationSpeed",      RobotRotationSpeed);
-    GetNodeAttribute(iAnt_params, "AngleToleranceInDegrees", angleInDegrees);
-
+    GetNodeAttribute(iAnt_params, "AngleToleranceInDegrees", angleInDegrees); 
+    
+	
     /* Convert the XML Degree input into Radians. */
     AngleToleranceInRadians.Set(-ToRadians(angleInDegrees),
                                  ToRadians(angleInDegrees));
@@ -185,10 +187,10 @@ void iAnt_controller::departing() {
     	    target = GetPosition();  
     	    /*qilu 07/04/2015 this sets the current location to be the search location, 
     	     then the robot can start to search*/
-    	    LOG<<"switch to search...."<<endl;
+    	    //LOG<<"switch to search...."<<endl;
     	} else if(distance.SquareLength() < DistanceTolerance) {
             SetRandomSearchLocation();
-            LOG<<"set random search location when it reaches a location...."<<endl;
+            //LOG<<"set random search location when it reaches a location...."<<endl;
         }
     }
 
@@ -217,7 +219,12 @@ void iAnt_controller::searching() {
 		if(random < data->ProbabilityOfReturningToNest) {
             SetClosestNest();//qilu 07/17
             target =ClosestNest->GetLocation();//qilu 07/17
-            LOG<<"give up and return...."<<endl;
+            if(isUsingSiteFidelity){ //qilu 07/28 remove the site fidelity if it is used and the robot can not find food 
+				data->FidelityList.erase(controllerID); //qilu 07/28
+				fidelity= CVector2(10000,10000); //qilu 07/28
+				}
+			updateFidelity = false; //qilu 07/29
+            //LOG<<"give up and return...."<<endl;
             MPFA = RETURNING;
         }
         /* If we reached our target search location, set a new one. The 
@@ -288,15 +295,15 @@ void iAnt_controller::returning() {
         Real r1 = RNG->Uniform(CRange<Real>(0.0, 1.0));
         Real r2 = RNG->Uniform(CRange<Real>(0.0, 1.0));
         //create a pheromone trail if there is a new site fidelity
-        if(poissonCDF_pLayRate > r1 && fidelity!=CVector2(10000, 10000)){//qilu 07/16
-				
-            Real timeInSeconds = (Real)(data->SimTime / data->TicksPerSecond);
+        //if(poissonCDF_pLayRate > r1 && fidelity!=CVector2(10000, 10000) && updateFidelity){//qilu 07/16
+		if(poissonCDF_pLayRate > r1 && updateFidelity){//qilu 07/29
+			Real timeInSeconds = (Real)(data->SimTime / data->TicksPerSecond);
             iAnt_pheromone sharedPheromone(fidelity,
                                            trailToShare,
                                            timeInSeconds,
                                            data->RateOfPheromoneDecay);
 				
-                LOG<<"add a sharedPheromone trail..."<<endl;
+                //LOG<<"add a sharedPheromone trail..."<<endl;
 				ClosestNest->PheromoneList.push_back(sharedPheromone);//qilu 07/05/2015 
 			
 		}
@@ -307,21 +314,23 @@ void iAnt_controller::returning() {
         
         /* use site fidelity */
         if(poissonCDF_sFollowRate > r2 && fidelity!=CVector2(10000, 10000)) { // qilu 07/07, consider the case of no site fidelity
-			LOG<<"Use site fidelity..."<<endl;
+			//LOG<<"Use site fidelity..."<<endl;
 			target = fidelity;
 			isInformed = true;
 			isUsingSiteFidelity = true;
 		}
         /* use pheromone waypoints */
         else if(SetTargetPheromone()) {
-            LOG<<"Use pheromone waypoints..."<<endl;
+            //LOG<<"Use pheromone waypoints..."<<endl;
 			isInformed = true;
+			isUsingSiteFidelity = false; //qilu 07/28
 		}
         /* use random search */
         else {
-            LOG<<"use random search..."<<endl;
+            //LOG<<"use random search..."<<endl;
 			SetRandomSearchLocation();
 			isInformed = false;
+			isUsingSiteFidelity = false; //qilu 07/28
 		}
 		MPFA = DEPARTING;
 	}
@@ -503,8 +512,10 @@ void iAnt_controller::SetLocalResourceDensity() {
 	}
 
     /* Set the fidelity position to the robot's current position. */
-    LOG<<"create a fidelity="<<fidelity<<endl;
+    //LOG<<"create a fidelity="<<fidelity<<endl;
     fidelity = GetPosition();
+    updateFidelity = true; //qilu 07/29
+    //LOG<<"updateFidelity = true"<<endl; 
     trailToShare.push_back(fidelity);//qilu 07/19
     /* Add the robot's new fidelity position to the global fidelity list. */
     //fidelity = newFidelity; //qilu 07/16
@@ -521,6 +532,7 @@ void iAnt_controller::SetLocalResourceDensity() {
 bool iAnt_controller::SetTargetPheromone() {
 	double maxStrength = 0.0, randomWeight = 0.0;
     bool isPheromoneSet = false;
+    //LOG<<"ClosestNest->PheromoneList.size()="<<ClosestNest->PheromoneList.size()<<endl;
     if(ClosestNest->PheromoneList.size()==0) return isPheromoneSet=false; //qilu 07/04 the case of no pheromone.  
     /* update the pheromone list and remove inactive pheromones */
 
@@ -803,7 +815,7 @@ void iAnt_controller::SetClosestNest(){//qilu 06/04
         }
     }
     if (ClosestNest->GetLocation() != data->nests[minIdex].GetLocation()){
-		LOG<<"switch to other closest nest..."<<endl;
+		//LOG<<"switch to other closest nest..."<<endl;
 		data->FidelityList.erase(controllerID); //qilu 07/16
 		fidelity=CVector2(10000,10000);
 		ClosestNest = &data->nests[minIdex];
