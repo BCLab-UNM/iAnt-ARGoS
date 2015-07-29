@@ -22,6 +22,7 @@ iAnt_controller::iAnt_controller() :
     collisionDelay(0),
     resourceDensity(0),
     fidelity(10000,10000), //qilu 07/04
+    updateFidelity(false), //qilu 07/29
     CPFA(INACTIVE)
 {}
 
@@ -182,10 +183,10 @@ void iAnt_controller::departing() {
             searchTime = 0;
     	    CPFA = SEARCHING;
     	    target = GetPosition(); //qilu 07/03/2015 this makes the current location to be the search location 
-    	    LOG<<"switch to search...."<<endl;
+    	    //LOG<<"switch to search...."<<endl;
     	} else if(distance.SquareLength() < DistanceTolerance) {
             SetRandomSearchLocation();
-            LOG<<"set random search location when it reaches a location...."<<endl;
+            //LOG<<"set random search location when it reaches a location...."<<endl;
         }
     }
 
@@ -219,7 +220,8 @@ void iAnt_controller::searching() {
 				data->FidelityList.erase(controllerID); //qilu 07/27
 				fidelity= CVector2(10000,10000); //qilu 07/27
 				}
-            LOG<<"give up and return...."<<endl;
+			updateFidelity = false; //qilu 07/29
+            //LOG<<"give up and return...."<<endl;
         }
         /* If we reached our target search location, set a new one. The 
            new search location calculation is different based on wether
@@ -227,7 +229,7 @@ void iAnt_controller::searching() {
         else if(distance.SquareLength() < DistanceTolerance) {
             /* uninformed search */
             if(isInformed == false) {
-				LOG<<"uninformed search...."<<endl;
+				//LOG<<"uninformed search...."<<endl;
                 Real USCV = data->UninformedSearchVariation.GetValue();
                 Real rand = RNG->Gaussian(USCV);
                 CRadians rotation(rand);
@@ -240,7 +242,7 @@ void iAnt_controller::searching() {
 			}
             /* informed search */
             else if(isInformed) {
-				LOG<<"informed search...."<<endl;
+				//LOG<<"informed search...."<<endl;
                 size_t   t           = searchTime++;
                 Real     twoPi       = (CRadians::TWO_PI).GetValue();
                 Real     pi          = (CRadians::PI).GetValue();
@@ -287,17 +289,16 @@ void iAnt_controller::returning() {
         Real r1 = RNG->Uniform(CRange<Real>(0.0, 1.0));
         Real r2 = RNG->Uniform(CRange<Real>(0.0, 1.0));
 
-		if(poissonCDF_pLayRate > r1) {
+		if(poissonCDF_pLayRate > r1 && updateFidelity) {
             //trailToShare.push_back(data->NestPosition);//qilu 07/17
             Real timeInSeconds = (Real)(data->SimTime / data->TicksPerSecond);
-            if(fidelity!=CVector2(10000, 10000)){ //qilu 07/04
-				iAnt_pheromone sharedPheromone(fidelity,
+            //if(fidelity!=CVector2(10000, 10000) && updateFidelity){ //qilu 07/04
+            iAnt_pheromone sharedPheromone(fidelity,
 										trailToShare,
                                            timeInSeconds,
                                            data->RateOfPheromoneDecay);
 				data->PheromoneList.push_back(sharedPheromone); 
-				LOG<<"create a pheromone trail..."<<endl;
-			}
+				//LOG<<"create a pheromone trail..."<<endl;
 		}
 		trailToShare.clear(); /* qilu 07/27 move it to here. If it does not creat a trail, 
 		then it creates one at the second site fidelity, the trail is accumulated. 
@@ -308,14 +309,14 @@ void iAnt_controller::returning() {
 
         /* use site fidelity */
 		if(poissonCDF_sFollowRate > r2 && fidelity!= CVector2(10000,10000)) { // qilu 07/04, add the case of no site fidelity
-            LOG<<"Use site fidelity..."<<endl;
+            //LOG<<"Use site fidelity..."<<endl;
 			SetTargetInBounds(fidelity);
 			isInformed = true;
             isUsingSiteFidelity = true;
 		}
         /* use pheromone waypoints */
         else if(SetTargetPheromone()) {
-            LOG<<"return: Use pheromone waypoints..."<<endl;
+            //LOG<<"Use pheromone waypoints..."<<endl;
 			isInformed = true;
 			isUsingSiteFidelity = false; //qilu 07/27
 		}
@@ -324,7 +325,7 @@ void iAnt_controller::returning() {
 			SetRandomSearchLocation();
 			isInformed = false;
 			isUsingSiteFidelity = false; //qilu 07/27
-			LOG<<"return: Use random search..."<<endl;
+			//LOG<<"Use random search..."<<endl;
 		}
 
 		CPFA = DEPARTING;
@@ -522,6 +523,7 @@ void iAnt_controller::SetLocalResourceDensity() {
 
     /* Set the fidelity position to the robot's current position. */
     fidelity = GetPosition();
+    updateFidelity = true; //qilu 07/29
 	trailToShare.push_back(fidelity);//qilu 07/19 
     /* Add the robot's new fidelity position to the global fidelity list. */
 	data->FidelityList[controllerID] =fidelity; //qilu 07/17
@@ -539,7 +541,7 @@ void iAnt_controller::SetLocalResourceDensity() {
 bool iAnt_controller::SetTargetPheromone() {
 	double maxStrength = 0.0, randomWeight = 0.0;
     bool isPheromoneSet = false;
-    LOG<<"data->PheromoneList.size()="<<data->PheromoneList.size()<<endl;
+    //LOG<<"data->PheromoneList.size()="<<data->PheromoneList.size()<<endl;
 	if(data->PheromoneList.size()==0) return isPheromoneSet; //qilu 07/04 the case of no pheromone. 
     /* update the pheromone list and remove inactive pheromones */
     // data->UpdatePheromoneList();
@@ -561,6 +563,8 @@ bool iAnt_controller::SetTargetPheromone() {
     for(size_t i = 0; i < data->PheromoneList.size(); i++) {
 	    if(randomWeight < data->PheromoneList[i].GetWeight()) {
             /* We've chosen a pheromone! */
+            //LOG<<"Choose a pheromone trail..."<<endl;
+            //LOG<<"data->PheromoneList[i].GetLocation()="<<data->PheromoneList[i].GetLocation()<<endl;
             SetTargetInBounds(data->PheromoneList[i].GetLocation());
             trailToFollow = data->PheromoneList[i].GetTrail();
             isPheromoneSet = true;

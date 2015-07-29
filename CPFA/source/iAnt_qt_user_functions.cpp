@@ -57,7 +57,8 @@ void iAnt_qt_user_functions::DrawNest() {
     CVector3 nest_3d(x_coordinate, y_coordinate, elevation);
 
     /* Draw the nest on the arena. */
-    DrawCircle(nest_3d, CQuaternion(), data->NestRadius, CColor::GRAY50);
+    //DrawCircle(nest_3d, CQuaternion(), data->NestRadius, CColor::GRAY50);//qilu 07/21
+    DrawCircle(nest_3d, CQuaternion(), data->NestRadius, CColor::RED);
 }
 
 /*****
