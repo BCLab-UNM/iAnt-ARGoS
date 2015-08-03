@@ -66,7 +66,6 @@ class iAnt_controller : public CCI_Controller {
         vector<CVector2> trailToFollow;
         bool             isHoldingFood;
         bool             isInformed;
-        bool             isUsingSiteFidelity;
         size_t           searchTime;
         size_t           waitTime;
         size_t           collisionDelay;
