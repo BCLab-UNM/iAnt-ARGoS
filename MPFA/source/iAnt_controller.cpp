@@ -17,7 +17,7 @@ iAnt_controller::iAnt_controller() :
     data(NULL),
     isHoldingFood(false),
     isInformed(false),
-    isUsingSiteFidelity(false),
+    //isUsingSiteFidelity(false),
     searchTime(0),
     waitTime(0),
     collisionDelay(0),
@@ -219,10 +219,8 @@ void iAnt_controller::searching() {
 		if(random < data->ProbabilityOfReturningToNest) {
             SetClosestNest();//qilu 07/17
             target =ClosestNest->GetLocation();//qilu 07/17
-            if(isUsingSiteFidelity){ //qilu 07/28 remove the site fidelity if it is used and the robot can not find food 
-				data->FidelityList.erase(controllerID); //qilu 07/28
-				fidelity= CVector2(10000,10000); //qilu 07/28
-				}
+           	data->FidelityList.erase(controllerID); //qilu 07/28
+			fidelity= CVector2(10000,10000); //qilu 07/28
 			updateFidelity = false; //qilu 07/29
             //LOG<<"give up and return...."<<endl;
             MPFA = RETURNING;
@@ -317,20 +315,20 @@ void iAnt_controller::returning() {
 			//LOG<<"Use site fidelity..."<<endl;
 			target = fidelity;
 			isInformed = true;
-			isUsingSiteFidelity = true;
+			//isUsingSiteFidelity = true;
 		}
         /* use pheromone waypoints */
         else if(SetTargetPheromone()) {
             //LOG<<"Use pheromone waypoints..."<<endl;
 			isInformed = true;
-			isUsingSiteFidelity = false; //qilu 07/28
+			//isUsingSiteFidelity = false; //qilu 07/28
 		}
         /* use random search */
         else {
             //LOG<<"use random search..."<<endl;
 			SetRandomSearchLocation();
 			isInformed = false;
-			isUsingSiteFidelity = false; //qilu 07/28
+			//isUsingSiteFidelity = false; //qilu 07/28
 		}
 		MPFA = DEPARTING;
 	}
