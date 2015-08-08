@@ -27,7 +27,7 @@ CVector2 iAnt_nest::GetLocation() {
     return nestLocation;
 }
 
-CVector2 iAnt_nest::SetLocation() {
+void iAnt_nest::SetLocation() {
     nestLocation=CVector2(0.0, 0.0);
 }
 

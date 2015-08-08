@@ -22,7 +22,7 @@ class iAnt_nest {
 		
 		/* public helper functions */
         CVector2		GetLocation();
-        CVector2		SetLocation();
+        void		SetLocation();
         
 	private:
 
