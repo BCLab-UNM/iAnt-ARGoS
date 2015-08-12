@@ -1,0 +1,25 @@
+c++ (level 3): N SE SW SN WN 1 W NE NE NS ES ES 2 W E SW SW SW
+
+
+               N SE SW SN WN 1 W NE NE NS ES ES 2 W E SW SW SW
+mathlab
+(level 3):     N SE SW SN WN 1 W NE NE NS ES ES 2 E SW SW SW SN WN WN WN
+            
+               N SE SW SN WN 1 W NE NE NS ES ES 2 E SW SW SW SN WN WN WN
+
+
+c++ (level 2):  N SE SW SN WN 1 W NE NE NS ES ES W (size 21)
+matlab
+(level 2):      N SE SW SN WN 1 W NE NE NS ES ES (size 20)
+
+
+N SE SW SN WN WN E NE NS ES ES W ES W SW  W 
+
+
+N SE SW SN WN 1 W NE NE NS ES ES 2 E SW SW SW 
+
+N SE SW SN WN 1 W NE NE NS ES ES 2 E SW SW SW
+
+N SE SW SN WN 1 W NE NE NS ES ES 2 E SW SW SW SN WN WN WN 
+
+N SE SW SN WN 1 W NE NE NS ES ES 2 W NE NE NS E SE SE SW SW SW 
