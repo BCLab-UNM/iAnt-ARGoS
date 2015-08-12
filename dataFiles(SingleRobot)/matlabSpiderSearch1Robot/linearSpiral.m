@@ -14,8 +14,8 @@ function pattern = linearSpiral(levels,run)
     %run = 0, then draw diamond shape spiral
     if run == 1
         initDir = 'S';
-        initPattern = 'N,E,:';
-        pattern=insertSqPattern2(initDir,initPattern,levels);
+        initPattern = 'NE';
+        pattern=insertSqPattern(initDir,initPattern,levels);
     else
         initPattern = 'NSESWSNWN';
         pattern = insertStairPattern(initPattern,levels);
