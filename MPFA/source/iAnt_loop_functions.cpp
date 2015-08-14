@@ -77,6 +77,7 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
     GetNodeAttribute(cluster,  "ClusterWidthX",    data.ClusterWidthX);
     GetNodeAttribute(cluster,  "ClusterLengthY",   data.ClusterLengthY);
     GetNodeAttribute(powerLaw, "PowerRank",        data.PowerRank);
+    GetNodeAttribute(powerLaw, "PowerLawCopies",      data.PowerLawCopies);//qilu 08/14/2015
     
     /* Convert and calculate additional values. */
     //data.MaxSimTime                = simulator->GetMaxSimulationClock(); //qilu 07/19 

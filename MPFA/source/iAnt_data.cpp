@@ -24,6 +24,7 @@ iAnt_data::iAnt_data() :
     ClusterWidthX(8),
     ClusterLengthY(8),
     PowerRank(4),
+    PowerLawCopies(1),//qilu 08/14/2015
 
     ProbabilityOfSwitchingToSearching(0.99999),
     ProbabilityOfReturningToNest(0.00001),
@@ -136,7 +137,8 @@ void iAnt_data::PowerLawFoodDistribution() {
     CVector2       placementPosition;
 
     for(size_t i = 0; i < PowerRank; i++) {
-        powerLawClusters.push_back(powerLawLength * powerLawLength);
+        //powerLawClusters.push_back(powerLawLength * powerLawLength);
+        powerLawClusters.push_back(powerLawLength * powerLawLength*PowerLawCopies);//qilu 08/14/2015
         powerLawLength *= 2;
     }
 

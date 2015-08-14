@@ -48,6 +48,7 @@ class iAnt_data {
         size_t ClusterWidthX;
         size_t ClusterLengthY;
         size_t PowerRank;
+        size_t PowerLawCopies; //qilu 08/14/2015
 
 		CRandom::CRNG *RNG;
 

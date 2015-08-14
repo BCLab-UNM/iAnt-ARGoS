@@ -34,12 +34,12 @@
         <MPFA ProbabilityOfReturningToNest="0.0009405957534909248" ProbabilityOfSwitchingToSearching="0.2041456252336502" RateOfInformedSearchDecay="0.2497878670692444" RateOfLayingPheromone="2.24421238899231" RateOfPheromoneDecay="0.03821808844804764" RateOfSiteFidelity="2.5117506980896" UninformedSearchVariation="12.996437"/>
 
         <!-- un-evolvable environment variables -->
-        <simulation FoodDistribution="1" FoodRadius="0.02" MaxSimCounter="1" NestRadius="0.25" OutputData="1" VariableSeed="1" nestPosition_0="2.5 , 2.5" nestPosition_1="2.5 , -2.5" nestPosition_2="-2.5 , 2.5" nestPosition_3="-2.5 , -2.5"/>
+        <simulation FoodDistribution="2" FoodRadius="0.02" MaxSimCounter="1" NestRadius="0.25" OutputData="1" VariableSeed="1" nestPosition_0="2.5 , 2.5" nestPosition_1="2.5 , -2.5" nestPosition_2="-2.5 , 2.5" nestPosition_3="-2.5 , -2.5"/>
 
 		<!-- un-evolvable food distribution parameters -->
         <_0_FoodDistribution_Random FoodItemCount="256"/>
         <_1_FoodDistribution_Cluster ClusterLengthY="8" ClusterWidthX="8" NumberOfClusters="16"/>
-        <_2_FoodDistribution_PowerLaw PowerRank="4"/>
+        <_2_FoodDistribution_PowerLaw PowerRank="4" PowerLawCopies=2/>
 
     </loop_functions>
 
