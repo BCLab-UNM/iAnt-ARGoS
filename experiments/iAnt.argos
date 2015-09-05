@@ -1,14 +1,12 @@
 <?xml version="1.0"?>
 <argos-configuration>
 
-    <!-- FRAMEWORK -->
     <framework>
 		<experiment length           = "3600"
                     ticks_per_second = "16"
 					random_seed      = "1337"/>
 	</framework>
 
-    <!-- CONTROLLERS -->
     <controllers>
         <iAnt_controller id      = "iAnt_c"
                          library = "build/source/libiAnt_controller.so">
@@ -93,16 +91,11 @@
     <visualization>
         <qt-opengl>
             <camera>
-                <placement idx="0" position="  0, 0, 10" look_at="0, 0, 0"
-                           lens_focal_length="90"/>
-                <placement idx="1" position="  0, 0, 10" look_at="0, 0, 0"
-                           lens_focal_length="45"/>
-                <placement idx="2" position="  0, 0, 10" look_at="0, 0, 0"
-                           lens_focal_length="120"/>
-                <placement idx="3" position="-30, 0, 10" look_at="0, 0, 0"
-                           lens_focal_length="180"/>
-                <placement idx="4" position="-30, 0, 10" look_at="0, 0, 0"
-                           lens_focal_length="240"/>
+                <placement idx="0" position="  0, 0, 10" look_at="0, 0, 0" lens_focal_length="90"/>
+                <placement idx="1" position="  0, 0, 10" look_at="0, 0, 0" lens_focal_length="45"/>
+                <placement idx="2" position="  0, 0, 10" look_at="0, 0, 0" lens_focal_length="120"/>
+                <placement idx="3" position="-30, 0, 10" look_at="0, 0, 0" lens_focal_length="180"/>
+                <placement idx="4" position="-30, 0, 10" look_at="0, 0, 0" lens_focal_length="240"/>
             </camera>
             <user_functions label="iAnt_qt_user_functions"/>
         </qt-opengl>

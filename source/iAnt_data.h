@@ -57,12 +57,6 @@ class iAnt_data {
         Real     RateOfPheromoneDecay;
 
         /* iAnt_controller data */
-/*
-        Real                   TurnProbability;
-        Real                   PushProbability;
-        Real                   PullProbability;
-        Real                   WaitProbability;
-*/
         Real                   NestRadius;
         Real                   NestRadiusSquared;
         Real                   NestElevation;

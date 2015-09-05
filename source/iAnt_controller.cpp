@@ -1,8 +1,8 @@
 #include "iAnt_controller.h"
 
 /*****
- * Initialize most basic variables and objects here. Most of the setup should
- * be done in the Init(...) function instead of here where possible.
+ * Initialize most basic variables and objects here. Most of the setup should be done in the Init(...) function instead
+ * of here where possible.
  *****/
 iAnt_controller::iAnt_controller() :
     compass(NULL),
@@ -14,6 +14,7 @@ iAnt_controller::iAnt_controller() :
     RobotRotationSpeed(0.0),
     RNG(NULL),
     data(NULL),
+    loopFunctions(NULL),
     isHoldingFood(false),
     isInformed(false),
     isUsingSiteFidelity(false),
@@ -21,14 +22,15 @@ iAnt_controller::iAnt_controller() :
     waitTime(0),
     collisionDelay(0),
     resourceDensity(0),
-    CPFA(INACTIVE)
+    CPFA(DEPARTING)
 {}
 
 /*****
- * Initialize the controller via the XML configuration file. ARGoS typically
- * wants objects & variables initialized here instead of in the constructor(s).
+ * Initialize the controller via the XML configuration file. ARGoS typically wants objects & variables initialized here
+ * instead of in the constructor(s).
  *****/
 void iAnt_controller::Init(TConfigurationNode& node) {
+
     /* Shorter names, please. #This_Is_Not_Java */
     typedef CCI_PositioningSensor            CCI_PS;
     typedef CCI_DifferentialSteeringActuator CCI_DSA;
@@ -45,8 +47,7 @@ void iAnt_controller::Init(TConfigurationNode& node) {
     /* CPFA node from the iAnt.argos XML file */
     TConfigurationNode iAnt_params = GetNode(node, "iAnt_params");
 
-    /* Temporary variable, XML accepts input in degrees, but that is converted
-       and used as radians internally within ARGoS. */
+    /* Temporary variable, XML accepts input in degrees and is converted to radians for use with ARGoS. */
     CDegrees angleInDegrees;
 
     /* Input from XML for iAnt parameter variables for this controller. */
@@ -57,29 +58,27 @@ void iAnt_controller::Init(TConfigurationNode& node) {
     GetNodeAttribute(iAnt_params, "AngleToleranceInDegrees", angleInDegrees);
 
     /* Convert the XML Degree input into Radians. */
-    AngleToleranceInRadians.Set(-ToRadians(angleInDegrees),
-                                 ToRadians(angleInDegrees));
+    AngleToleranceInRadians.Set(-ToRadians(angleInDegrees), ToRadians(angleInDegrees));
 }
 
 /*****
- * Primary control loop for this controller object. This function will execute
- * the CPFA logic using the CPFA enumeration flag once per frame.
+ * Primary control loop for this controller object. This function will execute the CPFA logic using the CPFA
+ * enumeration flag once per frame.
  *****/
 void iAnt_controller::ControlStep() {
+
     /* don't run if the robot is waiting, see: SetLocalResourceDensity() */
     if(waitTime > data->SimTime) return;
 
     /* update target ray */
+    /* TODO: make this code snippet into its own helper function... */
     CVector3 position3d(GetPosition().GetX(), GetPosition().GetY(), 0.02);
     CVector3 target3d(GetTarget().GetX(), GetTarget().GetY(), 0.02);
     CRay3 targetRay(target3d, position3d);
     data->TargetRayList.push_back(targetRay);
 
+    /* CPFA "state machine" switching mechanism */
     switch(CPFA) {
-        /* state at the start or reset of a simulation, start departing() */
-        case INACTIVE:
-            inactive();
-     	    break;
         /* depart from nest after food drop off (or at simulation start) */
         case DEPARTING:
 	       	departing();
@@ -99,21 +98,24 @@ void iAnt_controller::ControlStep() {
 }
 
 /*****
- * After pressing the reset button in the GUI, this controller will be set to
- * default factory settings like at the start of a simulation.
+ * After pressing the reset button in the GUI, this controller will be set to default factory settings like at the
+ * start of a simulation.
  *****/
 void iAnt_controller::Reset() {
-    isHoldingFood   = false;
-    isInformed      = false;
-    searchTime      = 0;
-    waitTime        = 0;
-    resourceDensity = 0;
-    collisionDelay  = 0;
-    CPFA            = INACTIVE;
 
-    target   = data->NestPosition;
-    fidelity = data->NestPosition;
+    /* Reset all local variables. */
+    isHoldingFood       = false;
+    isInformed          = false;
+    isUsingSiteFidelity = false;
+    searchTime          = 0;
+    waitTime            = 0;
+    collisionDelay      = 0;
+    resourceDensity     = 0;
+    CPFA                = RETURNING;
+    target              = data->NestPosition;
+    fidelity            = data->NestPosition;
 
+    /* Clear all pheromone trail data. */
     trailToShare.clear();
     trailToFollow.clear();
 }
@@ -135,51 +137,41 @@ void iAnt_controller::SetData(iAnt_data* dataPointer) {
 }
 
 /*****
- * iAnt_qt_user_functions uses this function to get the iAnt_data pointer.
- *****/
-iAnt_data* iAnt_controller::GetData() {
-    return data;
-}
-
-/*****
- * The initial state of the CPFA controller.
- * [1] pick a random target location at the edge of the arena
- * [2] start robot motors and begin CPFA-departing state
- *****/
-void iAnt_controller::inactive() {
-    SetRandomSearchLocation();
-    CPFA = DEPARTING;
-}
-
-/*****
  * DEPARTING: CPFA state when the robot is leaving the nest and heading towards
  * a site fidelity waypoint, pheromone marker, or a random search location. The
  * iAnt robot will NOT pick up any food discovered during this state. Food is
  * only interacted with during the searching() state.
  ****/
 void iAnt_controller::departing() {
+
     CVector2 distance = (GetPosition() - target);
+    Real randomNumber = RNG->Uniform(CRange<Real>(0.0, 1.0));
     
     /* Are we informed? I.E. using site fidelity or pheromones. */
-    if(isInformed == true) {
-        /* When informed, proceed to the target location. */
-        if(distance.SquareLength() < DistanceTolerance) {
-            searchTime = 0;
-            CPFA = SEARCHING;
-            isInformed = false;
-            isUsingSiteFidelity = false;
-        }
-    } else {
-        /* When not informed, continue to travel until randomly switching
-           to the searching state. */
-        Real randomNumber = RNG->Uniform(CRange<Real>(0.0, 1.0));
+    if(distance.SquareLength() < DistanceTolerance) {
+        searchTime = 0;
+        CPFA = SEARCHING;
 
-        if(randomNumber < data->ProbabilityOfSwitchingToSearching) {
-            searchTime = 0;
-    	    CPFA = SEARCHING;
-    	} else if(distance.SquareLength() < DistanceTolerance) {
-            SetRandomSearchLocation();
+        if(isUsingSiteFidelity == true) {
+            isUsingSiteFidelity = false;
+            SetFidelityList();
         }
+    }
+
+    /* When not informed, continue to travel until randomly switching to the searching state. */
+    if(isInformed == false && randomNumber < data->ProbabilityOfSwitchingToSearching) {
+        searchTime = 0;
+    	CPFA = SEARCHING;
+
+        Real USV = data->UninformedSearchVariation.GetValue();
+        Real rand = RNG->Gaussian(USV);
+        CRadians rotation(rand);
+        CRadians angle1(rotation.UnsignedNormalize());
+        CRadians angle2(GetHeading().UnsignedNormalize());
+        CRadians turn_angle(angle1 + angle2);
+        CVector2 turn_vector(SearchStepSize, turn_angle);
+
+        SetTargetInBounds(turn_vector + GetPosition());
     }
 
     /* Adjust motor speeds and direction based on the target position. */
@@ -193,7 +185,7 @@ void iAnt_controller::departing() {
  *****/
 void iAnt_controller::searching() {
     /* "scan" for food only every half of a second */
-    if(data->SimTime % (data->TicksPerSecond / 2) != 0) {
+    if(data->SimTime % (data->TicksPerSecond / 2) == 0) {
         SetHoldingFood();
     }
 
@@ -228,12 +220,22 @@ void iAnt_controller::searching() {
                 size_t   t           = searchTime++;
                 Real     twoPi       = (CRadians::TWO_PI).GetValue();
                 Real     pi          = (CRadians::PI).GetValue();
+
                 Real     isd         = data->RateOfInformedSearchDecay;
-				Real     correlation = GetExponentialDecay(twoPi, t, isd);
-				CRadians rotation(GetBound(correlation, -pi, pi));
-				CRadians angle1(rotation.UnsignedNormalize());
-				CRadians angle2(GetHeading().UnsignedNormalize());
-				CRadians turn_angle(angle1 + angle2);
+				Real     correlation = GetExponentialDecay((2.0 * twoPi) - data->UninformedSearchVariation.GetValue(), t, isd);
+
+
+                //LOG << "t: " << t << endl;
+                //LOG << "omega: " << correlation + data->UninformedSearchVariation.GetValue() << endl;
+                Real rand = RNG->Gaussian(correlation + data->UninformedSearchVariation.GetValue());
+                //LOG << rand << endl << endl;
+
+
+				//CRadians rotation(GetBound(correlation, -pi, pi));
+                CRadians rotation(GetBound(rand, -pi, pi));
+                CRadians angle1(rotation);
+                CRadians angle2(GetHeading());
+                CRadians turn_angle(angle2 + angle1);
                 CVector2 turn_vector(SearchStepSize, turn_angle);
 
 				SetTargetInBounds(turn_vector + GetPosition());
@@ -256,47 +258,48 @@ void iAnt_controller::searching() {
  * up on searching and is returning to the nest.
  *****/
 void iAnt_controller::returning() {
+    
     SetHoldingFood();
+    
     CVector2 distance = GetPosition() - target;
 
     /* Are we there yet? (To the nest, that is.) */
    	if(distance.SquareLength() < data->NestRadiusSquared) {
         /* Based on a Poisson CDF, the robot may or may not create a pheromone
            located at the last place it picked up food. */
-        Real poissonCDF_pLayRate    = GetPoissonCDF(resourceDensity,
-                                                   data->RateOfLayingPheromone);
-        Real poissonCDF_sFollowRate = GetPoissonCDF(resourceDensity,
-                                                      data->RateOfSiteFidelity);
+        Real poissonCDF_pLayRate    = GetPoissonCDF(resourceDensity, data->RateOfLayingPheromone);
+        Real poissonCDF_sFollowRate = GetPoissonCDF(resourceDensity, data->RateOfSiteFidelity);
         Real r1 = RNG->Uniform(CRange<Real>(0.0, 1.0));
         Real r2 = RNG->Uniform(CRange<Real>(0.0, 1.0));
 
 		if(poissonCDF_pLayRate > r1) {
             trailToShare.push_back(data->NestPosition);
             Real timeInSeconds = (Real)(data->SimTime / data->TicksPerSecond);
-            iAnt_pheromone sharedPheromone(fidelity,
-                                           trailToShare,
-                                           timeInSeconds,
-                                           data->RateOfPheromoneDecay);
+            iAnt_pheromone sharedPheromone(fidelity, trailToShare, timeInSeconds, data->RateOfPheromoneDecay);
 			data->PheromoneList.push_back(sharedPheromone);
+            sharedPheromone.Deactivate(); // make sure this won't get re-added later...
 		}
 
         /* Determine probabilistically wether to use site fidelity, pheromone
            trails, or random search. */
 
         /* use site fidelity */
-		if(poissonCDF_sFollowRate > r2) {
+		if((isUsingSiteFidelity == true) && (poissonCDF_sFollowRate > r2)) {
 			SetTargetInBounds(fidelity);
 			isInformed = true;
-            isUsingSiteFidelity = true;
 		}
         /* use pheromone waypoints */
-        else if(SetTargetPheromone()) {
+        else if(SetTargetPheromone() == true) {
+            SetFidelityList();
 			isInformed = true;
+            isUsingSiteFidelity = false;
 		}
         /* use random search */
         else {
 			SetRandomSearchLocation();
 			isInformed = false;
+            SetFidelityList();
+            isUsingSiteFidelity = false;
 		}
 
 		CPFA = DEPARTING;
@@ -319,7 +322,8 @@ void iAnt_controller::shutdown() {
         motorActuator->SetLinearVelocity(0.0, 0.0);
         searchTime--;
     } else if(data->FoodList.size() > 0) {
-        CPFA = INACTIVE;
+        SetRandomSearchLocation();
+        CPFA = DEPARTING;
     } else {
         ApproachTheTarget();
     }
@@ -458,8 +462,6 @@ void iAnt_controller::SetRandomSearchLocation() {
  *****/
 void iAnt_controller::SetLocalResourceDensity() {
 
-    vector<CVector2> newFidelityList;
-
     CVector2 distance;
 	resourceDensity = 1; // remember: the food we picked up is removed from the foodList before this function call
                          // therefore compensate here by counting that food (which we want to count)
@@ -477,6 +479,21 @@ void iAnt_controller::SetLocalResourceDensity() {
         }
 	}
 
+    /* Set the fidelity position to the robot's current position. */
+    SetFidelityList(GetPosition());
+    isUsingSiteFidelity = true;
+
+    /* Delay for 4 seconds (simulate iAnts scannning rotation). */
+    waitTime = (data->SimTime) + (data->TicksPerSecond * 4);
+}
+
+/*****
+ * Update the global site fidelity list for graphics display and add a new fidelity position.
+ *****/
+void iAnt_controller::SetFidelityList(CVector2 newFidelity) {
+
+    vector<CVector2> newFidelityList;
+
     /* Remove this robot's old fidelity position from the fidelity list. */
     for(size_t i = 0; i < data->FidelityList.size(); i++) {
         if((data->FidelityList[i] - fidelity).SquareLength() != 0.0)
@@ -486,14 +503,28 @@ void iAnt_controller::SetLocalResourceDensity() {
     /* Update the global fidelity list. */
     data->FidelityList = newFidelityList;
 
-    /* Set the fidelity position to the robot's current position. */
-    fidelity = GetPosition();
-
     /* Add the robot's new fidelity position to the global fidelity list. */
-    data->FidelityList.push_back(fidelity);
+    data->FidelityList.push_back(newFidelity);
 
-    /* Delay for 4 seconds (simulate iAnts scannning rotation). */
-    waitTime = (data->SimTime) + (data->TicksPerSecond * 4);
+    /* Update the local fidelity position for this robot. */
+    fidelity = newFidelity;
+}
+
+/*****
+ * Update the global site fidelity list for graphics display and remove the old fidelity position.
+ *****/
+void iAnt_controller::SetFidelityList() {
+
+    vector<CVector2> newFidelityList;
+
+    /* Remove this robot's old fidelity position from the fidelity list. */
+    for(size_t i = 0; i < data->FidelityList.size(); i++) {
+        if((data->FidelityList[i] - fidelity).SquareLength() != 0.0)
+            newFidelityList.push_back(data->FidelityList[i]);
+    }
+
+    /* Update the global fidelity list. */
+    data->FidelityList = newFidelityList;
 }
 
 /*****
@@ -543,6 +574,13 @@ bool iAnt_controller::SetTargetPheromone() {
  * Calculate and return the exponential decay of "value."
  *****/
 Real iAnt_controller::GetExponentialDecay(Real value, Real time, Real lambda) {
+
+    /* convert time into units of half-seconds from simulation frames */
+    //time = time / (data->TicksPerSecond / 2.0);
+
+    //LOG << "time: " << time << endl;
+    //LOG << "correlation: " << (value * exp(-lambda * time)) << endl << endl;
+
 	return (value * exp(-lambda * time));
 }
 

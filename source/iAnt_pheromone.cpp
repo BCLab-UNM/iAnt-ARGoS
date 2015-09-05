@@ -37,6 +37,13 @@ void iAnt_pheromone::Update(Real time) {
 }
 
 /*****
+ * Turns off a pheromone and makes it inactive.
+ *****/
+void iAnt_pheromone::Deactivate() {
+    weight = 0.0;
+}
+
+/*****
  * Return the pheromone's location.
  *****/
 CVector2 iAnt_pheromone::GetLocation() {

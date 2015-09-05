@@ -1,7 +1,8 @@
 #ifndef IANT_CONTROLLER_H_
 #define IANT_CONTROLLER_H_
 
-#include "iAnt_data.h"
+#include <source/iAnt_data.h>
+#include <source/iAnt_loop_functions.h>
 #include <argos3/core/control_interface/ci_controller.h>
 #include <argos3/core/utility/logging/argos_log.h>
 #include <argos3/core/utility/math/rng.h>
@@ -15,10 +16,11 @@
 using namespace argos;
 using namespace std;
 
+class iAnt_loop_functions;
+
 /*****
- * The brains of the iAnt robot. This controller object is a component of
- * each robot that is placed in the arena for experiments. The implementation
- * of the iAnt Central Place Foraging Algorithm (CPFA) is in this code.
+ * The brains of the iAnt robot. This controller object is a component of each robot that is placed in the arena for
+ * experiments. The implementation of the iAnt Central Place Foraging Algorithm (CPFA) is in this code.
  *****/
 class iAnt_controller : public CCI_Controller {
 
@@ -36,8 +38,12 @@ class iAnt_controller : public CCI_Controller {
         /* public helper functions */
         bool       IsHoldingFood();
         bool       IsInTheNest();
+
         void       SetData(iAnt_data* dataPointer);
-        iAnt_data* GetData();
+        iAnt_data* GetData() { return data; }
+
+        void       SetLoopFunctions(iAnt_loop_functions* lf) { loopFunctions = lf; }
+
         CVector2   GetPosition();
         CVector2   GetTarget();
 
@@ -56,25 +62,28 @@ class iAnt_controller : public CCI_Controller {
         CRange<CRadians> AngleToleranceInRadians;
 
         /* robot internal variables & statistics */
-        CRandom::CRNG*   RNG;
-        iAnt_data*       data;
-        CVector2         target;
-        CVector2         fidelity;
-        vector<CVector2> trailToShare;
-        vector<CVector2> trailToFollow;
-        bool             isHoldingFood;
-        bool             isInformed;
-        bool             isUsingSiteFidelity;
-        size_t           searchTime;
-        size_t           waitTime;
-        size_t           collisionDelay;
-        size_t           resourceDensity;
+        CRandom::CRNG*       RNG;
+        iAnt_data*           data;
+        iAnt_loop_functions* loopFunctions;
+        CVector2             target;
+        CVector2             fidelity;
+        vector<CVector2>     trailToShare;
+        vector<CVector2>     trailToFollow;
+
+        bool   isHoldingFood;
+        bool   isInformed;
+        bool   isUsingSiteFidelity;
+        size_t searchTime;
+        size_t waitTime;
+        size_t collisionDelay;
+        size_t resourceDensity;
+
+    private:
 
         /* iAnt CPFA state variable */
-        enum CPFA { INACTIVE, DEPARTING, SEARCHING, RETURNING, SHUTDOWN } CPFA;
+        enum CPFA { DEPARTING, SEARCHING, RETURNING, SHUTDOWN } CPFA;
 
         /* iAnt CPFA state functions */
-        void inactive();
         void departing();
         void searching();
         void returning();
@@ -84,6 +93,8 @@ class iAnt_controller : public CCI_Controller {
         void SetHoldingFood();
         void SetRandomSearchLocation();
         void SetLocalResourceDensity();
+        void SetFidelityList(CVector2 newFidelity);
+        void SetFidelityList();
         bool SetTargetPheromone();
         Real GetExponentialDecay(Real value, Real time, Real lambda);
         Real GetBound(Real x, Real min, Real max);

@@ -7,22 +7,19 @@ using namespace argos;
 using namespace std;
 
 /*****
- * Implementation of the iAnt Pheromone object used by the iAnt CPFA. iAnts
- * build and maintain a list of these pheromone waypoint objects to use during
+ * Implementation of the iAnt Pheromone object used by the iAnt CPFA. iAnts build and maintain a list of these pheromone waypoint objects to use during
  * the informed search component of the CPFA algorithm.
  *****/
 class iAnt_pheromone {
 
-	public:
+    public:
 
         /* constructor function */
-		iAnt_pheromone(CVector2         newLocation,
-                       vector<CVector2> newTrail,
-                       Real             newTime,
-                       Real             newDecayRate);
+		iAnt_pheromone(CVector2 newLocation, vector<CVector2> newTrail, Real newTime, Real newDecayRate);
 
         /* public helper functions */
         void             Update(Real time);
+        void             Deactivate();
 		CVector2         GetLocation();
         vector<CVector2> GetTrail();
 		Real             GetWeight();
@@ -39,7 +36,6 @@ class iAnt_pheromone {
 		Real decayRate;
 		Real weight;
 		Real threshold;
-
 };
 
 #endif /* IANT_PHEROMONE_H_ */

@@ -1,10 +1,12 @@
 #include "iAnt_qt_user_functions.h"
+#include <source/iAnt_loop_functions.h>
 
 /*****
  * Constructor: In order for drawing functions in this class to be used by
  * ARGoS it must be registered using the RegisterUserFunction function.
  *****/
 iAnt_qt_user_functions::iAnt_qt_user_functions() :
+    loopFunctions(dynamic_cast<iAnt_loop_functions&>(CSimulator::GetInstance().GetLoopFunctions())),
     data(NULL)
 {
     RegisterUserFunction<iAnt_qt_user_functions, CFootBotEntity>(&iAnt_qt_user_functions::DrawOnRobot);
@@ -88,7 +90,7 @@ void iAnt_qt_user_functions::DrawFidelity() {
     for(size_t i = 0; i < data->FidelityList.size(); i++) {
         x = data->FidelityList[i].GetX();
         y = data->FidelityList[i].GetY();
-        DrawCylinder(CVector3(x, y, 0.0), CQuaternion(), data->FoodRadius, 0.025, CColor::CYAN);
+        DrawCylinder(CVector3(x, y, 0.0), CQuaternion(), data->FoodRadius, 0.025, CColor::ORANGE);
     }
 }
 

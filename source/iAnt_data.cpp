@@ -6,7 +6,7 @@
 iAnt_data::iAnt_data() :
 
     SimTime(0),
-    MaxSimTime(57600),
+    MaxSimTime(0),
     TicksPerSecond(16),
     ResourceDensityDelay(0),
     RandomSeed(1337),
@@ -15,10 +15,11 @@ iAnt_data::iAnt_data() :
     VariableSeed(0),
     OutputData(0),
     TrailDensityRate(6),
+
     DrawTrails(1),
     DrawTargetRays(1),
-    FoodDistribution(0),
 
+    FoodDistribution(0),
     FoodItemCount(256),
     NumberOfClusters(4),
     ClusterWidthX(8),
@@ -32,13 +33,6 @@ iAnt_data::iAnt_data() :
     RateOfSiteFidelity(10.0),
     RateOfLayingPheromone(10.0),
     RateOfPheromoneDecay(0.05),
-
-    /*
-    TurnProbability(0.1),
-    PushProbability(0.5),
-    PullProbability(0.1),
-    WaitProbability(0.1),
-    */
 
     NestRadius(0.25),
     NestRadiusSquared(0.0625),
@@ -117,6 +111,7 @@ void iAnt_data::RandomFoodDistribution() {
  *
  *****/
 void iAnt_data::ClusterFoodDistribution() {
+
     Real     foodOffset  = 3.0 * FoodRadius;
     size_t   foodToPlace = NumberOfClusters * ClusterWidthX * ClusterLengthY;
     CVector2 placementPosition;
