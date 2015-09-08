@@ -13,7 +13,7 @@ iAnt_loop_functions::iAnt_loop_functions() :
     MaxSimCounter(0),
     VariableSeed(0),
     OutputData(0),
-    TrailDensityRate(0),
+    DrawDensityRate(0),
     DrawTrails(0),
     DrawTargetRays(0),
     FoodDistribution(0),
@@ -71,11 +71,13 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
     GetNodeAttribute(simNode,  "MaxSimTime",                        MaxSimTime);
     GetNodeAttribute(simNode,  "VariableSeed",                      VariableSeed);
     GetNodeAttribute(simNode,  "OutputData",                        OutputData);
-    GetNodeAttribute(simNode,  "TrailDensityRate",                  TrailDensityRate);
+    GetNodeAttribute(simNode,  "ResourceDensityDelay",              ResourceDensityDelay);
+    GetNodeAttribute(simNode,  "DrawDensityRate",                   DrawDensityRate);
     GetNodeAttribute(simNode,  "DrawTrails",                        DrawTrails);
     GetNodeAttribute(simNode,  "DrawTargetRays",                    DrawTargetRays);
     GetNodeAttribute(simNode,  "NestPosition",                      NestPosition);
     GetNodeAttribute(simNode,  "NestRadius",                        NestRadius);
+    GetNodeAttribute(simNode,  "NestElevation",                     NestElevation);
     GetNodeAttribute(simNode,  "FoodRadius",                        FoodRadius);
     GetNodeAttribute(simNode,  "FoodDistribution",                  FoodDistribution);
     GetNodeAttribute(random,   "FoodItemCount",                     FoodItemCount);
@@ -85,11 +87,12 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
     GetNodeAttribute(powerLaw, "PowerRank",                         PowerRank);
 
     /* Convert and calculate additional values. */
-    MaxSimTime                = MaxSimTime * TicksPerSecond;
-    RandomSeed                = simulator->GetRandomSeed();
     TicksPerSecond            = physicsEngine->GetInverseSimulationClockTick();
+    RandomSeed                = simulator->GetRandomSeed();
     UninformedSearchVariation = ToRadians(USV_InDegrees);
     NestRadiusSquared         = (NestRadius) * (NestRadius);
+    MaxSimTime                = MaxSimTime * TicksPerSecond;
+    ResourceDensityDelay      = ResourceDensityDelay * TicksPerSecond;
 
     /* Compensate for the radius of the footbot and scale the search radius to the size of food. */
     FoodRadiusSquared         = (FoodRadius + 0.04) * (FoodRadius + 0.04);
@@ -158,7 +161,7 @@ void iAnt_loop_functions::PostExperiment() {
     if(OutputData == 1) {
         // This file is created in the directory where you run ARGoS
         // it is always created or appended to, never overwritten, i.e. ios::app
-        ofstream dataOutput("iAntTagtxt", ios::app);
+        ofstream dataOutput("iAntTagData.txt", ios::app);
 
         // output to file
         if(dataOutput.tellp() == 0) {
@@ -178,17 +181,6 @@ void iAnt_loop_functions::PostExperiment() {
     } else {
         LOG << collectedFood << ", ";
         LOG << time_in_minutes << ", " << RandomSeed << endl;
-
-        /*
-        ifstream dataInput("iAntTagtxt");
-        string s;
-
-        while(getline(dataInput, s)) {
-            LOG << s << endl;
-        }
-
-        dataInput.close();
-        */
     }
 
     SimCounter++;
@@ -241,14 +233,12 @@ bool iAnt_loop_functions::IsExperimentFinished() {
         size_t newSimCounter = SimCounter + 1;
         size_t newMaxSimCounter = MaxSimCounter - 1;
 
-        // LOG << endl << "FINISHED RUN: " << SimCounter << endl;
-
         PostExperiment();
         Reset();
 
         SimCounter    = newSimCounter;
         MaxSimCounter = newMaxSimCounter;
-        isFinished         = false;
+        isFinished    = false;
     }
 
     return isFinished;

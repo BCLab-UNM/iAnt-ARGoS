@@ -26,17 +26,17 @@ class iAnt_controller : public CCI_Controller {
         virtual ~iAnt_controller() {}
 
         /* CCI_Controller Inherited Functions */
-        virtual void Init(TConfigurationNode& node);
-        virtual void ControlStep();
-        virtual void Reset();
+        void Init(TConfigurationNode& node);
+        void ControlStep();
+        void Reset();
 
         /* public helper functions */
-        bool     IsHoldingFood() { return isHoldingFood; }
-        bool     IsInTheNest();
-        void     SetLoopFunctions(iAnt_loop_functions* lf) { loopFunctions = lf; }
+        bool IsHoldingFood() { return isHoldingFood; }
+        bool IsInTheNest();
+        void SetLoopFunctions(iAnt_loop_functions* lf) { loopFunctions = lf; }
         CVector2 GetPosition();
         CVector3 GetStartPosition() { return startPosition; }
-        CVector2 GetTarget();
+        CVector2 GetTarget() { return targetPosition; }
 
     private:
 
@@ -56,14 +56,15 @@ class iAnt_controller : public CCI_Controller {
         CRandom::CRNG*       RNG;
         iAnt_loop_functions* loopFunctions;
         CVector3             startPosition;
-        CVector2             target;
-        CVector2             fidelity;
+        CVector2             targetPosition;
+        CVector2             fidelityPosition;
         vector<CVector2>     trailToShare;
         vector<CVector2>     trailToFollow;
 
         bool   isHoldingFood;
         bool   isInformed;
         bool   isUsingSiteFidelity;
+        bool   isGivingUpSearch;
         size_t searchTime;
         size_t waitTime;
         size_t collisionDelay;
@@ -86,12 +87,14 @@ class iAnt_controller : public CCI_Controller {
         void SetFidelityList(CVector2 newFidelity);
         void SetFidelityList();
         bool SetTargetPheromone();
+
         Real GetExponentialDecay(Real value, Real time, Real lambda);
         Real GetBound(Real x, Real min, Real max);
         Real GetPoissonCDF(Real k, Real lambda);
 
         /* navigation helper functions */
         CRadians GetHeading();
+        CRadians GetCollisionHeading();
         bool     IsCollisionDetected();
         void     ApproachTheTarget();
         void     SetTargetInBounds(CVector2 newTarget);

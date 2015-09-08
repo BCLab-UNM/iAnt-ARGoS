@@ -79,7 +79,7 @@ void iAnt_qt_user_functions::DrawFidelity() {
     for(size_t i = 0; i < loopFunctions.FidelityList.size(); i++) {
         x = loopFunctions.FidelityList[i].GetX();
         y = loopFunctions.FidelityList[i].GetY();
-        DrawCylinder(CVector3(x, y, 0.0), CQuaternion(), loopFunctions.FoodRadius, 0.025, CColor::ORANGE);
+        DrawCylinder(CVector3(x, y, 0.0), CQuaternion(), loopFunctions.FoodRadius, 0.025, CColor::CYAN);
     }
 }
 
@@ -107,18 +107,10 @@ void iAnt_qt_user_functions::DrawPheromones() {
             else                                      // [   5.0% ,  0.0% ]
                 pColor = trailColor = CColor::RED;
 
-            /*
-            for(size_t j = 0; j < trail.size(); j++) {
-                x = trail[j].GetX();
-                y = trail[j].GetY();
-
-                DrawCylinder(CVector3(x, y, 0.0), CQuaternion(), loopFunctions.FoodRadius, 0.025, trailColor);
-            }
-            */
-
             CRay3 ray;
+            size_t j = 0;
 
-            for(size_t j = 1; j < trail.size(); j++) {
+            for(j = 1; j < trail.size(); j++) {
                 ray = CRay3(CVector3(trail[j - 1].GetX(), trail[j - 1].GetY(), 0.01),
                             CVector3(trail[j].GetX(), trail[j].GetY(), 0.01));
                 DrawRay(ray, trailColor, 1.0);

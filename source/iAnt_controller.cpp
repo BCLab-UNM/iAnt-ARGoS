@@ -17,6 +17,7 @@ iAnt_controller::iAnt_controller() :
     isHoldingFood(false),
     isInformed(false),
     isUsingSiteFidelity(false),
+    isGivingUpSearch(false),
     searchTime(0),
     waitTime(0),
     collisionDelay(0),
@@ -64,7 +65,7 @@ void iAnt_controller::Init(TConfigurationNode& node) {
 }
 
 /*****
- * Primary control loop for this controller object. This function will execute the CPFA logic using the CPFA
+ * Primary control loop for this controller object. This function will execute the CPFA logic using the CPFA 
  * enumeration flag once per frame.
  *****/
 void iAnt_controller::ControlStep() {
@@ -72,12 +73,14 @@ void iAnt_controller::ControlStep() {
     /* don't run if the robot is waiting, see: SetLocalResourceDensity() */
     if(waitTime > loopFunctions->SimTime) return;
 
-    /* update target ray */
-    /* TODO: make this code snippet into its own helper function... */
-    CVector3 position3d(GetPosition().GetX(), GetPosition().GetY(), 0.02);
-    CVector3 target3d(GetTarget().GetX(), GetTarget().GetY(), 0.02);
-    CRay3 targetRay(target3d, position3d);
-    loopFunctions->TargetRayList.push_back(targetRay);
+    if(loopFunctions->SimTime % loopFunctions->DrawDensityRate == 0 && loopFunctions->DrawTargetRays == 1) {
+        /* update target ray */
+        /* TODO: make this code snippet into its own helper function... */
+        CVector3 position3d(GetPosition().GetX(), GetPosition().GetY(), 0.02);
+        CVector3 target3d(GetTarget().GetX(), GetTarget().GetY(), 0.02);
+        CRay3 targetRay(target3d, position3d);
+        loopFunctions->TargetRayList.push_back(targetRay);
+    }
 
     /* CPFA "state machine" switching mechanism */
     switch(CPFA) {
@@ -111,8 +114,8 @@ void iAnt_controller::Reset() {
     collisionDelay      = 0;
     resourceDensity     = 0;
     CPFA                = RETURNING;
-    target              = loopFunctions->NestPosition;
-    fidelity            = loopFunctions->NestPosition;
+    targetPosition      = loopFunctions->NestPosition;
+    fidelityPosition    = loopFunctions->NestPosition;
 
     /* Clear all pheromone trail data. */
     trailToShare.clear();
@@ -127,7 +130,7 @@ void iAnt_controller::Reset() {
  ****/
 void iAnt_controller::departing() {
 
-    CVector2 distance = (GetPosition() - target);
+    CVector2 distance = (GetPosition() - targetPosition);
     Real randomNumber = RNG->Uniform(CRange<Real>(0.0, 1.0));
     
     /* Are we informed? I.E. using site fidelity or pheromones. */
@@ -174,12 +177,13 @@ void iAnt_controller::searching() {
 
     /* When not carrying food, calculate movement. */
     if(IsHoldingFood() == false) {
-        CVector2 distance = GetPosition() - target;
+        CVector2 distance = GetPosition() - targetPosition;
         Real     random   = RNG->Uniform(CRange<Real>(0.0, 1.0));
 
         /* randomly give up searching */
 		if(random < loopFunctions->ProbabilityOfReturningToNest) {
             SetTargetInBounds(loopFunctions->NestPosition);
+            isGivingUpSearch = true;
             CPFA = RETURNING;
         }
         /* If we reached our target search location, set a new one. The 
@@ -203,18 +207,11 @@ void iAnt_controller::searching() {
                 size_t   t           = searchTime++;
                 Real     twoPi       = (CRadians::TWO_PI).GetValue();
                 Real     pi          = (CRadians::PI).GetValue();
-
                 Real     isd         = loopFunctions->RateOfInformedSearchDecay;
+
 				Real     correlation = GetExponentialDecay((2.0 * twoPi) - loopFunctions->UninformedSearchVariation.GetValue(), t, isd);
+                Real     rand = RNG->Gaussian(correlation + loopFunctions->UninformedSearchVariation.GetValue());
 
-
-                //LOG << "t: " << t << endl;
-                //LOG << "omega: " << correlation + loopFunctions->UninformedSearchVariation.GetValue() << endl;
-                Real rand = RNG->Gaussian(correlation + loopFunctions->UninformedSearchVariation.GetValue());
-                //LOG << rand << endl << endl;
-
-
-				//CRadians rotation(GetBound(correlation, -pi, pi));
                 CRadians rotation(GetBound(rand, -pi, pi));
                 CRadians angle1(rotation);
                 CRadians angle2(GetHeading());
@@ -244,7 +241,7 @@ void iAnt_controller::returning() {
     
     SetHoldingFood();
     
-    CVector2 distance = GetPosition() - target;
+    CVector2 distance = GetPosition() - targetPosition;
 
     /* Are we there yet? (To the nest, that is.) */
    	if(distance.SquareLength() < loopFunctions->NestRadiusSquared) {
@@ -256,11 +253,16 @@ void iAnt_controller::returning() {
         Real r2 = RNG->Uniform(CRange<Real>(0.0, 1.0));
 
 		if(poissonCDF_pLayRate > r1) {
-            trailToShare.push_back(loopFunctions->NestPosition);
-            Real timeInSeconds = (Real)(loopFunctions->SimTime / loopFunctions->TicksPerSecond);
-            iAnt_pheromone sharedPheromone(fidelity, trailToShare, timeInSeconds, loopFunctions->RateOfPheromoneDecay);
-			loopFunctions->PheromoneList.push_back(sharedPheromone);
-            sharedPheromone.Deactivate(); // make sure this won't get re-added later...
+            if(isGivingUpSearch == false) {
+                trailToShare.push_back(loopFunctions->NestPosition);
+                Real timeInSeconds = (Real)(loopFunctions->SimTime / loopFunctions->TicksPerSecond);
+                iAnt_pheromone sharedPheromone(fidelityPosition, trailToShare, timeInSeconds, loopFunctions->RateOfPheromoneDecay);
+    			loopFunctions->PheromoneList.push_back(sharedPheromone);
+                trailToShare.clear();
+                sharedPheromone.Deactivate(); // make sure this won't get re-added later...
+            } else {
+                isGivingUpSearch = false;
+            }
 		}
 
         /* Determine probabilistically wether to use site fidelity, pheromone
@@ -268,7 +270,7 @@ void iAnt_controller::returning() {
 
         /* use site fidelity */
 		if((isUsingSiteFidelity == true) && (poissonCDF_sFollowRate > r2)) {
-			SetTargetInBounds(fidelity);
+			SetTargetInBounds(fidelityPosition);
 			isInformed = true;
 		}
         /* use pheromone waypoints */
@@ -340,10 +342,11 @@ void iAnt_controller::SetHoldingFood() {
     else if((GetPosition() - loopFunctions->NestPosition).SquareLength() < loopFunctions->NestRadiusSquared) {
         isHoldingFood = false;
     }
+
     /* We are carrying food and haven't reached the nest, keep building up the
        pheromone trail attached to this found food item. */
-    else if(loopFunctions->SimTime % loopFunctions->TrailDensityRate == 0) {
-            trailToShare.push_back(GetPosition());
+    if(IsHoldingFood() == true && loopFunctions->SimTime % loopFunctions->DrawDensityRate == 0) {
+        trailToShare.push_back(GetPosition());
     }
 }
 
@@ -453,7 +456,7 @@ void iAnt_controller::SetFidelityList(CVector2 newFidelity) {
 
     /* Remove this robot's old fidelity position from the fidelity list. */
     for(size_t i = 0; i < loopFunctions->FidelityList.size(); i++) {
-        if((loopFunctions->FidelityList[i] - fidelity).SquareLength() != 0.0)
+        if((loopFunctions->FidelityList[i] - fidelityPosition).SquareLength() != 0.0)
             newFidelityList.push_back(loopFunctions->FidelityList[i]);
     }
 
@@ -464,7 +467,7 @@ void iAnt_controller::SetFidelityList(CVector2 newFidelity) {
     loopFunctions->FidelityList.push_back(newFidelity);
 
     /* Update the local fidelity position for this robot. */
-    fidelity = newFidelity;
+    fidelityPosition = newFidelity;
 }
 
 /*****
@@ -476,7 +479,7 @@ void iAnt_controller::SetFidelityList() {
 
     /* Remove this robot's old fidelity position from the fidelity list. */
     for(size_t i = 0; i < loopFunctions->FidelityList.size(); i++) {
-        if((loopFunctions->FidelityList[i] - fidelity).SquareLength() != 0.0)
+        if((loopFunctions->FidelityList[i] - fidelityPosition).SquareLength() != 0.0)
             newFidelityList.push_back(loopFunctions->FidelityList[i]);
     }
 
@@ -497,7 +500,7 @@ bool iAnt_controller::SetTargetPheromone() {
     // loopFunctions->UpdatePheromoneList();
 
     /* default target = nest; in case we have 0 active pheromones */
-    target = loopFunctions->NestPosition;
+    targetPosition = loopFunctions->NestPosition;
 
     /* Calculate a maximum strength based on active pheromone weights. */
 	for(size_t i = 0; i < loopFunctions->PheromoneList.size(); i++) {
@@ -578,6 +581,13 @@ Real iAnt_controller::GetPoissonCDF(Real k, Real lambda) {
 }
 
 /*****
+ *
+ *****/
+bool iAnt_controller::IsInTheNest() {
+    return ((GetPosition() - targetPosition).SquareLength() < loopFunctions->NestRadiusSquared);
+}
+
+/*****
  * Return the robot's 2D position on the arena.
  *****/
 CVector2 iAnt_controller::GetPosition() {
@@ -586,14 +596,6 @@ CVector2 iAnt_controller::GetPosition() {
     /* Return the 2D position components of the compass sensor reading. */
     return CVector2(position3D.GetX(), position3D.GetY());
 }
-
-/*****
- * Return the robot's 2D target on the arena.
- *****/
-CVector2 iAnt_controller::GetTarget() {
-    return target;
-}
-
 
 /*****
  * Return the angle the robot is facing relative to the arena's origin.
@@ -612,18 +614,29 @@ CRadians iAnt_controller::GetHeading() {
 }
 
 /*****
- * Is the iAnt inside the nest zone?
- *     True:  Yes, iAnt is in the nest.
- *     False: No, iAnt is not in the nest.
+ *
  *****/
-bool iAnt_controller::IsInTheNest() {
-    return ((GetPosition() - target).SquareLength() < loopFunctions->NestRadiusSquared);
+CRadians iAnt_controller::GetCollisionHeading() {
+
+    typedef const CCI_FootBotProximitySensor::TReadings PR;
+    PR &proximityReadings = proximitySensor->GetReadings();
+    size_t collisionsDetected = 0;
+    CRadians angle;
+
+    for(size_t i = 0; i < proximityReadings.size(); i++) {
+        if(proximityReadings[i].Value == 0.0) {
+            angle += proximityReadings[i].Angle;
+        }
+    }
+
+    return angle;
 }
 
 /*****
  *
  *****/
 bool iAnt_controller::IsCollisionDetected() {
+
     typedef const CCI_FootBotProximitySensor::TReadings PR;
 	PR &proximityReadings = proximitySensor->GetReadings();
 	size_t collisionsDetected = 0;
@@ -717,16 +730,16 @@ void iAnt_controller::ApproachTheTarget() {
     CRadians angle1  = GetHeading();
 
     /* angle from the target to the robot's position */
-    CRadians angle2  = (target - GetPosition()).Angle();
+    CRadians angle2  = (targetPosition - GetPosition()).Angle();
 
     /* heading = angle1 - angle2 = 0.0 when the robot is facing its target */
 	CRadians heading = (angle1 - angle2).SignedNormalize();
 
 	if(IsCollisionDetected() == true) {
-		collisionDelay = loopFunctions->SimTime + (loopFunctions->TicksPerSecond * 2);
+	   collisionDelay = loopFunctions->SimTime + (loopFunctions->TicksPerSecond * 2);
 
-		/* turn left */
-		motorActuator->SetLinearVelocity(-robotRotationSpeed, robotRotationSpeed);
+       /* turn left */
+	   motorActuator->SetLinearVelocity(-robotRotationSpeed, robotRotationSpeed);
 
 	} else if((heading <= angleToleranceInRadians.GetMin()) &&
               (collisionDelay < loopFunctions->SimTime)) {
@@ -742,9 +755,10 @@ void iAnt_controller::ApproachTheTarget() {
 
 	} else {
 
-		/* go straight */
-		motorActuator->SetLinearVelocity(robotForwardSpeed, robotForwardSpeed);
-	}
+        /* go straight */
+        motorActuator->SetLinearVelocity(robotForwardSpeed, robotForwardSpeed);
+
+    }
 }
 
 /*****
@@ -768,7 +782,7 @@ void iAnt_controller::SetTargetInBounds(CVector2 t) {
         t = CVector2(t.GetX(), loopFunctions->ForageRangeY.GetMin());
 
     /* Set the robot's target to the bounded t position. */
-    target = t;
+    targetPosition = t;
 }
 
 REGISTER_CONTROLLER(iAnt_controller, "iAnt_controller")

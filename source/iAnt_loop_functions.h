@@ -38,7 +38,6 @@ class iAnt_loop_functions : public CLoopFunctions {
 		void Reset();
         bool IsExperimentFinished();
 		CColor GetFloorColor(const CVector2& p) { return CColor::WHITE; }
-		vector<CVector2>* GetFoodList() { return &FoodList; }
 
         /* public helper functions */
         void UpdatePheromoneList();
@@ -58,7 +57,7 @@ class iAnt_loop_functions : public CLoopFunctions {
         size_t VariableSeed;
         size_t OutputData;
 
-        size_t TrailDensityRate;
+        size_t DrawDensityRate;
         size_t DrawTrails;
         size_t DrawTargetRays;
 

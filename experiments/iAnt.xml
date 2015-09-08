@@ -36,7 +36,7 @@
                          distanceTolerance       = "0.01"
                 		 robotForwardSpeed       = "16.0"
                          robotRotationSpeed      = "13.3"
-            	         angleToleranceInDegrees = "10.0"/>
+            	         angleToleranceInDegrees = "15.0"/>
 			</params>
         </iAnt_controller>
     </controllers>
@@ -46,25 +46,26 @@
                     label   = "iAnt_loop_functions">
 
         <!-- evolvable parameters -->
-        <CPFA       ProbabilityOfSwitchingToSearching = "0.75"
-                    ProbabilityOfReturningToNest      = "0.001"
-                    UninformedSearchVariation         = "15.0"
-                    RateOfInformedSearchDecay         = "0.01"
-                    RateOfSiteFidelity                = "3.0"
-                    RateOfLayingPheromone             = "3.0"
-                    RateOfPheromoneDecay              = "0.05"/>
+        <CPFA       ProbabilityOfSwitchingToSearching = "0.2041456252336502"
+                    ProbabilityOfReturningToNest      = "0.0009405957534909248"
+                    UninformedSearchVariation         = "12.996437"
+                    RateOfInformedSearchDecay         = "0.2497878670692444"
+                    RateOfSiteFidelity                = "2.5117506980896"
+                    RateOfLayingPheromone             = "2.24421238899231"
+                    RateOfPheromoneDecay              = "0.03821808844804764"/>
 
         <!-- un-evolvable environment variables -->
-        <simulation MaxSimCounter        = "1"
+        <simulation MaxSimCounter        = "20"
                     MaxSimTime           = "3600"
                     VariableSeed         = "1"
-                    OutputData           = "0"
+                    OutputData           = "1"
                     ResourceDensityDelay = "4"
-                    TrailDensityRate     = "6"
+                    DrawDensityRate      = "8"
                     DrawTrails           = "1"
-                    DrawTargetRays       = "0"
+                    DrawTargetRays       = "1"
                     NestPosition         = "0.0, 0.0"
                     NestRadius           = "0.25"
+                    NestElevation        = "0.01"
                     FoodRadius           = "0.05"
                     FoodDistribution     = "1"/>
 
