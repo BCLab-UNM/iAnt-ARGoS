@@ -93,9 +93,6 @@ void iAnt_controller::ControlStep() {
         case RETURNING:
 	       	returning();
             break;
-        /* all food is picked up, return to the nest and turn off motors */
-        case SHUTDOWN:
-            shutdown();
     }
 }
 
@@ -296,26 +293,6 @@ void iAnt_controller::returning() {
 }
 
 /*****
- * SHUTDOWN: If all food items have been collected, the simulation is over
- * and all iAnts are instructed to return to the nest and shut down.
- *****/
-void iAnt_controller::shutdown() {
-	target = loopFunctions->NestPosition;
-    searchTime++;
-
-    if((GetPosition() - target).SquareLength() < distanceTolerance ||
-       searchTime % (loopFunctions->TicksPerSecond * 30) == 0) {
-        motorActuator->SetLinearVelocity(0.0, 0.0);
-        searchTime--;
-    } else if(loopFunctions->FoodList.size() > 0) {
-        SetRandomSearchLocation();
-        CPFA = DEPARTING;
-    } else {
-        ApproachTheTarget();
-    }
-}
-
-/*****
  * Check if the iAnt is finding food. This is defined as the iAnt being within
  * the distance tolerance of the position of a food item. If the iAnt has found
  * food then the appropriate boolean flags are triggered.
@@ -367,12 +344,6 @@ void iAnt_controller::SetHoldingFood() {
        pheromone trail attached to this found food item. */
     else if(loopFunctions->SimTime % loopFunctions->TrailDensityRate == 0) {
             trailToShare.push_back(GetPosition());
-    }
-
-    /* If all food is collected, return to the nest and shutdown. */
-    if(loopFunctions->FoodList.size() == 0 && !IsHoldingFood()) {
-        searchTime = 0;
-        CPFA = SHUTDOWN;
     }
 }
 

@@ -421,6 +421,7 @@ void iAnt_loop_functions::ClusterFoodDistribution() {
                 FoodList.push_back(placementPosition);
                 FoodColoringList.push_back(CColor::BLACK);
                 placementPosition.SetX(placementPosition.GetX() + foodOffset);
+
             }
 
             placementPosition.SetX(placementPosition.GetX() - (ClusterWidthX * foodOffset));

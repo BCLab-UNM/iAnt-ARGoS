@@ -72,13 +72,12 @@ class iAnt_controller : public CCI_Controller {
     private:
 
         /* iAnt CPFA state variable */
-        enum CPFA { DEPARTING, SEARCHING, RETURNING, SHUTDOWN } CPFA;
+        enum CPFA { DEPARTING, SEARCHING, RETURNING } CPFA;
 
         /* iAnt CPFA state functions */
         void departing();
         void searching();
         void returning();
-        void shutdown();
 
         /* CPFA helper functions */
         void SetHoldingFood();
