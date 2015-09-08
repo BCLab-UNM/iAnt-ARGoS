@@ -2,7 +2,7 @@
 #define IANT_LOOP_FUNCTIONS_H_
 
 #include <source/iAnt_controller.h>
-#include <source/iAnt_data.h>
+#include <source/iAnt_pheromone.h>
 #include <vector>
 #include <argos3/core/utility/math/vector2.h>
 #include <argos3/core/utility/datatypes/color.h>
@@ -15,6 +15,7 @@ using namespace argos;
 using namespace std;
 
 class iAnt_controller;
+class iAnt_pheromone;
 
 /*****
  * The loop functions class provides "hooks" into the simulation right before and right after each tick (or frame) of
@@ -98,7 +99,6 @@ class iAnt_loop_functions : public CLoopFunctions {
     private:
 
         CRandom::CRNG* RNG;
-        iAnt_data      data;
 
         /* private helper functions */
         void RandomFoodDistribution();

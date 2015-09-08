@@ -1,7 +1,6 @@
 #ifndef IANT_QT_USER_FUNCTIONS_H_
 #define IANT_QT_USER_FUNCTIONS_H_
 
-#include <source/iAnt_data.h>
 #include <argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_user_functions.h>
 #include <argos3/plugins/robots/foot-bot/simulator/footbot_entity.h>
 #include <argos3/core/simulator/entity/floor_entity.h>
@@ -36,12 +35,6 @@ class iAnt_qt_user_functions : public CQTOpenGLUserFunctions {
         void DrawFidelity();
         void DrawPheromones();
         void DrawTargetRays();
-
-        /*****
-         * The iAnt_data object contains shared variables used by
-         * this class, iAnt_controller, and iAnt_loop_functions.
-         *****/
-        iAnt_data* data;
 
         iAnt_loop_functions& loopFunctions;
 };

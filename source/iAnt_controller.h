@@ -1,17 +1,13 @@
 #ifndef IANT_CONTROLLER_H_
 #define IANT_CONTROLLER_H_
 
-#include <source/iAnt_data.h>
-#include <source/iAnt_loop_functions.h>
 #include <argos3/core/control_interface/ci_controller.h>
-#include <argos3/core/utility/logging/argos_log.h>
-#include <argos3/core/utility/math/rng.h>
-#include <argos3/core/utility/math/vector2.h>
-#include <argos3/core/utility/math/ray3.h>
+#include <argos3/plugins/robots/foot-bot/simulator/footbot_entity.h>
 #include <argos3/plugins/robots/generic/control_interface/ci_positioning_sensor.h>
 #include <argos3/plugins/robots/generic/control_interface/ci_differential_steering_actuator.h>
-#include <argos3/plugins/robots/foot-bot/simulator/footbot_entity.h>
 #include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_proximity_sensor.h>
+#include <argos3/core/utility/math/rng.h>
+#include <source/iAnt_loop_functions.h>
 
 using namespace argos;
 using namespace std;
@@ -19,8 +15,7 @@ using namespace std;
 class iAnt_loop_functions;
 
 /*****
- * The brains of the iAnt robot. This controller object is a component of each robot that is placed in the arena for
- * experiments. The implementation of the iAnt Central Place Foraging Algorithm (CPFA) is in this code.
+ * The brain of each iAnt robot which implements the Central Place Foraging Algorithm (CPFA).
  *****/
 class iAnt_controller : public CCI_Controller {
 
@@ -28,24 +23,20 @@ class iAnt_controller : public CCI_Controller {
 
         /* constructor and destructor */
         iAnt_controller();
-        ~iAnt_controller() {}
+        virtual ~iAnt_controller() {}
 
         /* CCI_Controller Inherited Functions */
-        void Init(TConfigurationNode& node);
-        void ControlStep();
-        void Reset();
+        virtual void Init(TConfigurationNode& node);
+        virtual void ControlStep();
+        virtual void Reset();
 
         /* public helper functions */
-        bool       IsHoldingFood();
-        bool       IsInTheNest();
-
-        void       SetData(iAnt_data* dataPointer);
-        iAnt_data* GetData() { return data; }
-
-        void       SetLoopFunctions(iAnt_loop_functions* lf) { loopFunctions = lf; }
-
-        CVector2   GetPosition();
-        CVector2   GetTarget();
+        bool     IsHoldingFood() { return isHoldingFood; }
+        bool     IsInTheNest();
+        void     SetLoopFunctions(iAnt_loop_functions* lf) { loopFunctions = lf; }
+        CVector2 GetPosition();
+        CVector3 GetStartPosition() { return startPosition; }
+        CVector2 GetTarget();
 
     private:
 
@@ -55,16 +46,16 @@ class iAnt_controller : public CCI_Controller {
         CCI_FootBotProximitySensor*       proximitySensor;
 
         /* iAnt controller parameters */
-        Real             DistanceTolerance;
-        Real             SearchStepSize;
-        Real             RobotForwardSpeed;
-        Real             RobotRotationSpeed;
-        CRange<CRadians> AngleToleranceInRadians;
+        Real             distanceTolerance;
+        Real             searchStepSize;
+        Real             robotForwardSpeed;
+        Real             robotRotationSpeed;
+        CRange<CRadians> angleToleranceInRadians;
 
         /* robot internal variables & statistics */
         CRandom::CRNG*       RNG;
-        iAnt_data*           data;
         iAnt_loop_functions* loopFunctions;
+        CVector3             startPosition;
         CVector2             target;
         CVector2             fidelity;
         vector<CVector2>     trailToShare;

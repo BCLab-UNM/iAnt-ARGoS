@@ -12,8 +12,8 @@ iAnt_loop_functions::iAnt_loop_functions() :
     OutputData(0),
     TrailDensityRate(6),
 
-    DrawTrails(0),
-    DrawTargetRays(0),
+    DrawTrails(1),
+    DrawTargetRays(1),
 
     FoodDistribution(0),
     FoodItemCount(256),
@@ -64,41 +64,83 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
     TConfigurationNode powerLaw = GetNode(node, "_2_FoodDistribution_PowerLaw");
 
     /* Initialize all loop functions variables from the XML file. */
-    GetNodeAttribute(CPFA,     "ProbabilityOfSwitchingToSearching", data.ProbabilityOfSwitchingToSearching);
-    GetNodeAttribute(CPFA,     "ProbabilityOfReturningToNest",      data.ProbabilityOfReturningToNest);
+    /*
+    GetNodeAttribute(CPFA,     "ProbabilityOfSwitchingToSearching", ProbabilityOfSwitchingToSearching);
+    GetNodeAttribute(CPFA,     "ProbabilityOfReturningToNest",      ProbabilityOfReturningToNest);
     GetNodeAttribute(CPFA,     "UninformedSearchVariation",         USV_InDegrees);
-    GetNodeAttribute(CPFA,     "RateOfInformedSearchDecay",         data.RateOfInformedSearchDecay);
-    GetNodeAttribute(CPFA,     "RateOfSiteFidelity",                data.RateOfSiteFidelity);
-    GetNodeAttribute(CPFA,     "RateOfLayingPheromone",             data.RateOfLayingPheromone);
-    GetNodeAttribute(CPFA,     "RateOfPheromoneDecay",              data.RateOfPheromoneDecay);
-    GetNodeAttribute(simNode,  "MaxSimCounter",                     data.MaxSimCounter);
-    GetNodeAttribute(simNode,  "MaxSimTime",                        data.MaxSimTime);
-    GetNodeAttribute(simNode,  "VariableSeed",                      data.VariableSeed);
-    GetNodeAttribute(simNode,  "OutputData",                        data.OutputData);
-    GetNodeAttribute(simNode,  "NestPosition",                      data.NestPosition);
-    GetNodeAttribute(simNode,  "NestRadius",                        data.NestRadius);
-    GetNodeAttribute(simNode,  "FoodRadius",                        data.FoodRadius);
-    GetNodeAttribute(simNode,  "FoodDistribution",                  data.FoodDistribution);
-    GetNodeAttribute(random,   "FoodItemCount",                     data.FoodItemCount);
-    GetNodeAttribute(cluster,  "NumberOfClusters",                  data.NumberOfClusters);
-    GetNodeAttribute(cluster,  "ClusterWidthX",                     data.ClusterWidthX);
-    GetNodeAttribute(cluster,  "ClusterLengthY",                    data.ClusterLengthY);
-    GetNodeAttribute(powerLaw, "PowerRank",                         data.PowerRank);
+    GetNodeAttribute(CPFA,     "RateOfInformedSearchDecay",         RateOfInformedSearchDecay);
+    GetNodeAttribute(CPFA,     "RateOfSiteFidelity",                RateOfSiteFidelity);
+    GetNodeAttribute(CPFA,     "RateOfLayingPheromone",             RateOfLayingPheromone);
+    GetNodeAttribute(CPFA,     "RateOfPheromoneDecay",              RateOfPheromoneDecay);
+    GetNodeAttribute(simNode,  "MaxSimCounter",                     MaxSimCounter);
+    GetNodeAttribute(simNode,  "MaxSimTime",                        MaxSimTime);
+    GetNodeAttribute(simNode,  "VariableSeed",                      VariableSeed);
+    GetNodeAttribute(simNode,  "OutputData",                        OutputData);
+    GetNodeAttribute(simNode,  "NestPosition",                      NestPosition);
+    GetNodeAttribute(simNode,  "NestRadius",                        NestRadius);
+    GetNodeAttribute(simNode,  "FoodRadius",                        FoodRadius);
+    GetNodeAttribute(simNode,  "FoodDistribution",                  FoodDistribution);
+    GetNodeAttribute(random,   "FoodItemCount",                     FoodItemCount);
+    GetNodeAttribute(cluster,  "NumberOfClusters",                  NumberOfClusters);
+    GetNodeAttribute(cluster,  "ClusterWidthX",                     ClusterWidthX);
+    GetNodeAttribute(cluster,  "ClusterLengthY",                    ClusterLengthY);
+    GetNodeAttribute(powerLaw, "PowerRank",                         PowerRank);
+    */
+
+    /* Initialize all loop functions variables from the XML file. */
+    GetNodeAttribute(CPFA,     "ProbabilityOfSwitchingToSearching", ProbabilityOfSwitchingToSearching);
+    GetNodeAttribute(CPFA,     "ProbabilityOfReturningToNest",      ProbabilityOfReturningToNest);
+    GetNodeAttribute(CPFA,     "UninformedSearchVariation",         USV_InDegrees);
+    GetNodeAttribute(CPFA,     "RateOfInformedSearchDecay",         RateOfInformedSearchDecay);
+    GetNodeAttribute(CPFA,     "RateOfSiteFidelity",                RateOfSiteFidelity);
+    GetNodeAttribute(CPFA,     "RateOfLayingPheromone",             RateOfLayingPheromone);
+    GetNodeAttribute(CPFA,     "RateOfPheromoneDecay",              RateOfPheromoneDecay);
+    GetNodeAttribute(simNode,  "MaxSimCounter",                     MaxSimCounter);
+    GetNodeAttribute(simNode,  "MaxSimTime",                        MaxSimTime);
+    GetNodeAttribute(simNode,  "VariableSeed",                      VariableSeed);
+    GetNodeAttribute(simNode,  "OutputData",                        OutputData);
+    GetNodeAttribute(simNode,  "NestPosition",                      NestPosition);
+    GetNodeAttribute(simNode,  "NestRadius",                        NestRadius);
+    GetNodeAttribute(simNode,  "FoodRadius",                        FoodRadius);
+    GetNodeAttribute(simNode,  "FoodDistribution",                  FoodDistribution);
+    GetNodeAttribute(random,   "FoodItemCount",                     FoodItemCount);
+    GetNodeAttribute(cluster,  "NumberOfClusters",                  NumberOfClusters);
+    GetNodeAttribute(cluster,  "ClusterWidthX",                     ClusterWidthX);
+    GetNodeAttribute(cluster,  "ClusterLengthY",                    ClusterLengthY);
+    GetNodeAttribute(powerLaw, "PowerRank",                         PowerRank);
 
     /* Convert and calculate additional values. */
-    data.MaxSimTime                = data.MaxSimTime * data.TicksPerSecond;
-    data.RandomSeed                = simulator->GetRandomSeed();
-    data.TicksPerSecond            = physicsEngine->GetInverseSimulationClockTick();
-    data.UninformedSearchVariation = ToRadians(USV_InDegrees);
-    data.NestRadiusSquared         = (data.NestRadius) * (data.NestRadius);
-    data.FoodRadiusSquared         = (data.FoodRadius + 0.04) * (data.FoodRadius + 0.04);
-    data.SearchRadius              = (4.0 * data.FoodRadiusSquared);
+    /*
+    MaxSimTime                = MaxSimTime * TicksPerSecond;
+    RandomSeed                = simulator->GetRandomSeed();
+    TicksPerSecond            = physicsEngine->GetInverseSimulationClockTick();
+    UninformedSearchVariation = ToRadians(USV_InDegrees);
+    NestRadiusSquared         = (NestRadius) * (NestRadius);
+    FoodRadiusSquared         = (FoodRadius + 0.04) * (FoodRadius + 0.04);
+    SearchRadius              = (4.0 * FoodRadiusSquared);
+    */
 
-    data.ForageRangeX.Set(rangeX.GetX() + (2.0 * data.FoodRadius), rangeX.GetY() - (2.0 * data.FoodRadius));
-    data.ForageRangeY.Set(rangeY.GetX() + (2.0 * data.FoodRadius), rangeY.GetY() - (2.0 * data.FoodRadius));
+    /* Convert and calculate additional values. */
+    MaxSimTime                = MaxSimTime * TicksPerSecond;
+    RandomSeed                = simulator->GetRandomSeed();
+    TicksPerSecond            = physicsEngine->GetInverseSimulationClockTick();
+    UninformedSearchVariation = ToRadians(USV_InDegrees);
+    NestRadiusSquared         = (NestRadius) * (NestRadius);
+    FoodRadiusSquared         = (FoodRadius + 0.04) * (FoodRadius + 0.04);
+    SearchRadius              = (4.0 * FoodRadiusSquared);
+
+    /*
+    ForageRangeX.Set(rangeX.GetX() + (2.0 * FoodRadius), rangeX.GetY() - (2.0 * FoodRadius));
+    ForageRangeY.Set(rangeY.GetX() + (2.0 * FoodRadius), rangeY.GetY() - (2.0 * FoodRadius));
 
     RNG = CRandom::CreateRNG("argos");
-    data.RNG = RNG;
+    RNG = RNG;
+    */
+
+    ForageRangeX.Set(rangeX.GetX() + (2.0 * FoodRadius), rangeX.GetY() - (2.0 * FoodRadius));
+    ForageRangeY.Set(rangeY.GetX() + (2.0 * FoodRadius), rangeY.GetY() - (2.0 * FoodRadius));
+
+    RNG = CRandom::CreateRNG("argos");
 
     /* Store the iAnts in a more friendly, human-readable structure. */
     CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
@@ -108,13 +150,13 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
         CFootBotEntity& footBot = *any_cast<CFootBotEntity*>(it->second);
         iAnt_controller& c = dynamic_cast<iAnt_controller&>(footBot.GetControllableEntity().GetController());
 
-        //iAnts.push_back(&c);
-        c.SetData(&data);    // all iAnts get a pointer to the iAnt_loop_functions object
+        // all iAnts get a pointer to the iAnt_loop_functions object
         c.SetLoopFunctions(this);
     }
 
     /* Set up the food distribution based on the XML file. */
-    data.SetFoodDistribution();
+    SetFoodDistribution();
+    // SetFoodDistribution();
 }
 
 /*****
@@ -122,27 +164,38 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
  *****/
 void iAnt_loop_functions::PreStep() {
 
-    data.SimTime++;
+    /*
+    SimTime++;
     UpdatePheromoneList();
 
-    if(data.SimTime > data.ResourceDensityDelay) {
-        for(size_t i = 0; i < data.FoodColoringList.size(); i++) {
-            data.FoodColoringList[i] = CColor::BLACK;
+    if(SimTime > ResourceDensityDelay) {
+        for(size_t i = 0; i < FoodColoringList.size(); i++) {
+            FoodColoringList[i] = CColor::BLACK;
         }
     }
 
-    if(data.FoodList.size() == 0) {
-        data.FidelityList.clear();
-        data.TargetRayList.clear();
-        data.PheromoneList.clear();
+    if(FoodList.size() == 0) {
+        FidelityList.clear();
+        TargetRayList.clear();
+        PheromoneList.clear();
+    }
+    */
+
+    SimTime++;
+    UpdatePheromoneList();
+
+    if(SimTime > ResourceDensityDelay) {
+        for(size_t i = 0; i < FoodColoringList.size(); i++) {
+            FoodColoringList[i] = CColor::BLACK;
+        }
     }
 
-    /*
-    if(data.SimTime % (16 * 10) == 0) {
-        LOG << "pheromones: " << data.PheromoneList.size() << endl;
-        LOG << "fidelities: " << data.FidelityList.size() << endl;
-        LOG << "target ray list: " << data.TargetRayList.size() << endl << endl;
-    }*/
+    if(FoodList.size() == 0) {
+        FidelityList.clear();
+        TargetRayList.clear();
+        PheromoneList.clear();
+    }
+
 }
 
 /*****
@@ -157,14 +210,14 @@ void iAnt_loop_functions::PostStep() {
  * time limit imposed in the XML file has been reached.
  *****/
 void iAnt_loop_functions::PostExperiment() {
-    size_t time_in_minutes = floor(floor(data.SimTime/data.TicksPerSecond)/60);
-    size_t collectedFood = data.FoodItemCount - data.FoodList.size();
+    size_t time_in_minutes = floor(floor(SimTime/TicksPerSecond)/60);
+    size_t collectedFood = FoodItemCount - FoodList.size();
 
     // This variable is set in XML
-    if(data.OutputData == 1) {
+    if(OutputData == 1) {
         // This file is created in the directory where you run ARGoS
         // it is always created or appended to, never overwritten, i.e. ios::app
-        ofstream dataOutput("iAntTagdata.txt", ios::app);
+        ofstream dataOutput("iAntTagtxt", ios::app);
 
         // output to file
         if(dataOutput.tellp() == 0) {
@@ -172,21 +225,21 @@ void iAnt_loop_functions::PostExperiment() {
         }
 
         dataOutput << collectedFood << ", ";
-        dataOutput << time_in_minutes << ", " << data.RandomSeed << endl;
+        dataOutput << time_in_minutes << ", " << RandomSeed << endl;
         dataOutput.close();
     }
 
     // output to ARGoS GUI
-    if(data.SimCounter == 0) {
+    if(SimCounter == 0) {
         LOG << "\ntags_collected, time_in_minutes, random_seed\n";
         LOG << collectedFood << ", ";
-        LOG << time_in_minutes << ", " << data.RandomSeed << endl;
+        LOG << time_in_minutes << ", " << RandomSeed << endl;
     } else {
         LOG << collectedFood << ", ";
-        LOG << time_in_minutes << ", " << data.RandomSeed << endl;
+        LOG << time_in_minutes << ", " << RandomSeed << endl;
 
         /*
-        ifstream dataInput("iAntTagdata.txt");
+        ifstream dataInput("iAntTagtxt");
         string s;
 
         while(getline(dataInput, s)) {
@@ -197,7 +250,7 @@ void iAnt_loop_functions::PostExperiment() {
         */
     }
 
-    data.SimCounter++;
+    SimCounter++;
 }
 
 /*****
@@ -205,19 +258,19 @@ void iAnt_loop_functions::PostExperiment() {
  * conditions set in the XML file.
  *****/
 void iAnt_loop_functions::Reset() {
-    if(data.VariableSeed == 1) GetSimulator().SetRandomSeed(++data.RandomSeed);
+    if(VariableSeed == 1) GetSimulator().SetRandomSeed(++RandomSeed);
 
     //GetSimulator().Reset();
     GetSpace().Reset();
-    data.SimTime = 0;
-    data.ResourceDensityDelay = 0;
-    data.MaxSimCounter = data.SimCounter;
-    data.SimCounter = 0;
-    data.FoodList.clear();
-    data.PheromoneList.clear();
-    data.FidelityList.clear();
-    data.TargetRayList.clear();
-    data.SetFoodDistribution();
+    SimTime = 0;
+    ResourceDensityDelay = 0;
+    MaxSimCounter = SimCounter;
+    SimCounter = 0;
+    FoodList.clear();
+    PheromoneList.clear();
+    FidelityList.clear();
+    TargetRayList.clear();
+    SetFoodDistribution();
 
     CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
     CSpace::TMapPerType::iterator it;
@@ -226,6 +279,7 @@ void iAnt_loop_functions::Reset() {
         CFootBotEntity& footBot = *any_cast<CFootBotEntity*>(it->second);
         iAnt_controller& c = dynamic_cast<iAnt_controller&>(footBot.GetControllableEntity().GetController());
 
+        MoveEntity(footBot.GetEmbodiedEntity(), c.GetStartPosition(), CQuaternion(), false);
         c.Reset();
     }
 }
@@ -238,21 +292,21 @@ bool iAnt_loop_functions::IsExperimentFinished() {
 
     bool isFinished = false;
 
-    if(data.FoodList.size() == 0 || data.SimTime >= data.MaxSimTime) {
+    if(FoodList.size() == 0 || SimTime >= MaxSimTime) {
         isFinished = true;
     }
 
-    if(isFinished == true && data.MaxSimCounter > 1) {
-        size_t newSimCounter = data.SimCounter + 1;
-        size_t newMaxSimCounter = data.MaxSimCounter - 1;
+    if(isFinished == true && MaxSimCounter > 1) {
+        size_t newSimCounter = SimCounter + 1;
+        size_t newMaxSimCounter = MaxSimCounter - 1;
 
-        // LOG << endl << "FINISHED RUN: " << data.SimCounter << endl;
+        // LOG << endl << "FINISHED RUN: " << SimCounter << endl;
 
         PostExperiment();
         Reset();
 
-        data.SimCounter    = newSimCounter;
-        data.MaxSimCounter = newMaxSimCounter;
+        SimCounter    = newSimCounter;
+        MaxSimCounter = newMaxSimCounter;
         isFinished         = false;
     }
 
@@ -264,25 +318,25 @@ bool iAnt_loop_functions::IsExperimentFinished() {
  *****/
 void iAnt_loop_functions::UpdatePheromoneList() {
  
-    //LOG << "Hello, world! " << data.PheromoneList.size() << endl << endl;
+    //LOG << "Hello, world! " << PheromoneList.size() << endl << endl;
 
     vector<iAnt_pheromone> new_p_list;
 
-    for(size_t i = 0; i < data.PheromoneList.size(); i++) {
+    for(size_t i = 0; i < PheromoneList.size(); i++) {
 
-        data.PheromoneList[i].Update((Real)(data.SimTime / data.TicksPerSecond));
+        PheromoneList[i].Update((Real)(SimTime / TicksPerSecond));
 
-        //if(data.PheromoneList[i].IsActive()) LOG << "O" << endl;
+        //if(PheromoneList[i].IsActive()) LOG << "O" << endl;
         //else LOG << "X" << endl;
 
-        if(data.PheromoneList[i].IsActive() == true) {
-            new_p_list.push_back(data.PheromoneList[i]);
+        if(PheromoneList[i].IsActive() == true) {
+            new_p_list.push_back(PheromoneList[i]);
         }
     }
 
     //LOG << endl;
 
-    data.PheromoneList = new_p_list;
+    PheromoneList = new_p_list;
 }
 
 /*****
@@ -333,6 +387,7 @@ void iAnt_loop_functions::ClusterFoodDistribution() {
 
     Real     foodOffset  = 3.0 * FoodRadius;
     size_t   foodToPlace = NumberOfClusters * ClusterWidthX * ClusterLengthY;
+    size_t   foodPlaced = 0;
     CVector2 placementPosition;
 
     FoodItemCount = foodToPlace;
@@ -346,6 +401,23 @@ void iAnt_loop_functions::ClusterFoodDistribution() {
 
         for(size_t j = 0; j < ClusterLengthY; j++) {
             for(size_t k = 0; k < ClusterWidthX; k++) {
+
+                foodPlaced++;
+                /*
+                #include <argos3/plugins/simulator/entities/box_entity.h>
+
+                string label("my_box_");
+                label.push_back('0' + foodPlaced++);
+
+                CBoxEntity *b = new CBoxEntity(label,
+                                               CVector3(placementPosition.GetX(), placementPosition.GetY(), 0.0),
+                                               CQuaternion(),
+                                               true,
+                                               CVector3(0.1, 0.1, 0.001),
+                                               1.0);
+                AddEntity(*b);
+                */
+
                 FoodList.push_back(placementPosition);
                 FoodColoringList.push_back(CColor::BLACK);
                 placementPosition.SetX(placementPosition.GetX() + foodOffset);
