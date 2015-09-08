@@ -55,14 +55,18 @@
                     RateOfPheromoneDecay              = "0.05"/>
 
         <!-- un-evolvable environment variables -->
-        <simulation MaxSimCounter    = "1"
-                    MaxSimTime       = "3600"
-                    VariableSeed     = "1"
-                    OutputData       = "0"
-                    NestPosition     = "0.0, 0.0"
-                    NestRadius       = "0.25"
-                    FoodRadius       = "0.05"
-                    FoodDistribution = "1"/>
+        <simulation MaxSimCounter        = "1"
+                    MaxSimTime           = "3600"
+                    VariableSeed         = "1"
+                    OutputData           = "0"
+                    ResourceDensityDelay = "4"
+                    TrailDensityRate     = "6"
+                    DrawTrails           = "1"
+                    DrawTargetRays       = "0"
+                    NestPosition         = "0.0, 0.0"
+                    NestRadius           = "0.25"
+                    FoodRadius           = "0.05"
+                    FoodDistribution     = "1"/>
 
 		<!-- un-evolvable food distribution parameters -->
         <_0_FoodDistribution_Random   FoodItemCount    = "256"/>

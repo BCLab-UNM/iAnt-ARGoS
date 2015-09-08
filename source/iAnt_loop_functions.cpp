@@ -1,50 +1,46 @@
 #include "iAnt_loop_functions.h"
 
+/*****
+ * The constructor function is used only to initialize variables to null/0 values. Primary setup is done with Init().
+ *****/
 iAnt_loop_functions::iAnt_loop_functions() :
     SimTime(0),
     MaxSimTime(0),
-    TicksPerSecond(16),
+    TicksPerSecond(0),
     ResourceDensityDelay(0),
-    RandomSeed(1337),
+    RandomSeed(0),
     SimCounter(0),
-    MaxSimCounter(1),
+    MaxSimCounter(0),
     VariableSeed(0),
     OutputData(0),
-    TrailDensityRate(6),
-
-    DrawTrails(1),
-    DrawTargetRays(1),
-
+    TrailDensityRate(0),
+    DrawTrails(0),
+    DrawTargetRays(0),
     FoodDistribution(0),
-    FoodItemCount(256),
-    NumberOfClusters(4),
-    ClusterWidthX(8),
-    ClusterLengthY(8),
-    PowerRank(4),
-
-    ProbabilityOfSwitchingToSearching(0.99999),
-    ProbabilityOfReturningToNest(0.00001),
-    UninformedSearchVariation(0.231256126),
-    RateOfInformedSearchDecay(0.05),
-    RateOfSiteFidelity(10.0),
-    RateOfLayingPheromone(10.0),
-    RateOfPheromoneDecay(0.05),
-
-    NestRadius(0.25),
-    NestRadiusSquared(0.0625),
-    NestElevation(0.01),
-
+    FoodItemCount(0),
+    NumberOfClusters(0),
+    ClusterWidthX(0),
+    ClusterLengthY(0),
+    PowerRank(0),
+    ProbabilityOfSwitchingToSearching(0.0),
+    ProbabilityOfReturningToNest(0.0),
+    UninformedSearchVariation(0.0),
+    RateOfInformedSearchDecay(0.0),
+    RateOfSiteFidelity(0.0),
+    RateOfLayingPheromone(0.0),
+    RateOfPheromoneDecay(0.0),
+    NestRadius(0.0),
+    NestRadiusSquared(0.0),
+    NestElevation(0.0),
     SearchRadius(0.0),
-    FoodRadius(0.05),
-    FoodRadiusSquared(0.0025),
-
-    ForageRangeX(-10.0, 10.0),
-    ForageRangeY(-10.0, 10.0)
+    FoodRadius(0.0),
+    FoodRadiusSquared(0.0),
+    ForageRangeX(-1.0, 1.0),
+    ForageRangeY(-1.0, 1.0)
 {}
 
 /*****
- * Required by ARGoS. This function initializes global variables using
- * values from the XML configuration file supplied when ARGoS is run.
+ * Required by ARGoS. This function initializes global variables from the XML configuration file.
  *****/
 void iAnt_loop_functions::Init(TConfigurationNode& node) {
 
@@ -64,7 +60,6 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
     TConfigurationNode powerLaw = GetNode(node, "_2_FoodDistribution_PowerLaw");
 
     /* Initialize all loop functions variables from the XML file. */
-    /*
     GetNodeAttribute(CPFA,     "ProbabilityOfSwitchingToSearching", ProbabilityOfSwitchingToSearching);
     GetNodeAttribute(CPFA,     "ProbabilityOfReturningToNest",      ProbabilityOfReturningToNest);
     GetNodeAttribute(CPFA,     "UninformedSearchVariation",         USV_InDegrees);
@@ -76,29 +71,9 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
     GetNodeAttribute(simNode,  "MaxSimTime",                        MaxSimTime);
     GetNodeAttribute(simNode,  "VariableSeed",                      VariableSeed);
     GetNodeAttribute(simNode,  "OutputData",                        OutputData);
-    GetNodeAttribute(simNode,  "NestPosition",                      NestPosition);
-    GetNodeAttribute(simNode,  "NestRadius",                        NestRadius);
-    GetNodeAttribute(simNode,  "FoodRadius",                        FoodRadius);
-    GetNodeAttribute(simNode,  "FoodDistribution",                  FoodDistribution);
-    GetNodeAttribute(random,   "FoodItemCount",                     FoodItemCount);
-    GetNodeAttribute(cluster,  "NumberOfClusters",                  NumberOfClusters);
-    GetNodeAttribute(cluster,  "ClusterWidthX",                     ClusterWidthX);
-    GetNodeAttribute(cluster,  "ClusterLengthY",                    ClusterLengthY);
-    GetNodeAttribute(powerLaw, "PowerRank",                         PowerRank);
-    */
-
-    /* Initialize all loop functions variables from the XML file. */
-    GetNodeAttribute(CPFA,     "ProbabilityOfSwitchingToSearching", ProbabilityOfSwitchingToSearching);
-    GetNodeAttribute(CPFA,     "ProbabilityOfReturningToNest",      ProbabilityOfReturningToNest);
-    GetNodeAttribute(CPFA,     "UninformedSearchVariation",         USV_InDegrees);
-    GetNodeAttribute(CPFA,     "RateOfInformedSearchDecay",         RateOfInformedSearchDecay);
-    GetNodeAttribute(CPFA,     "RateOfSiteFidelity",                RateOfSiteFidelity);
-    GetNodeAttribute(CPFA,     "RateOfLayingPheromone",             RateOfLayingPheromone);
-    GetNodeAttribute(CPFA,     "RateOfPheromoneDecay",              RateOfPheromoneDecay);
-    GetNodeAttribute(simNode,  "MaxSimCounter",                     MaxSimCounter);
-    GetNodeAttribute(simNode,  "MaxSimTime",                        MaxSimTime);
-    GetNodeAttribute(simNode,  "VariableSeed",                      VariableSeed);
-    GetNodeAttribute(simNode,  "OutputData",                        OutputData);
+    GetNodeAttribute(simNode,  "TrailDensityRate",                  TrailDensityRate);
+    GetNodeAttribute(simNode,  "DrawTrails",                        DrawTrails);
+    GetNodeAttribute(simNode,  "DrawTargetRays",                    DrawTargetRays);
     GetNodeAttribute(simNode,  "NestPosition",                      NestPosition);
     GetNodeAttribute(simNode,  "NestRadius",                        NestRadius);
     GetNodeAttribute(simNode,  "FoodRadius",                        FoodRadius);
@@ -110,39 +85,24 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
     GetNodeAttribute(powerLaw, "PowerRank",                         PowerRank);
 
     /* Convert and calculate additional values. */
-    /*
     MaxSimTime                = MaxSimTime * TicksPerSecond;
     RandomSeed                = simulator->GetRandomSeed();
     TicksPerSecond            = physicsEngine->GetInverseSimulationClockTick();
     UninformedSearchVariation = ToRadians(USV_InDegrees);
     NestRadiusSquared         = (NestRadius) * (NestRadius);
-    FoodRadiusSquared         = (FoodRadius + 0.04) * (FoodRadius + 0.04);
-    SearchRadius              = (4.0 * FoodRadiusSquared);
-    */
 
-    /* Convert and calculate additional values. */
-    MaxSimTime                = MaxSimTime * TicksPerSecond;
-    RandomSeed                = simulator->GetRandomSeed();
-    TicksPerSecond            = physicsEngine->GetInverseSimulationClockTick();
-    UninformedSearchVariation = ToRadians(USV_InDegrees);
-    NestRadiusSquared         = (NestRadius) * (NestRadius);
+    /* Compensate for the radius of the footbot and scale the search radius to the size of food. */
     FoodRadiusSquared         = (FoodRadius + 0.04) * (FoodRadius + 0.04);
     SearchRadius              = (4.0 * FoodRadiusSquared);
 
-    /*
-    ForageRangeX.Set(rangeX.GetX() + (2.0 * FoodRadius), rangeX.GetY() - (2.0 * FoodRadius));
-    ForageRangeY.Set(rangeY.GetX() + (2.0 * FoodRadius), rangeY.GetY() - (2.0 * FoodRadius));
 
-    RNG = CRandom::CreateRNG("argos");
-    RNG = RNG;
-    */
-
+    /* Define the boundary of the arena where iAnts can search */
     ForageRangeX.Set(rangeX.GetX() + (2.0 * FoodRadius), rangeX.GetY() - (2.0 * FoodRadius));
     ForageRangeY.Set(rangeY.GetX() + (2.0 * FoodRadius), rangeY.GetY() - (2.0 * FoodRadius));
 
     RNG = CRandom::CreateRNG("argos");
 
-    /* Store the iAnts in a more friendly, human-readable structure. */
+    /* Send a pointer to this loop functions object to each controller. */
     CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
     CSpace::TMapPerType::iterator it;
 
@@ -150,36 +110,17 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
         CFootBotEntity& footBot = *any_cast<CFootBotEntity*>(it->second);
         iAnt_controller& c = dynamic_cast<iAnt_controller&>(footBot.GetControllableEntity().GetController());
 
-        // all iAnts get a pointer to the iAnt_loop_functions object
         c.SetLoopFunctions(this);
     }
 
     /* Set up the food distribution based on the XML file. */
     SetFoodDistribution();
-    // SetFoodDistribution();
 }
 
 /*****
  * This hook function is called before iAnts call their ControlStep() function.
  *****/
 void iAnt_loop_functions::PreStep() {
-
-    /*
-    SimTime++;
-    UpdatePheromoneList();
-
-    if(SimTime > ResourceDensityDelay) {
-        for(size_t i = 0; i < FoodColoringList.size(); i++) {
-            FoodColoringList[i] = CColor::BLACK;
-        }
-    }
-
-    if(FoodList.size() == 0) {
-        FidelityList.clear();
-        TargetRayList.clear();
-        PheromoneList.clear();
-    }
-    */
 
     SimTime++;
     UpdatePheromoneList();
