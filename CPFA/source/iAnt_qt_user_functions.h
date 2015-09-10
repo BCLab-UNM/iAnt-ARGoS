@@ -34,6 +34,7 @@ class iAnt_qt_user_functions : public CQTOpenGLUserFunctions {
         void DrawFidelity();
         void DrawPheromones();
         void DrawTargetRays();
+		void DrawRobotID(CFootBotEntity& entity); //qilu 09/04
 
         /*****
          * The iAnt_data object contains shared variables used by

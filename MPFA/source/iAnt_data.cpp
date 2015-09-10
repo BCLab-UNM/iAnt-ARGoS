@@ -7,6 +7,10 @@ iAnt_data::iAnt_data() :
 
     SimTime(0),
     //MaxSimTime(28800), //qilu 07/19
+    currNumCollision(0), //qilu 08/19
+    lastNumCollision(0), //qilu 08/19
+    currNumCollectedFood(0), //qilu 08/19
+    lastNumCollectedFood(0), //qilu 08/19
     TicksPerSecond(16),
     ResourceDensityDelay(0),
     RandomSeed(1337),
@@ -48,8 +52,7 @@ iAnt_data::iAnt_data() :
     FoodRadius(0.05),
     FoodRadiusSquared(0.0025),
     ForageRangeX(-10.0, 10.0),
-    ForageRangeY(-10.0, 10.0){
-    }
+    ForageRangeY(-10.0, 10.0){}
 
 /*****
  *

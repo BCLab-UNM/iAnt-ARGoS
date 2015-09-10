@@ -25,10 +25,16 @@ class iAnt_data {
         void SetFoodDistribution();
         
         /* iAnt simulation data */
-        size_t ArenaX; //qilu 06/07
+		size_t ArenaX; //qilu 06/07
         size_t ArenaY;
         size_t SimTime;
-        //size_t MaxSimTime; //qi lu07/19
+        size_t MaxSimTime; //qilu 07/19
+		size_t currNumCollision; //qilu 08/19
+        size_t lastNumCollision; //qilu 08/19
+        size_t lastNumCollectedFood; //qilu 08/19
+        size_t currNumCollectedFood; //qilu 08/19
+        size_t curr_time_in_minutes; //qilu 08/19
+        size_t last_time_in_minutes;//qilu 08/19
         size_t TicksPerSecond;
         size_t ResourceDensityDelay;
 
@@ -81,27 +87,31 @@ class iAnt_data {
         CVector2         NestPosition_2;//qilu
         CVector2         NestPosition_3;//qilu
         
-//        CVector2         NestPosition_4;//qilu 06/07
-//        CVector2         NestPosition_5;//qilu
-//        CVector2         NestPosition_6;//qilu
-//        CVector2         NestPosition_7;//qilu
-//    
-//        CVector2         NestPosition_8;//qilu 06/04
-//        CVector2         NestPosition_9;//qilu
-//        CVector2         NestPosition_10;//qilu
-//        CVector2         NestPosition_11;//qilu
-//        CVector2         NestPosition_12;//qilu 06/07
-//        CVector2         NestPosition_13;//qilu
-//        CVector2         NestPosition_14;//qilu
-//        CVector2         NestPosition_15;//qilu
+        //CVector2         NestPosition_4;//qilu 06/07
+        //CVector2         NestPosition_5;//qilu
+        //CVector2         NestPosition_6;//qilu
+        //CVector2         NestPosition_7;//qilu
+    
+        //CVector2         NestPosition_8;//qilu 06/04
+        //CVector2         NestPosition_9;//qilu
+        //CVector2         NestPosition_10;//qilu
+        //CVector2         NestPosition_11;//qilu
+        //CVector2         NestPosition_12;//qilu 06/07
+        //CVector2         NestPosition_13;//qilu
+        //CVector2         NestPosition_14;//qilu
+        //CVector2         NestPosition_15;//qilu
     
         vector<iAnt_nest> nests; //qilu 07/05 
         CVector2         targetPosition; //qilu 06/04 needed?
         /* position vectors */
         vector<CVector2>       FoodList;
         vector<CColor>         FoodColoringList;
-        map<string, CVector2>  FidelityList; //qilu 07/16
+        //vector<CVector2>       FidelityList;
+		map<string, CVector2>  FidelityList; //qilu 07/17
+        vector<iAnt_pheromone> PheromoneList;
         vector<CRay3>          TargetRayList;
+		vector<size_t>			CollisionList;//qilu 08/19
+        vector<size_t>			ForageList; //qilu 08/19
 
     private:
 
@@ -112,7 +122,6 @@ class iAnt_data {
         bool IsOutOfBounds(CVector2 p, size_t length, size_t width);
         bool IsCollidingWithNest(CVector2 p);
         bool IsCollidingWithFood(CVector2 p);
-    
 };
 
 #endif /* IANT_DATA_H_ */

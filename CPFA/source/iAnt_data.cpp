@@ -6,7 +6,11 @@
 iAnt_data::iAnt_data() :
 
     SimTime(0),
-    //MaxSimTime(28800), //qilu 07/19 no need 
+    //MaxSimTime(28800), //qilu 07/19
+    currNumCollision(0), //qilu 08/19
+    lastNumCollision(0), //qilu 08/19
+    currNumCollectedFood(0), //qilu 08/19
+    lastNumCollectedFood(0), //qilu 08/19
     TicksPerSecond(16),
     ResourceDensityDelay(0),
     RandomSeed(1337),
@@ -40,24 +44,20 @@ iAnt_data::iAnt_data() :
     PullProbability(0.1),
     WaitProbability(0.1),
     */
-
     NestRadius(0.25),
     NestRadiusSquared(0.0625),
     NestElevation(0.01),
-
+	
     SearchRadius(0.0),
     FoodRadius(0.05),
     FoodRadiusSquared(0.0025),
-
     ForageRangeX(-10.0, 10.0),
-    ForageRangeY(-10.0, 10.0)
-
-{}
+    ForageRangeY(-10.0, 10.0){}
 
 /*****
  *
  *****/
-void iAnt_data::UpdatePheromoneList() {
+ void iAnt_data::UpdatePheromoneList() {
  
    vector<iAnt_pheromone> new_p_list;
 
@@ -73,9 +73,6 @@ void iAnt_data::UpdatePheromoneList() {
     PheromoneList = new_p_list;
 }
 
-/*****
- *
- *****/
 void iAnt_data::SetFoodDistribution() {
     switch(FoodDistribution) {
         case 0:

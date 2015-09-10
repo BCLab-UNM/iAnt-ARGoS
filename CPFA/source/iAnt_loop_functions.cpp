@@ -11,7 +11,7 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
     CVector3        ArenaSize     = GetSpace().GetArenaSize();
     CVector2        rangeX        = CVector2(-ArenaSize.GetX()/2.0, ArenaSize.GetX()/2.0);
     CVector2        rangeY        = CVector2(-ArenaSize.GetY()/2.0, ArenaSize.GetY()/2.0);
-	data.ArenaX = ArenaSize.GetX();//qilu 06/07
+    data.ArenaX = ArenaSize.GetX();//qilu 06/07
     data.ArenaY = ArenaSize.GetY();
     CDegrees        USV_InDegrees;
 
@@ -49,10 +49,10 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
     GetNodeAttribute(cluster,  "ClusterWidthX",    data.ClusterWidthX);
     GetNodeAttribute(cluster,  "ClusterLengthY",   data.ClusterLengthY);
     GetNodeAttribute(powerLaw, "PowerRank",        data.PowerRank);
-	GetNodeAttribute(powerLaw, "PowerLawCopies",      data.PowerLawCopies);//qilu 08/14/2015
-	
+    GetNodeAttribute(powerLaw, "PowerLawCopies",      data.PowerLawCopies);//qilu 08/14/2015
+
     /* Convert and calculate additional values. */
-    //data.MaxSimTime                = simulator->GetMaxSimulationClock(); //qilu 07/19
+    //data.MaxSimTime                = simulator->GetMaxSimulationClock(); //qilu 07/19 
     data.RandomSeed                = simulator->GetRandomSeed();
     data.TicksPerSecond            = physicsEngine->GetInverseSimulationClockTick();
     data.UninformedSearchVariation = ToRadians(USV_InDegrees);
@@ -67,8 +67,7 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
 
     RNG = CRandom::CreateRNG("argos");
     data.RNG = RNG;
-
-    /* Store the iAnts in a more friendly, human-readable structure. */
+	/* Store the iAnts in a more friendly, human-readable structure. */
     CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
     CSpace::TMapPerType::iterator it;
 
@@ -79,9 +78,11 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
         iAnts.push_back(&c);
         c.SetData(&data);    // all iAnts get a pointer to the iAnt_data object
     }
-
     /* Set up the food distribution based on the XML file. */
     data.SetFoodDistribution();
+	data.CollisionList.clear(); //qilu 08/19
+    data.ForageList.clear(); //qilu 08/19
+    data.last_time_in_minutes=0; //qilu 08/19
 }
 
 /*****
@@ -89,7 +90,18 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
  *****/
 void iAnt_loop_functions::PreStep() {
     data.SimTime++;
-    data.UpdatePheromoneList();
+	//qilu 08/19
+    data.curr_time_in_minutes = floor(floor(data.SimTime/data.TicksPerSecond)/60);
+    if(data.curr_time_in_minutes - data.last_time_in_minutes==1){
+		data.CollisionList.push_back(data.currNumCollision - data.lastNumCollision);
+		data.lastNumCollision = data.currNumCollision;
+				
+		data.ForageList.push_back(data.currNumCollectedFood - data.lastNumCollectedFood);
+		data.lastNumCollectedFood = data.currNumCollectedFood;
+		data.last_time_in_minutes++;
+    }
+    // end qilu 08/19 
+    data.UpdatePheromoneList();//qilu 07/05
 
     if(data.SimTime > data.ResourceDensityDelay) {
         for(size_t i = 0; i < data.FoodColoringList.size(); i++) {
@@ -124,25 +136,37 @@ void iAnt_loop_functions::PostExperiment() {
         // This file is created in the directory where you run ARGoS
         // it is always created or appended to, never overwritten, i.e. ios::app
         ofstream dataOutput("iAntTagData.txt", ios::app);
-
-        // output to file
+		// output to file
         if(dataOutput.tellp() == 0) {
-            dataOutput << "tags_collected, time_in_minutes, random_seed\n";
+            dataOutput << "tags_collected, collisions, time_in_minutes, random_seed\n";//qilu 08/18
         }
 
         dataOutput << collectedFood << ", ";
-        dataOutput << time_in_minutes << ", " << data.RandomSeed << endl;
+        dataOutput << data.currNumCollision <<", "<< time_in_minutes << ", " << data.RandomSeed << endl;//qilu 08/19
         dataOutput.close();
+		//qilu 08/19
+	    ofstream forageDataOutput("ForageData.txt", ios::app);
+		if(data.ForageList.size()!=0) forageDataOutput<<"Forage: "<< data.ForageList[0];
+        for(size_t i=1; i< data.ForageList.size(); i++) forageDataOutput<<", "<<data.ForageList[i];
+        forageDataOutput<<"\n";
+        forageDataOutput.close();
+        
+        ofstream collisonDataOutput("CollisonData.txt", ios::app);
+        if(data.CollisionList.size()!=0) collisonDataOutput<<"Collision: "<< data.CollisionList[0];
+        for(size_t i=1; i< data.CollisionList.size(); i++) collisonDataOutput<<", "<<data.CollisionList[i];
+        collisonDataOutput<<"\n";
+        collisonDataOutput.close();
+        //qilu 08/19
     }
 
     // output to ARGoS GUI
     if(data.SimCounter == 0) {
-        LOG << "\ntags_collected, time_in_minutes, random_seed\n";
+        LOG << "\ntags_collected, collisions, time_in_minutes, random_seed\n"; //qilu 08/18
         LOG << collectedFood << ", ";
-        LOG << time_in_minutes << ", " << data.RandomSeed << endl;
+        LOG << data.currNumCollision <<", "<<time_in_minutes << ", " << data.RandomSeed << endl; //qilu 08/19
     } else {
         LOG << collectedFood << ", ";
-        LOG << time_in_minutes << ", " << data.RandomSeed << endl;
+        LOG << data.currNumCollision <<", "<< time_in_minutes << ", " << data.RandomSeed << endl; //qilu 08/19
 
         /*
         ifstream dataInput("iAntTagData.txt");
@@ -166,7 +190,7 @@ void iAnt_loop_functions::PostExperiment() {
 void iAnt_loop_functions::Reset() {
     if(data.VariableSeed == 1) GetSimulator().SetRandomSeed(++data.RandomSeed);
 
-    //GetSimulator().Reset();
+    GetSimulator().Reset();
     GetSpace().Reset();
     data.SimTime = 0;
     data.ResourceDensityDelay = 0;
@@ -188,21 +212,22 @@ void iAnt_loop_functions::Reset() {
  *****/
 bool iAnt_loop_functions::IsExperimentFinished() {
     bool isFinished = false;
-	for(size_t i = 0; i < iAnts.size(); i++) {//qilu 06/07
+    for(size_t i = 0; i < iAnts.size(); i++) {//qilu 06/07
         if(iAnts[i]->IsHoldingFood() == true){
             isFinished=false;
             return isFinished;}
     }
-    //if(data.FoodList.size() == 0 || data.SimTime >= data.MaxSimTime) {//qilu 07/19 no need the MaxSimTime
-    if(data.FoodList.size() == 0) {
-        isFinished = true;
-    }
-
+    
+    //if(data.FoodList.size() == 0 || data.SimTime >= data.MaxSimTime) { //qilu 07/19 no need MaxSimTime
+    if(data.FoodList.size() == 0) 
+    isFinished = true;
+    
+    
     if(isFinished == true && data.MaxSimCounter > 1) {
         size_t newSimCounter = data.SimCounter + 1;
         size_t newMaxSimCounter = data.MaxSimCounter - 1;
 
-        // LOG << endl << "FINISHED RUN: " << data.SimCounter << endl;
+        //LOG << endl << "FINISHED RUN: " << data.SimCounter << endl;
 
         PostExperiment();
         Reset();
@@ -211,8 +236,7 @@ bool iAnt_loop_functions::IsExperimentFinished() {
         data.MaxSimCounter = newMaxSimCounter;
         isFinished         = false;
     }
-
-    return isFinished;
+	return isFinished;
 }
 
 REGISTER_LOOP_FUNCTIONS(iAnt_loop_functions, "iAnt_loop_functions")

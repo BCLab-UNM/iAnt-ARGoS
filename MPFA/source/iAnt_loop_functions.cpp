@@ -56,18 +56,42 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
     iAnt_nest nest3=iAnt_nest(nestPosition);
     data.nests.push_back(nest3);
     
-//    GetNodeAttribute(simNode, "nestPosition_4"   , data.NestPositions[4]     );//nestPosition_0 is defined in iAnt_data.h
-//    GetNodeAttribute(simNode, "nestPosition_5"    , data.NestPositions[5]    );
-//    GetNodeAttribute(simNode, "nestPosition_6"    , data.NestPositions[6]    );//nestPosition_0 is defined in iAnt_data.h
-//    GetNodeAttribute(simNode, "nestPosition_7"    , data.NestPositions[7]    );
-//    GetNodeAttribute(simNode, "nestPosition_8"   , data.NestPositions[8]     );//nestPosition_0 is defined in iAnt_data.h
-//    GetNodeAttribute(simNode, "nestPosition_9"    , data.NestPositions[9]    );
-//    GetNodeAttribute(simNode, "nestPosition_10"    , data.NestPositions[10]    );//nestPosition_0 is defined in iAnt_data.h
-//    GetNodeAttribute(simNode, "nestPosition_11"    , data.NestPositions[11]    );
-//    GetNodeAttribute(simNode, "nestPosition_12"   , data.NestPositions[12]     );//nestPosition_0 is defined in iAnt_data.h
-//    GetNodeAttribute(simNode, "nestPosition_13"    , data.NestPositions[13]    );
-//    GetNodeAttribute(simNode, "nestPosition_14"    , data.NestPositions[14]    );//nestPosition_0 is defined in iAnt_data.h
-//    GetNodeAttribute(simNode, "nestPosition_15"    , data.NestPositions[15]    );
+    //GetNodeAttribute(simNode, "nestPosition_4"   , nestPosition     );
+    //iAnt_nest nest4=iAnt_nest(nestPosition);
+    //data.nests.push_back(nest4);
+    //GetNodeAttribute(simNode, "nestPosition_5"    , nestPosition    );
+    //iAnt_nest nest5=iAnt_nest(nestPosition);
+    //data.nests.push_back(nest5);
+    //GetNodeAttribute(simNode, "nestPosition_6"    , nestPosition    );
+    //iAnt_nest nest6=iAnt_nest(nestPosition);
+    //data.nests.push_back(nest6);
+    //GetNodeAttribute(simNode, "nestPosition_7"    , nestPosition    );
+    //iAnt_nest nest7=iAnt_nest(nestPosition);
+    //data.nests.push_back(nest7);
+    //GetNodeAttribute(simNode, "nestPosition_8"   , nestPosition     );
+    //iAnt_nest nest8=iAnt_nest(nestPosition);
+    //data.nests.push_back(nest8);
+    //GetNodeAttribute(simNode, "nestPosition_9"    , nestPosition    );
+    //iAnt_nest nest9=iAnt_nest(nestPosition);
+    //data.nests.push_back(nest9);
+    //GetNodeAttribute(simNode, "nestPosition_10"    , nestPosition    );
+    //iAnt_nest nest10=iAnt_nest(nestPosition);
+    //data.nests.push_back(nest10);
+    //GetNodeAttribute(simNode, "nestPosition_11"    , nestPosition    );
+    //iAnt_nest nest11=iAnt_nest(nestPosition);
+    //data.nests.push_back(nest11);
+    //GetNodeAttribute(simNode, "nestPosition_12"   , nestPosition     );
+    //iAnt_nest nest12=iAnt_nest(nestPosition);
+    //data.nests.push_back(nest12);
+    //GetNodeAttribute(simNode, "nestPosition_13"    , nestPosition    );
+    //iAnt_nest nest13=iAnt_nest(nestPosition);
+    //data.nests.push_back(nest13);
+    //GetNodeAttribute(simNode, "nestPosition_14"    , nestPosition    );
+    //iAnt_nest nest14=iAnt_nest(nestPosition);
+    //data.nests.push_back(nest14);
+    //GetNodeAttribute(simNode, "nestPosition_15"    , nestPosition    );
+    //iAnt_nest nest15=iAnt_nest(nestPosition);
+    //data.nests.push_back(nest15);
     
     GetNodeAttribute(simNode,  "NestRadius",       data.NestRadius);
     GetNodeAttribute(simNode,  "FoodRadius",       data.FoodRadius);
@@ -77,8 +101,7 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
     GetNodeAttribute(cluster,  "ClusterWidthX",    data.ClusterWidthX);
     GetNodeAttribute(cluster,  "ClusterLengthY",   data.ClusterLengthY);
     GetNodeAttribute(powerLaw, "PowerRank",        data.PowerRank);
-    GetNodeAttribute(powerLaw, "PowerLawCopies",      data.PowerLawCopies);//qilu 08/14/2015
-    
+    GetNodeAttribute(powerLaw, "PowerLawCopies",        data.PowerLawCopies); //qilu 07/14/2015
     /* Convert and calculate additional values. */
     //data.MaxSimTime                = simulator->GetMaxSimulationClock(); //qilu 07/19 
     data.RandomSeed                = simulator->GetRandomSeed();
@@ -109,6 +132,9 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
     }
     /* Set up the food distribution based on the XML file. */
     data.SetFoodDistribution();
+	data.CollisionList.clear(); //qilu 08/19
+    data.ForageList.clear(); //qilu 08/19
+    data.last_time_in_minutes=0; //qilu 08/19
 }
 
 /*****
@@ -116,6 +142,17 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
  *****/
 void iAnt_loop_functions::PreStep() {
     data.SimTime++;
+	//qilu 08/19
+    data.curr_time_in_minutes = floor(floor(data.SimTime/data.TicksPerSecond)/60);
+    if(data.curr_time_in_minutes - data.last_time_in_minutes==1){
+		data.CollisionList.push_back(data.currNumCollision - data.lastNumCollision);
+		data.lastNumCollision = data.currNumCollision;
+				
+		data.ForageList.push_back(data.currNumCollectedFood - data.lastNumCollectedFood);
+		data.lastNumCollectedFood = data.currNumCollectedFood;
+		data.last_time_in_minutes++;
+    }
+    // end qilu 08/19 
     data.UpdatePheromoneList();//qilu 07/05
 
     if(data.SimTime > data.ResourceDensityDelay) {
@@ -154,22 +191,35 @@ void iAnt_loop_functions::PostExperiment() {
         ofstream dataOutput("iAntTagData.txt", ios::app);
 		// output to file
         if(dataOutput.tellp() == 0) {
-            dataOutput << "tags_collected, time_in_minutes, random_seed\n";
+            dataOutput << "tags_collected, collisions, time_in_minutes, random_seed\n";//qilu 08/18
         }
 
         dataOutput << collectedFood << ", ";
-        dataOutput << time_in_minutes << ", " << data.RandomSeed << endl;
+        dataOutput << data.currNumCollision <<", "<< time_in_minutes << ", " << data.RandomSeed << endl;//qilu 08/19
         dataOutput.close();
+		//qilu 08/19
+	    ofstream forageDataOutput("ForageData.txt", ios::app);
+		if(data.ForageList.size()!=0) forageDataOutput<<"Forage: "<< data.ForageList[0];
+        for(size_t i=1; i< data.ForageList.size(); i++) forageDataOutput<<", "<<data.ForageList[i];
+        forageDataOutput<<"\n";
+        forageDataOutput.close();
+        
+        ofstream collisonDataOutput("CollisonData.txt", ios::app);
+        if(data.CollisionList.size()!=0) collisonDataOutput<<"Collision: "<< data.CollisionList[0];
+        for(size_t i=1; i< data.CollisionList.size(); i++) collisonDataOutput<<", "<<data.CollisionList[i];
+        collisonDataOutput<<"\n";
+        collisonDataOutput.close();
+        //qilu 08/19
     }
 
     // output to ARGoS GUI
     if(data.SimCounter == 0) {
-        LOG << "\ntags_collected, time_in_minutes, random_seed\n";
+        LOG << "\ntags_collected, collisions, time_in_minutes, random_seed\n"; //qilu 08/18
         LOG << collectedFood << ", ";
-        LOG << time_in_minutes << ", " << data.RandomSeed << endl;
+        LOG << data.currNumCollision <<", "<<time_in_minutes << ", " << data.RandomSeed << endl; //qilu 08/19
     } else {
         LOG << collectedFood << ", ";
-        LOG << time_in_minutes << ", " << data.RandomSeed << endl;
+        LOG << data.currNumCollision <<", "<< time_in_minutes << ", " << data.RandomSeed << endl; //qilu 08/19
 
     }
 

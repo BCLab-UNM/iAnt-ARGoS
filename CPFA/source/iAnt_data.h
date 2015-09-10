@@ -19,14 +19,20 @@ class iAnt_data {
         iAnt_data();
 
         /* public helper functions */
-        void UpdatePheromoneList();
+        void UpdatePheromoneList(); //qilu 07/05/2015
         void SetFoodDistribution();
-
+        
         /* iAnt simulation data */
 		size_t ArenaX; //qilu 06/07
         size_t ArenaY;
         size_t SimTime;
         size_t MaxSimTime; //qilu 07/19
+		size_t currNumCollision; //qilu 08/19
+        size_t lastNumCollision; //qilu 08/19
+        size_t lastNumCollectedFood; //qilu 08/19
+        size_t currNumCollectedFood; //qilu 08/19
+        size_t curr_time_in_minutes; //qilu 08/19
+        size_t last_time_in_minutes;//qilu 08/19
         size_t TicksPerSecond;
         size_t ResourceDensityDelay;
 
@@ -83,6 +89,8 @@ class iAnt_data {
 		map<string, CVector2>  FidelityList; //qilu 07/17
         vector<iAnt_pheromone> PheromoneList;
         vector<CRay3>          TargetRayList;
+		vector<size_t>			CollisionList;//qilu 08/19
+        vector<size_t>			ForageList; //qilu 08/19
 
     private:
 

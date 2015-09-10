@@ -11,6 +11,8 @@
 #include <argos3/plugins/robots/generic/control_interface/ci_differential_steering_actuator.h>
 #include <argos3/plugins/robots/foot-bot/simulator/footbot_entity.h>
 #include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_proximity_sensor.h>
+/* Definition of the LEDs actuator */
+#include <argos3/plugins/robots/generic/control_interface/ci_leds_actuator.h>//qilu 09/04
 
 using namespace argos;
 using namespace std;
@@ -49,8 +51,9 @@ class iAnt_controller : public CCI_Controller {
         CCI_DifferentialSteeringActuator* motorActuator;
         CCI_FootBotProximitySensor*       proximitySensor;
         iAnt_nest*		ClosestNest;
-        string 			controllerID;//qilu 07/16
-        
+		CCI_LEDsActuator* 				  m_pcLEDs; //qilu 09/04
+		string 			controllerID;//qilu 07/17
+		size_t		collisionOccurTime;//qilu 09/07
 
         /* iAnt controller parameters */
         Real             DistanceTolerance;
@@ -69,7 +72,6 @@ class iAnt_controller : public CCI_Controller {
         vector<CVector2> trailToFollow;
         bool             isHoldingFood;
         bool             isInformed;
-        //bool             isUsingSiteFidelity;
         size_t           searchTime;
         size_t           waitTime;
         size_t           collisionDelay;
@@ -96,7 +98,9 @@ class iAnt_controller : public CCI_Controller {
 
         /* navigation helper functions */
         CRadians GetHeading();
-        bool     IsCollisionDetected();
+        //bool     IsCollisionDetected();//qilu 09/05
+        size_t     IsCollisionDetected();//qilu 09/05
+        bool		isCollisionOnWall();//qilu 09/06
         void     ApproachTheTarget();
         void     SetTargetInBounds(CVector2 newTarget);
     

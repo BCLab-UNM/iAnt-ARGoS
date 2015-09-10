@@ -2,7 +2,7 @@
 <!-- cluster -->
     <!-- FRAMEWORK -->
     <framework>
-		<experiment length="7200" random_seed="964272" ticks_per_second="16"/>
+		<experiment length="1200" random_seed="964272" ticks_per_second="16"/>
 	</framework>
 
     <!-- CONTROLLERS -->
@@ -11,6 +11,7 @@
 
             <actuators>
 				<differential_steering implementation="default"/>
+				<leds implementation="default" medium="leds" />
 			</actuators>
 
             <sensors>
@@ -21,9 +22,9 @@
             <!-- un-evolvable parameters -->
             <!-- remember: a footbot's radius = 8.5 cm / 0.085 m -->
             <!-- remember: an iAnt's radius   = 4.0 cm / 0.040 m -->
-            <params>
-				<iAnt_params AngleToleranceInDegrees="22.5" DistanceTolerance="0.01" RobotForwardSpeed="16.0" RobotRotationSpeed="13.3" SearchStepSize="0.175"/>
-			</params>
+           <params>
+				<iAnt_params AngleToleranceInDegrees="22.5" DistanceTolerance="0.01" SearchStepSize="0.175" RobotForwardSpeed="16.0" RobotRotationSpeed="13.3" />
+			</params>  
         </iAnt_controller>
     </controllers>
 
@@ -31,31 +32,46 @@
     <loop_functions label="iAnt_loop_functions" library="build/source/libiAnt_loop_functions.so">
 
         <!-- evolvable parameters -->
-        <MPFA ProbabilityOfReturningToNest="0.0009405957534909248" ProbabilityOfSwitchingToSearching="0.2041456252336502" RateOfInformedSearchDecay="0.2497878670692444" RateOfLayingPheromone="2.24421238899231" RateOfPheromoneDecay="0.03821808844804764" RateOfSiteFidelity="2.5117506980896" UninformedSearchVariation="12.996437"/>
+        <MPFA ProbabilityOfReturningToNest="0.0009405957534909248" ProbabilityOfSwitchingToSearching="0.2041456252336502" 
+	RateOfInformedSearchDecay="0.2497878670692444" RateOfLayingPheromone="2.24421238899231" 
+	RateOfPheromoneDecay="0.03821808844804764" RateOfSiteFidelity="2.5117506980896" UninformedSearchVariation="12.996437"/>
 
-        <!-- un-evolvable environment variables -->
-        <simulation FoodDistribution="2" FoodRadius="0.02" MaxSimCounter="1" NestRadius="0.25" OutputData="1" VariableSeed="1" nestPosition_0="2.5 , 2.5" nestPosition_1="2.5 , -2.5" nestPosition_2="-2.5 , 2.5" nestPosition_3="-2.5 , -2.5"/>
+		<!-- un-evolvable environment variables -->
+        <simulation FoodDistribution="1" FoodRadius="0.02" MaxSimCounter="1" NestRadius="0.5" 
+	OutputData="1" VariableSeed="1" nestPosition_0="4, 4" nestPosition_1="4, -4" 
+	nestPosition_2="-4, 4" nestPosition_3="-4, -4" />
 
 		<!-- un-evolvable food distribution parameters -->
         <_0_FoodDistribution_Random FoodItemCount="256"/>
-        <_1_FoodDistribution_Cluster ClusterLengthY="8" ClusterWidthX="8" NumberOfClusters="16"/>
-        <_2_FoodDistribution_PowerLaw PowerRank="4" PowerLawCopies=2/>
+        <_1_FoodDistribution_Cluster ClusterLengthY="8" ClusterWidthX="8" NumberOfClusters="10"/>
+        <_2_FoodDistribution_PowerLaw PowerRank="4" PowerLawCopies="2"/>
 
     </loop_functions>
 
     <!-- ARENA -->
-    <arena center="0.0, 0.0, 0.0" size="10, 10, 0.0">
+    <arena center="0.0, 0.0, 0.0" size="16, 16, 1.0">
 
         <floor id="floor" pixels_per_meter="1" source="loop_functions"/>
 
         <distribute>
             <position max="5.0 , 5.0 , 0.0" method="uniform" min="-5.0 , -5.0 , 0.0"/>
             <orientation mean="0, 0, 0" method="gaussian" std_dev="360, 0, 0"/>
-            <entity max_trials="100" quantity="16">
+            <entity max_trials="100" quantity="48">
                 <foot-bot id="fb_0"><controller config="iAnt_c"/></foot-bot>
             </entity>
         </distribute>
-        
+	<box id="wall_north" size="16,0.1,0.5" movable="false">
+      <body position="0,8,0" orientation="0,0,0" />
+    </box>
+    <box id="wall_south" size="16,0.1,0.5" movable="false">
+      <body position="0,-8,0" orientation="0,0,0" />
+    </box>
+    <box id="wall_east" size="0.1,16,0.5" movable="false">
+      <body position="8,0,0" orientation="0,0,0" />
+    </box>
+    <box id="wall_west" size="0.1,16,0.5" movable="false">
+      <body position="-8,0,0" orientation="0,0,0" />
+    </box>
     </arena>
 
     <!-- PHYSICS ENGINE(S) -->

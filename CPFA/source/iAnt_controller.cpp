@@ -8,6 +8,7 @@ iAnt_controller::iAnt_controller() :
     compass(NULL),
     motorActuator(NULL),
     proximitySensor(NULL),
+	m_pcLEDs(NULL), //qilu 09/04
     DistanceTolerance(0.0),
     SearchStepSize(0.0),
     RobotForwardSpeed(0.0),
@@ -16,9 +17,11 @@ iAnt_controller::iAnt_controller() :
     data(NULL),
     isHoldingFood(false),
     isInformed(false),
+    //isUsingSiteFidelity(false),
     searchTime(0),
     waitTime(0),
     collisionDelay(0),
+    collisionOccurTime(0), //qilu 09/07
     resourceDensity(0),
     fidelity(10000,10000), //qilu 07/04
     updateFidelity(false), //qilu 07/29
@@ -39,13 +42,13 @@ void iAnt_controller::Init(TConfigurationNode& node) {
     motorActuator   = GetActuator<CCI_DSA>("differential_steering");
     compass         = GetSensor<CCI_PS>   ("positioning");
     proximitySensor = GetSensor<CCI_FBPS> ("footbot_proximity");
-
+	m_pcLEDs      = GetActuator<CCI_LEDsActuator>("leds"); //qilu 09/04
     /* Initialize the random number generator. */
     RNG = CRandom::CreateRNG("argos");
 
     /* CPFA node from the iAnt.argos XML file */
     TConfigurationNode iAnt_params = GetNode(node, "iAnt_params");
-
+    
     /* Temporary variable, XML accepts input in degrees, but that is converted
        and used as radians internally within ARGoS. */
     CDegrees angleInDegrees;
@@ -77,7 +80,7 @@ void iAnt_controller::ControlStep() {
     CVector3 position3d(GetPosition().GetX(), GetPosition().GetY(), 0.02);
     CVector3 target3d(GetTarget().GetX(), GetTarget().GetY(), 0.02);
     CRay3 targetRay(target3d, position3d);
-    data->TargetRayList.push_back(targetRay);
+    data->TargetRayList.push_back(targetRay); //qilu 07/13
 
     switch(CPFA) {
         /* state at the start or reset of a simulation, start departing() */
@@ -115,6 +118,10 @@ void iAnt_controller::Reset() {
     collisionDelay  = 0;
     CPFA            = INACTIVE;
 
+	data->currNumCollision =0; //qilu 09/03
+    data->lastNumCollision =0; //qilu 09/03
+	/* Set LED color */
+    m_pcLEDs->SetAllColors(CColor::BLACK); //qilu 09/04
     target   = data->NestPosition;
     fidelity = data->NestPosition;
 
@@ -162,6 +169,7 @@ void iAnt_controller::inactive() {
  * only interacted with during the searching() state.
  ****/
 void iAnt_controller::departing() {
+	m_pcLEDs->SetAllColors(CColor::GREEN); //qilu 09/04
     CVector2 distance = (GetPosition() - target);
     
     /* Are we informed? I.E. using site fidelity or pheromones. */
@@ -199,13 +207,14 @@ void iAnt_controller::departing() {
  * the departing() function, food WILL be picked up and returned to the nest.
  *****/
 void iAnt_controller::searching() {
+	m_pcLEDs->SetAllColors(CColor::BLUE); //qilu 09/04
     /* "scan" for food only every half of a second */
     if(data->SimTime % (data->TicksPerSecond / 2) != 0) {
         SetHoldingFood();
     }
 
     /* When not carrying food, calculate movement. */
-    if(IsHoldingFood() == false) {
+    if(!IsHoldingFood()) {
         CVector2 distance = GetPosition() - target;
         Real     random   = RNG->Uniform(CRange<Real>(0.0, 1.0));
 
@@ -213,18 +222,19 @@ void iAnt_controller::searching() {
 		if(random < data->ProbabilityOfReturningToNest) {
             //SetTargetInBounds(data->NestPosition);
             target = data->NestPosition;//qilu 07/16
-			CPFA = RETURNING;
+			
 			data->FidelityList.erase(controllerID); //qilu 07/27
 			fidelity= CVector2(10000,10000); //qilu 07/27
 			updateFidelity = false; //qilu 07/29
             //LOG<<"give up and return...."<<endl;
+			CPFA = RETURNING;
         }
         /* If we reached our target search location, set a new one. The 
            new search location calculation is different based on wether
            we are currently using informed or uninformed search. */
         else if(distance.SquareLength() < DistanceTolerance) {
             /* uninformed search */
-            if(isInformed == false) {
+            if(!isInformed) {
 				//LOG<<"uninformed search...."<<endl;
                 Real USCV = data->UninformedSearchVariation.GetValue();
                 Real rand = RNG->Gaussian(USCV);
@@ -262,7 +272,7 @@ void iAnt_controller::searching() {
 
     /* Adjust motor speeds and direction based on the target position. */
     ApproachTheTarget();
-    //LOG<<"Searching: approach..."<<endl;
+    //LOG<<"search: ApproachTheTarget...."<<endl;
 }
 
 /*****
@@ -271,6 +281,7 @@ void iAnt_controller::searching() {
  * up on searching and is returning to the nest.
  *****/
 void iAnt_controller::returning() {
+	m_pcLEDs->SetAllColors(CColor::RED); //qilu 09/04
     SetHoldingFood();
     CVector2 distance = GetPosition() - target;
 
@@ -359,7 +370,7 @@ void iAnt_controller::SetHoldingFood() {
 	//LOG<<"set holding food..."<<endl;
     /* Is the iAnt already holding food? */
     if(!IsHoldingFood()) {
-		//LOG<<"IsHoldingFood() == false"<<endl;
+
         /* No, the iAnt isn't holding food. Check if we have found food at our
            current position and update the food list if we have. */
 
@@ -380,9 +391,10 @@ void iAnt_controller::SetHoldingFood() {
 					newFoodList.push_back(data->FoodList[i]);
 					newFoodColoringList.push_back(CColor::BLACK);
 				}
-			}
-		}
-		if(j>0){ //qilu 07/19 avoid unneccessary iteration
+			} //end of for
+		}//end of if MPFA
+		
+		if(j>0){ //qilu 07/19 avoid redundant iteration
 			for( ; j < data->FoodList.size(); j++) {
 				newFoodList.push_back(data->FoodList[j]);
 				newFoodColoringList.push_back(CColor::BLACK);
@@ -392,6 +404,7 @@ void iAnt_controller::SetHoldingFood() {
         if(IsHoldingFood()) {
 			//LOG<<"We picked up food. Update the food list minus what we picked up..."<<endl;
             data->FoodList = newFoodList;
+            data->currNumCollectedFood++; //qilu 08/19
             //SetLocalResourceDensity(); //qilu 07/19 move this to the branch of discovered food in searching() 
         }
         /* We dropped off food. Clear the built-up pheromone trail. */
@@ -413,7 +426,6 @@ void iAnt_controller::SetHoldingFood() {
         CPFA = SHUTDOWN;
     }
 }
-
 /*****
  * Set the target to a random position along the edge of the arena.
  *****/
@@ -657,26 +669,52 @@ CRadians iAnt_controller::GetHeading() {
 bool iAnt_controller::IsInTheNest() {
     return ((GetPosition() - target).SquareLength() < data->NestRadiusSquared);
 }
-
+ bool iAnt_controller::isCollisionOnWall(){
+	 size_t maxX = data->ArenaX/2.0;
+	 size_t maxY = data->ArenaY/2.0;
+	 
+	 if (maxX - GetPosition().GetX()<=0.25 || GetPosition().GetX()+maxX<=0.25) 
+	 	 return true;
+	 if (maxY - GetPosition().GetY()<=0.25 || GetPosition().GetY()+maxY<=0.25) 
+		return true;
+	 return false;
+	 }
 /*****
  *
- *****/
-bool iAnt_controller::IsCollisionDetected() {
+  *****/
+//bool iAnt_controller::IsCollisionDetected() {
+size_t iAnt_controller::IsCollisionDetected() { //qilu 09/05
     typedef const CCI_FootBotProximitySensor::TReadings PR;
 	PR &proximityReadings = proximitySensor->GetReadings();
-	size_t collisionsDetected = 0;
-    CRadians angle;
-
-	for(size_t i = 0; i < proximityReadings.size(); i++) {
-        angle = proximityReadings[i].Angle;
-
-		if((proximityReadings[i].Value > 0.0) &&
-           (AngleToleranceInRadians.WithinMinBoundIncludedMaxBoundIncluded(angle))) {
-            collisionsDetected++;
-		}
-	}
-
-	return (collisionsDetected > 0) ? (true) : (false);
+	//size_t collisionsDetected = 0; //qilu 09/05
+    //CRadians angle;//qilu 09/05
+    CVector2 cAccumulator;
+	for(size_t i = 0; i < proximityReadings.size(); i++) 
+        //angle = proximityReadings[i].Angle; //qilu 09/05
+        cAccumulator += CVector2(proximityReadings[i].Value, proximityReadings[i].Angle);
+		//if((proximityReadings[i].Value > 0.0) &&
+        //   (AngleToleranceInRadians.WithinMinBoundIncludedMaxBoundIncluded(angle))) {
+        //    collisionsDetected++;
+		//}
+	cAccumulator /= proximityReadings.size();
+	CRadians angle = cAccumulator.Angle();
+	//return (collisionsDetected > 0) ? (true) : (false); //qilu 09/05
+	if(AngleToleranceInRadians.WithinMinBoundIncludedMaxBoundIncluded(angle) &&
+      cAccumulator.Length() < 0.05f) {
+      /* Go straight */
+      return 0;
+   }
+   else {
+      /* Turn, depending on the sign of the angle */
+      if(angle.GetValue() > 0.0f) {
+		  /* turn to the right*/
+         return 1;
+      }
+      else {
+         /* turn to the left*/
+         return -1;
+      }
+   }
 }
 
 /*****
@@ -753,33 +791,37 @@ bool iAnt_controller::IsCollisionDetected() {
 void iAnt_controller::ApproachTheTarget() {
     /* angle of the robot's direction relative to the arena's origin */
     CRadians angle1  = GetHeading();
-
-    /* angle from the target to the robot's position */
+	/* angle from the target to the robot's position */
     CRadians angle2  = (target - GetPosition()).Angle();
-
-    /* heading = angle1 - angle2 = 0.0 when the robot is facing its target */
+	/* heading = angle1 - angle2 = 0.0 when the robot is facing its target */
 	CRadians heading = (angle1 - angle2).SignedNormalize();
 
-	if(IsCollisionDetected() == true) {
-		collisionDelay = data->SimTime + (data->TicksPerSecond * 2);
-
-		/* turn left */
-		motorActuator->SetLinearVelocity(-RobotRotationSpeed, RobotRotationSpeed);
-
+	if(IsCollisionDetected()!=0) {
+		//LOG<<"Collision detected..."<<endl;
+		if (data->SimTime - collisionOccurTime >=60.0 && !isCollisionOnWall()){ //qilu 09/03
+			data->currNumCollision++; //qilu 08/19
+			//LOG<< "currNumCollision="<<data->currNumCollision<<endl; //qilu 08/19
+			collisionOccurTime = data->SimTime;//qilu 09/07
+		}
+		if(IsCollisionDetected()==1){
+			//LOG<<"turn right..."<<endl;
+			motorActuator->SetLinearVelocity(RobotRotationSpeed, 0);//qilu 09/05
+			}
+			else{
+				motorActuator->SetLinearVelocity(0, RobotRotationSpeed);//qilu 09/05
+				//LOG<<"turn left..."<<endl;
+				}
+		collisionDelay = data->SimTime + (data->TicksPerSecond * 2);	
+		
 	} else if((heading <= AngleToleranceInRadians.GetMin()) &&
               (collisionDelay < data->SimTime)) {
-
 		/* turn left */
 		motorActuator->SetLinearVelocity(-RobotRotationSpeed, RobotRotationSpeed);
-
 	} else if((heading >= AngleToleranceInRadians.GetMax()) &&
               (collisionDelay < data->SimTime)) {
-
 		/* turn right */
 		motorActuator->SetLinearVelocity(RobotRotationSpeed, -RobotRotationSpeed);
-
 	} else {
-
 		/* go straight */
 		motorActuator->SetLinearVelocity(RobotForwardSpeed, RobotForwardSpeed);
 	}
@@ -793,19 +835,26 @@ void iAnt_controller::ApproachTheTarget() {
  *****/
 void iAnt_controller::SetTargetInBounds(CVector2 t) {
     /* Bound the X value based on the forage range. */
-    if(t.GetX() > data->ForageRangeX.GetMax())
-        t = CVector2(data->ForageRangeX.GetMax(), t.GetY());
-
-    if(t.GetX() < data->ForageRangeX.GetMin())
-        t = CVector2(data->ForageRangeX.GetMin(), t.GetY());
+    //if(t.GetX() > data->ForageRangeX.GetMax()) //qilu 09/06
+    if(data->ForageRangeX.GetMax() - t.GetX()<=0.20)
+        t = CVector2(data->ForageRangeX.GetMax()-0.20, t.GetY()); //qilu 09/06, add 0.05 to make sure no target position on the boundary
+        //t = CVector2(data->ForageRangeX.GetMax(), t.GetY());
+        
+    //if(t.GetX() < data->ForageRangeX.GetMin())
+    if(t.GetX() - data->ForageRangeX.GetMin()<=0.20)
+        t = CVector2(data->ForageRangeX.GetMin()+0.20, t.GetY());
+        //t = CVector2(data->ForageRangeX.GetMin(), t.GetY());
 
     /* Bound the Y value based on the forage range. */
-    if(t.GetY() > data->ForageRangeY.GetMax())
-        t = CVector2(t.GetX(), data->ForageRangeY.GetMax());
+    //if(t.GetY() > data->ForageRangeY.GetMax())
+    if(data->ForageRangeY.GetMax()-t.GetY()<=0.20)
+        t = CVector2(t.GetX(), data->ForageRangeY.GetMax()-0.20);
+        //t= CVector2(t.GetX(), data->ForageRangeY.GetMax());
 
-    if(t.GetY() < data->ForageRangeY.GetMin())
-        t = CVector2(t.GetX(), data->ForageRangeY.GetMin());
-
+    //if(t.GetY() < data->ForageRangeY.GetMin())
+    if(t.GetY() - data->ForageRangeY.GetMin()<=0.20)
+        t = CVector2(t.GetX(), data->ForageRangeY.GetMin()+0.20);
+		//t = CVector2(t.GetX(), data->ForageRangeY.GetMin());
     /* Set the robot's target to the bounded t position. */
     target = t;
 }
