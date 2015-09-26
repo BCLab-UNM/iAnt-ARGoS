@@ -19,7 +19,8 @@ target_link_libraries(iAnt_loop_functions
                       iAnt_controller
                       iAnt_pheromone
                       iAnt_data
-                      argos3plugin_simulator_qtopengl)
+                      argos3plugin_simulator_qtopengl
+					${QT_LIBRARIES} ${GLUT_LIBRARY} ${OPENGL_LIBRARY})
 
 target_link_libraries(iAnt_data
                       iAnt_pheromone
