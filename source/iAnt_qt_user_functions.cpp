@@ -16,10 +16,33 @@ iAnt_qt_user_functions::iAnt_qt_user_functions() :
  *
  *****/
 void iAnt_qt_user_functions::DrawOnRobot(CFootBotEntity& entity) {
-    iAnt_controller& c = dynamic_cast<iAnt_controller&>(entity.GetControllableEntity().GetController());
+    //iAnt_controller& c = dynamic_cast<iAnt_controller&>(entity.GetControllableEntity().GetController());
+    DSA_controller& c = dynamic_cast<DSA_controller&>(entity.GetControllableEntity().GetController());
 
     if(c.IsHoldingFood() == true) {
         DrawCylinder(CVector3(0.0, 0.0, 0.3), CQuaternion(), loopFunctions.FoodRadius, 0.025, CColor::BLACK);
+    }
+
+    if(loopFunctions.DrawIDs == 1) {
+        /* Disable lighting, so it does not interfere with the chosen text color */
+        glDisable(GL_LIGHTING);
+        /* Disable face culling to be sure the text is visible from anywhere */
+        glDisable(GL_CULL_FACE);
+        /* Set the text color */
+        CColor cColor(CColor::BLACK);
+        glColor3ub(cColor.GetRed(), cColor.GetGreen(), cColor.GetBlue());
+
+        /* The position of the text is expressed wrt the reference point of the footbot
+         * For a foot-bot, the reference point is the center of its base.
+         * See also the description in
+         * $ argos3 -q foot-bot
+         */
+        GetOpenGLWidget().renderText(0.0, 0.0, 0.5,             // position
+                                    entity.GetId().c_str()); // text
+        /* Restore face culling */
+        glEnable(GL_CULL_FACE);
+        /* Restore lighting */
+        glEnable(GL_LIGHTING);
     }
 }
  
@@ -133,11 +156,24 @@ void iAnt_qt_user_functions::DrawPheromones() {
 }
 
 void iAnt_qt_user_functions::DrawTargetRays() {
-    for(size_t i = 0; i < loopFunctions.TargetRayList.size(); i++) {
-        DrawRay(loopFunctions.TargetRayList[i], CColor::BLUE);
+
+    CColor c = CColor::BLACK;
+
+    for(size_t j = 0; j < loopFunctions.TargetRayList.size(); j++) {
+
+        for(size_t i = 0; i < loopFunctions.TargetRayList[j].size(); i++) {
+            //if(j == 0) c = CColor::RED;
+            //else if(j == 1) c = CColor::YELLOW;
+
+            DrawRay(loopFunctions.TargetRayList[j][i], c);
+        }
+
     }
 
-    loopFunctions.TargetRayList.clear();
+    //if(loopFunctions.SimTime % (loopFunctions.TicksPerSecond * 10) == 0) {
+        // comment out for DSA, uncomment for CPFA
+        //loopFunctions.TargetRayList.clear();
+    //}
 }
 
 REGISTER_QTOPENGL_USER_FUNCTIONS(iAnt_qt_user_functions, "iAnt_qt_user_functions")

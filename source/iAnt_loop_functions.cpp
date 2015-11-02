@@ -11,9 +11,10 @@ iAnt_loop_functions::iAnt_loop_functions() :
     RandomSeed(0),
     SimCounter(0),
     MaxSimCounter(0),
-    VariableSeed(0),
+    VariableFoodPlacement(0),
     OutputData(0),
     DrawDensityRate(0),
+    DrawIDs(0),
     DrawTrails(0),
     DrawTargetRays(0),
     FoodDistribution(0),
@@ -69,10 +70,11 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
     GetNodeAttribute(CPFA,     "RateOfPheromoneDecay",              RateOfPheromoneDecay);
     GetNodeAttribute(simNode,  "MaxSimCounter",                     MaxSimCounter);
     GetNodeAttribute(simNode,  "MaxSimTime",                        MaxSimTime);
-    GetNodeAttribute(simNode,  "VariableSeed",                      VariableSeed);
+    GetNodeAttribute(simNode,  "VariableFoodPlacement",             VariableFoodPlacement);
     GetNodeAttribute(simNode,  "OutputData",                        OutputData);
     GetNodeAttribute(simNode,  "ResourceDensityDelay",              ResourceDensityDelay);
     GetNodeAttribute(simNode,  "DrawDensityRate",                   DrawDensityRate);
+    GetNodeAttribute(simNode,  "DrawIDs",                           DrawIDs);
     GetNodeAttribute(simNode,  "DrawTrails",                        DrawTrails);
     GetNodeAttribute(simNode,  "DrawTargetRays",                    DrawTargetRays);
     GetNodeAttribute(simNode,  "NestPosition",                      NestPosition);
@@ -86,6 +88,8 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
     GetNodeAttribute(cluster,  "ClusterLengthY",                    ClusterLengthY);
     GetNodeAttribute(powerLaw, "PowerRank",                         PowerRank);
 
+    RNG = CRandom::CreateRNG("argos");
+
     /* Convert and calculate additional values. */
     TicksPerSecond            = physicsEngine->GetInverseSimulationClockTick();
     RandomSeed                = simulator->GetRandomSeed();
@@ -98,14 +102,13 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
     FoodRadiusSquared         = (FoodRadius + 0.04) * (FoodRadius + 0.04);
     SearchRadius              = (4.0 * FoodRadiusSquared);
 
-
     /* Define the boundary of the arena where iAnts can search */
     ForageRangeX.Set(rangeX.GetX() + (2.0 * FoodRadius), rangeX.GetY() - (2.0 * FoodRadius));
     ForageRangeY.Set(rangeY.GetX() + (2.0 * FoodRadius), rangeY.GetY() - (2.0 * FoodRadius));
 
-    RNG = CRandom::CreateRNG("argos");
-
-    /* Send a pointer to this loop functions object to each controller. */
+// until dsa loop functions is written; disable this
+/*
+    // Send a pointer to this loop functions object to each controller.
     CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
     CSpace::TMapPerType::iterator it;
 
@@ -113,8 +116,32 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
         CFootBotEntity& footBot = *any_cast<CFootBotEntity*>(it->second);
         iAnt_controller& c = dynamic_cast<iAnt_controller&>(footBot.GetControllableEntity().GetController());
 
-        c.SetLoopFunctions(this);
+        // c.SetLoopFunctions(&this);
+        // set robot pattern vector, etc.
+        // MoveEntity(footBot.GetEmbodiedEntity(), c.GetStartPosition(), CQuaternion(), false);
+
     }
+*/
+
+/*
+    // Send a pointer to this loop functions object to each controller.
+    CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
+    CSpace::TMapPerType::iterator it;
+    size_t waitTime = 0;
+
+    for(it = footbots.begin(); it != footbots.end(); it++) {
+        CFootBotEntity& footBot = *any_cast<CFootBotEntity*>(it->second);
+        DSA_controller& c = dynamic_cast<DSA_controller&>(footBot.GetControllableEntity().GetController());
+
+        // linker problems... ?!
+        //c.SetStop(waitTime);
+        waitTime += 5;
+        // c.SetLoopFunctions(&this);
+        // set robot pattern vector, etc.
+        // MoveEntity(footBot.GetEmbodiedEntity(), c.GetStartPosition(), CQuaternion(), false);
+
+    }
+*/
 
     /* Set up the food distribution based on the XML file. */
     SetFoodDistribution();
@@ -161,29 +188,38 @@ void iAnt_loop_functions::PostExperiment() {
     if(OutputData == 1) {
         // This file is created in the directory where you run ARGoS
         // it is always created or appended to, never overwritten, i.e. ios::app
-        ofstream dataOutput("iAntTagData.txt", ios::app);
+        ofstream dataOutput("iAntTagData.csv", ios::app);
 
         // output to file
         if(dataOutput.tellp() == 0) {
-            dataOutput << "tags_collected, time_in_minutes, random_seed\n";
+            dataOutput << "tags_collected, time_in_minutes, random_seed, experiment_number\n";
         }
 
-        dataOutput << collectedFood << ", ";
-        dataOutput << time_in_minutes << ", " << RandomSeed << endl;
+        dataOutput << collectedFood << ",     ";
+        dataOutput << time_in_minutes << ",     ";
+        dataOutput << RandomSeed << ",     ";
+        dataOutput << SimCounter + 1 << endl;
         dataOutput.close();
     }
 
     // output to ARGoS GUI
     if(SimCounter == 0) {
-        LOG << "\ntags_collected, time_in_minutes, random_seed\n";
-        LOG << collectedFood << ", ";
-        LOG << time_in_minutes << ", " << RandomSeed << endl;
+        LOG << "\ntags_collected, time_in_minutes, random_seed, experiment_number\n";
+        LOG << collectedFood << ",     ";
+        LOG << time_in_minutes << ",     ";
+        LOG << RandomSeed << ",     ";
+        LOG << SimCounter + 1 << endl;
     } else {
-        LOG << collectedFood << ", ";
-        LOG << time_in_minutes << ", " << RandomSeed << endl;
+        LOG << collectedFood << ",     ";
+        LOG << time_in_minutes << ",     ";
+        LOG << RandomSeed << ",     ";
+        LOG << SimCounter + 1 << endl;
     }
 
     SimCounter++;
+
+    // add a variable time feature???
+    // MaxSimTime += (TicksPerSecond * 60);
 }
 
 /*****
@@ -191,20 +227,28 @@ void iAnt_loop_functions::PostExperiment() {
  * conditions set in the XML file.
  *****/
 void iAnt_loop_functions::Reset() {
-    if(VariableSeed == 1) GetSimulator().SetRandomSeed(++RandomSeed);
 
-    //GetSimulator().Reset();
+    if(VariableFoodPlacement == 0) {
+        RNG->Reset();
+    }
+
     GetSpace().Reset();
+    GetSpace().GetFloorEntity().Reset();
     SimTime = 0;
     ResourceDensityDelay = 0;
     MaxSimCounter = SimCounter;
     SimCounter = 0;
+
     FoodList.clear();
+    FoodColoringList.clear();
     PheromoneList.clear();
     FidelityList.clear();
     TargetRayList.clear();
+
     SetFoodDistribution();
 
+    /* disable placement reset... for now (it currently does not work with the addition of dsa controllers */
+    /*
     CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
     CSpace::TMapPerType::iterator it;
 
@@ -213,8 +257,8 @@ void iAnt_loop_functions::Reset() {
         iAnt_controller& c = dynamic_cast<iAnt_controller&>(footBot.GetControllableEntity().GetController());
 
         MoveEntity(footBot.GetEmbodiedEntity(), c.GetStartPosition(), CQuaternion(), false);
-        c.Reset();
     }
+    */
 }
 
 /*****
@@ -257,9 +301,6 @@ void iAnt_loop_functions::UpdatePheromoneList() {
 
         PheromoneList[i].Update((Real)(SimTime / TicksPerSecond));
 
-        //if(PheromoneList[i].IsActive()) LOG << "O" << endl;
-        //else LOG << "X" << endl;
-
         if(PheromoneList[i].IsActive() == true) {
             new_p_list.push_back(PheromoneList[i]);
         }
@@ -298,12 +339,10 @@ void iAnt_loop_functions::RandomFoodDistribution() {
     CVector2 placementPosition;
 
     for(size_t i = 0; i < FoodItemCount; i++) {
-        placementPosition.Set(RNG->Uniform(ForageRangeX),
-                              RNG->Uniform(ForageRangeY));
+        placementPosition.Set(RNG->Uniform(ForageRangeX), RNG->Uniform(ForageRangeY));
 
         while(IsOutOfBounds(placementPosition, 1, 1)) {
-            placementPosition.Set(RNG->Uniform(ForageRangeX),
-                                  RNG->Uniform(ForageRangeY));
+            placementPosition.Set(RNG->Uniform(ForageRangeX), RNG->Uniform(ForageRangeY));
         }
 
         FoodList.push_back(placementPosition);

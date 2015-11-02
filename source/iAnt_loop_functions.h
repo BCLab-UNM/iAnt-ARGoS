@@ -2,6 +2,7 @@
 #define IANT_LOOP_FUNCTIONS_H_
 
 #include <source/iAnt_controller.h>
+#include <source/DSA_controller.h>
 #include <source/iAnt_pheromone.h>
 #include <vector>
 #include <argos3/core/utility/math/vector2.h>
@@ -15,6 +16,7 @@ using namespace argos;
 using namespace std;
 
 class iAnt_controller;
+class DSA_controller;
 class iAnt_pheromone;
 
 /*****
@@ -24,6 +26,7 @@ class iAnt_pheromone;
 class iAnt_loop_functions : public CLoopFunctions {
 
 	friend class iAnt_controller;
+    friend class DSA_controller;
 	friend class iAnt_qt_user_functions;
 
 	public:
@@ -54,10 +57,11 @@ class iAnt_loop_functions : public CLoopFunctions {
         size_t RandomSeed;
         size_t SimCounter;
         size_t MaxSimCounter;
-        size_t VariableSeed;
+        size_t VariableFoodPlacement;
         size_t OutputData;
 
         size_t DrawDensityRate;
+        size_t DrawIDs;
         size_t DrawTrails;
         size_t DrawTargetRays;
 
@@ -95,9 +99,9 @@ class iAnt_loop_functions : public CLoopFunctions {
         vector<iAnt_pheromone> PheromoneList;
         vector<CRay3>          TargetRayList;
 
-    private:
-
         CRandom::CRNG* RNG;
+
+    private:
 
         /* private helper functions */
         void RandomFoodDistribution();
