@@ -44,6 +44,7 @@ class DSA_loop_functions : public CLoopFunctions {
         size_t MaxSimTime;
         size_t TicksPerSecond;
         size_t ResourceDensityDelay;
+        size_t N_robots;
 
         size_t RandomSeed;
         size_t SimCounter;

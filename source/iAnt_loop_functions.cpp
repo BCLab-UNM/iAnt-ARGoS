@@ -54,12 +54,12 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
     CDegrees        USV_InDegrees;
 
     /* Get each tag in the loop functions section of the XML file. */
-    TConfigurationNode CPFA     = GetNode(node, "CPFA");
-    TConfigurationNode simNode  = GetNode(node, "simulation");
-    TConfigurationNode random   = GetNode(node, "_0_FoodDistribution_Random");
-    TConfigurationNode cluster  = GetNode(node, "_1_FoodDistribution_Cluster");
-    TConfigurationNode powerLaw = GetNode(node, "_2_FoodDistribution_PowerLaw");
-
+    TConfigurationNode CPFA      = GetNode(node, "CPFA");
+    TConfigurationNode simNode   = GetNode(node, "simulation");
+    TConfigurationNode random    = GetNode(node, "_0_FoodDistribution_Random");
+    TConfigurationNode cluster   = GetNode(node, "_1_FoodDistribution_Cluster");
+    TConfigurationNode powerLaw  = GetNode(node, "_2_FoodDistribution_PowerLaw");
+   
     /* Initialize all loop functions variables from the XML file. */
     GetNodeAttribute(CPFA,     "ProbabilityOfSwitchingToSearching", ProbabilityOfSwitchingToSearching);
     GetNodeAttribute(CPFA,     "ProbabilityOfReturningToNest",      ProbabilityOfReturningToNest);
@@ -87,7 +87,7 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
     GetNodeAttribute(cluster,  "ClusterWidthX",                     ClusterWidthX);
     GetNodeAttribute(cluster,  "ClusterLengthY",                    ClusterLengthY);
     GetNodeAttribute(powerLaw, "PowerRank",                         PowerRank);
-
+    
     RNG = CRandom::CreateRNG("argos");
 
     /* Convert and calculate additional values. */
@@ -106,20 +106,37 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
     ForageRangeX.Set(rangeX.GetX() + (2.0 * FoodRadius), rangeX.GetY() - (2.0 * FoodRadius));
     ForageRangeY.Set(rangeY.GetX() + (2.0 * FoodRadius), rangeY.GetY() - (2.0 * FoodRadius));
 
+<<<<<<< HEAD
 // until dsa loop functions is written; disable this
     // Send a pointer to this loop functions object to each controller.
     //CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
     //CSpace::TMapPerType::iterator it;
 
     //for(it = footbots.begin(); it != footbots.end(); it++) {
+=======
+
+   
+    // until dsa loop functions is written; disable this
+    // Send a pointer to this loop functions object to each controller.
+    NumberOfRobots = 0;
+    CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
+    CSpace::TMapPerType::iterator it;
+
+    for(it = footbots.begin(); it != footbots.end(); it++) {
+>>>>>>> fd0a10999ace0ff7e1cc0042f66b032afc4e1fa9
         //CFootBotEntity& footBot = *any_cast<CFootBotEntity*>(it->second);
         //iAnt_controller& c = dynamic_cast<iAnt_controller&>(footBot.GetControllableEntity().GetController());
 
         // c.SetLoopFunctions(&this);
         // set robot pattern vector, etc.
         // MoveEntity(footBot.GetEmbodiedEntity(), c.GetStartPosition(), CQuaternion(), false);
+<<<<<<< HEAD
 
     //}
+=======
+        NumberOfRobots++;
+    }
+>>>>>>> fd0a10999ace0ff7e1cc0042f66b032afc4e1fa9
 
 /*
     // Send a pointer to this loop functions object to each controller.
@@ -181,17 +198,74 @@ void iAnt_loop_functions::PostStep() {
 void iAnt_loop_functions::PostExperiment() {
     size_t time_in_minutes = floor(floor(SimTime/TicksPerSecond)/60);
     size_t collectedFood = FoodItemCount - FoodList.size();
+    string distribution;
+
+
+//    DSA_controller x;
+    // Send a pointer to this loop functions object to each controller.
+    // CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
+    // CSpace::TMapPerType::iterator it;
+    int numberOfSpirals = 0;
+
+    // for(it = footbots.begin(); it != footbots.end(); it++) {
+    //     CFootBotEntity& footBot = *any_cast<CFootBotEntity*>(it->second);
+    //     DSA_controller& c = dynamic_cast<DSA_controller&>(footBot.GetControllableEntity().GetController());
+
+    //     //numberOfSpirals = c.getNumberOfSpirals();
+    //     break;
+    // }
+
+
 
     // This variable is set in XML
     if(OutputData == 1) {
         // This file is created in the directory where you run ARGoS
         // it is always created or appended to, never overwritten, i.e. ios::app
-        ofstream dataOutput("iAntTagData.csv", ios::app);
+        ofstream dataOutput("iAntTagData.txt", ios::app);
+
+        // write out spiral stuff
+
+
 
         // output to file
         if(dataOutput.tellp() == 0) {
+            if (FoodDistribution == 0){
+                distribution = "Random";
+            }
+            else if (FoodDistribution == 1){
+                distribution = "Cluster";
+            }
+            else{
+                distribution = "PowerLaw";
+            }
+            dataOutput  << "Algorithm                         = " << "CFPA/DSA"                        <<endl;
+
+            //paremters for DSA
+            dataOutput  << "N_robots                          = " << NumberOfRobots                    <<endl;
+            dataOutput  << "N_circuits                        = " << "?"                               <<endl;
+            dataOutput  << "SearcherGap                       = " << FoodRadiusSquared                 <<endl;
+
+
+            //parameters for CPFA
+            dataOutput  << "FoodDistribution                  = " << distribution                      <<endl;
+            dataOutput  << "FoodItemCount                     = " << FoodItemCount                     <<endl;
+            dataOutput  << "NumberOfClusters                  = " << NumberOfClusters                  <<endl;
+            dataOutput  << "ClusterWidthX                     = " << ClusterWidthX                     <<endl;
+            dataOutput  << "ClusterLengthY                    = " << ClusterLengthY                    <<endl;
+            dataOutput  << "PowerRank                         = " << PowerRank                         <<endl;
+            dataOutput  << "ProbabilityOfSwitchingToSearching = " << ProbabilityOfSwitchingToSearching <<endl;
+            dataOutput  << "ProbabilityOfReturningToNest      = " << ProbabilityOfReturningToNest      <<endl;
+            dataOutput  << "UninformedSearchVariation         = " << UninformedSearchVariation         <<endl;
+            dataOutput  << "RateOfInformedSearchDecay         = " << RateOfInformedSearchDecay         <<endl;
+            dataOutput  << "RateOfSiteFidelity                = " << RateOfSiteFidelity                <<endl;
+            dataOutput  << "RateOfLayingPheromone             = " << RateOfLayingPheromone             <<endl;
+            dataOutput  << "RateOfPheromoneDecay              = " << RateOfPheromoneDecay              <<endl;
+            dataOutput  << endl;
+
             dataOutput << "tags_collected, time_in_minutes, random_seed, experiment_number\n";
         }
+        
+
 
         dataOutput << collectedFood << ",     ";
         dataOutput << time_in_minutes << ",     ";

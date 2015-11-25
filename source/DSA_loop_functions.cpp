@@ -161,6 +161,16 @@ void DSA_loop_functions::PostExperiment() {
         dataOutput << collectedFood << ", ";
         dataOutput << time_in_minutes << ", " << RandomSeed << endl; //<< ", " << levels << endl;
         dataOutput.close();
+
+
+
+        // ofstream spiralOutput("filename", ios::app);
+        // write out spiral stuff
+
+
+
+
+
     }
 
      // output to ARGoS GUI

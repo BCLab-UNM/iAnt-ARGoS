@@ -56,7 +56,7 @@
             <DSA_params  RobotForwardSpeed       = "16.0"
                          RobotTurningSpeed       = "13.3"
                          AngleToleranceInDegrees = "15.0"
-                         NumberOfRobots          = "2"
+                         NumberOfRobots          = "9"
                          NumberOfSpirals         = "25"/>
         </params>
     </DSA_controller>
@@ -78,10 +78,15 @@
                     RateOfPheromoneDecay              = "0.03360721096396446"/>
 
         <!-- un-evolvable environment variables -->
+<<<<<<< HEAD
         <simulation MaxSimCounter         = "10"
                     MaxSimTime            = "60"
+=======
+        <simulation MaxSimCounter         = "1"
+                    MaxSimTime            = "3600"
+>>>>>>> fd0a10999ace0ff7e1cc0042f66b032afc4e1fa9
                     VariableFoodPlacement = "1"
-                    OutputData            = "0"
+                    OutputData            = "1"
                     ResourceDensityDelay  = "4"
                     DrawDensityRate       = "4"
                     DrawIDs               = "1"
@@ -107,7 +112,12 @@
 
         <floor id="floor" source="loop_functions" pixels_per_meter="10"/>
 
+<<<<<<< HEAD
         <distribute>
+=======
+        
+        <!-- <distribute>
+>>>>>>> fd0a10999ace0ff7e1cc0042f66b032afc4e1fa9
             <position method="grid"
                       center="0.0, 0.0, 0.0"
                       distances="0.2, 0.2, 0.0"
@@ -117,17 +127,22 @@
             <entity quantity="6" max_trials="100">
                 <foot-bot id="iAnt_"><controller config="iAnt_c"/></foot-bot>
             </entity>
+<<<<<<< HEAD
         </distribute>
 
         <!--
+=======
+        </distribute> -->
+        
+>>>>>>> fd0a10999ace0ff7e1cc0042f66b032afc4e1fa9
         <distribute>
             <position method="grid"
                       center="0.0, 0.0, 0.0"
                       distances="0.2, 0.2, 0.0"
-                      layout="2, 1, 1" />
+                      layout="3, 3, 1" />
             <orientation method="constant" values="0.0, 0.0, 0.0" />
 
-            <entity quantity="2" max_trials="100">
+            <entity quantity="9" max_trials="100">
                 <foot-bot id="DSA_"><controller config="DSA_c"/></foot-bot>
             </entity>
         </distribute>

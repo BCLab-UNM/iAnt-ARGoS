@@ -51,6 +51,7 @@ class iAnt_loop_functions : public CLoopFunctions {
         size_t MaxSimTime;
         size_t TicksPerSecond;
         size_t ResourceDensityDelay;
+        size_t NumberOfRobots;  
 
         size_t RandomSeed;
         size_t SimCounter;
