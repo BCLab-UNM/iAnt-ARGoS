@@ -44,7 +44,12 @@ class DSA_controller : public iAntBaseController {
         DSA_loop_functions* loopFunctions;
 
         CVector2            ReturnPosition;
+
         vector<CRay3>       myTrail;
+        CColor              TrailColor;
+
+        Real                SearcherGap;
+        Real                FoodDistanceTolerance;
         size_t				collisionCounter;
         CVector2            newTarget;
         CVector3            startPosition;
@@ -52,7 +57,6 @@ class DSA_controller : public iAntBaseController {
         vector<char>        tempPattern;
         vector<string>      rPattern;
         int                 levels;
-        float               stepSize;
         bool                isHoldingFood;
         bool                goingHome;
         bool                ResetReturnPosition;

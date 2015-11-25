@@ -146,18 +146,21 @@ void DSA_controller::Init(TConfigurationNode& node) {
     argos::GetNodeAttribute(settings, "NumberOfRobots",          NumberOfRobots);
     argos::GetNodeAttribute(settings, "NumberOfSpirals",         NumberOfSpirals);
     argos::GetNodeAttribute(settings, "TargetDistanceTolerance", TargetDistanceTolerance);
-    argos::GetNodeAttribute(settings, "SearchStepSize",          SearchStepSize);
+    argos::GetNodeAttribute(settings, "SearcherGap",             SearcherGap);
+    argos::GetNodeAttribute(settings, "FoodDistanceTolerance",   FoodDistanceTolerance);
     argos::GetNodeAttribute(settings, "RobotForwardSpeed",       RobotForwardSpeed);
     argos::GetNodeAttribute(settings, "RobotRotationSpeed",      RobotRotationSpeed);
+
+    FoodDistanceTolerance *= FoodDistanceTolerance;
 
     argos::CVector2 p(GetPosition());
     SetStartPosition(argos::CVector3(p.GetX(), p.GetY(), 0.0));
     
-    stepSize = 0.05; /* Assigns the robot's stepSize */
     startPosition = CVector3(0.0, 0.0, 0.0);
 
     RNG = CRandom::CreateRNG("argos");
     generatePattern(NumberOfSpirals, NumberOfRobots);
+    TrailColor = CColor(std::rand()%255, std::rand()%255, std::rand()%255, 255);
 }
 
 
@@ -191,13 +194,14 @@ void DSA_controller::ControlStep() {
     if(IsHoldingFood() == false && DSA == SEARCHING){
 
         /* draws target rays every 2 seconds */
-        if((SimulationTick() % (SimulationTicksPerSecond() * 2)) == 0) {
+        if((SimulationTick() % (SimulationTicksPerSecond() * 1)) == 0) {
             CVector3 position3d(GetPosition().GetX(), GetPosition().GetY(), 0.02);
             CVector3 target3d(GetTarget().GetX(), GetTarget().GetY(), 0.02);
             CRay3 targetRay(target3d, position3d);
             myTrail.push_back(targetRay);
             //LOG << myTrail.size() << endl;
             loopFunctions->TargetRayList.push_back(targetRay);
+            loopFunctions->TargetRayColorList.push_back(TrailColor);
             //loopFunctions->TargetRayList.insert(loopFunctions->TargetRayList.end(), myTrail.begin(), myTrail.end());
         }
 
@@ -227,7 +231,7 @@ void DSA_controller::ControlStep() {
  *****/
 void DSA_controller::SetTargetN(char x){
     CVector2 position = GetTarget();
-    SetTarget(CVector2(position.GetX()+stepSize,position.GetY()));
+    SetTarget(CVector2(position.GetX()+SearcherGap,position.GetY()));
 }
 
 /*****
@@ -235,7 +239,7 @@ void DSA_controller::SetTargetN(char x){
  *****/
 void DSA_controller::SetTargetS(char x){
     CVector2 position = GetTarget();
-    SetTarget(CVector2(position.GetX()-stepSize,position.GetY()));
+    SetTarget(CVector2(position.GetX()-SearcherGap,position.GetY()));
 }
 
 /*****
@@ -243,7 +247,7 @@ void DSA_controller::SetTargetS(char x){
  *****/
 void DSA_controller::SetTargetE(char x){
    CVector2 position = GetTarget();
-   SetTarget(CVector2(position.GetX(),position.GetY()-stepSize));
+   SetTarget(CVector2(position.GetX(),position.GetY()-SearcherGap));
 }
 
 /*****
@@ -251,7 +255,7 @@ void DSA_controller::SetTargetE(char x){
  *****/
 void DSA_controller::SetTargetW(char x){
     CVector2 position = GetTarget();
-    SetTarget(CVector2(position.GetX(),position.GetY()+stepSize));
+    SetTarget(CVector2(position.GetX(),position.GetY()+SearcherGap));
 }
 
 /*****
@@ -322,7 +326,7 @@ void DSA_controller::SetHoldingFood(){
         vector <CVector2> newFoodList; 
         size_t i = 0;
         for (i = 0; i < loopFunctions->FoodList.size(); i++){
-            if ((GetPosition()-loopFunctions->FoodList[i]).SquareLength() < loopFunctions->FoodRadiusSquared){
+            if ((GetPosition()-loopFunctions->FoodList[i]).SquareLength() < FoodDistanceTolerance){
                 isHoldingFood = true;
                 ResetReturnPosition = false;
                 ReturnPosition = GetTarget();

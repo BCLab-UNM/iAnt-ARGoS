@@ -115,7 +115,7 @@ void DSA_qt_user_functions::DrawTargetRays() {
 		return;
 	}
 */
-    CColor c = CColor::BLACK;
+
 
     for(size_t j = 0; j < loopFunctions.TargetRayList.size(); j++) {
 
@@ -124,7 +124,7 @@ void DSA_qt_user_functions::DrawTargetRays() {
             //else if(j == 1) c = CColor::YELLOW;
 
             //DrawRay(loopFunctions.TargetRayList[j][i], c);
-            DrawRay(loopFunctions.TargetRayList[j], c);
+            DrawRay(loopFunctions.TargetRayList[j], loopFunctions.TargetRayColorList[j]);
         //}
 
     }

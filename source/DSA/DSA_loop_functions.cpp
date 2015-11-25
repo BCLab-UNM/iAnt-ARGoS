@@ -10,7 +10,8 @@ DSA_loop_functions::DSA_loop_functions() :
     VariableFoodPlacement(0),
     OutputData(0),
     DrawDensityRate(4),
-    DrawIDs(1),
+//    DrawIDs(1),
+    DrawIDs(0),
     DrawTrails(1),
     DrawTargetRays(0),
     FoodDistribution(2),
@@ -38,6 +39,7 @@ void DSA_loop_functions::Init(TConfigurationNode& node) {
 
     CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
     CSpace::TMapPerType::iterator it;
+
 	for(it = footbots.begin(); it != footbots.end(); it++) {
         argos::CFootBotEntity& footBot = *argos::any_cast<argos::CFootBotEntity*>(it->second);
         iAntBaseController& c = dynamic_cast<iAntBaseController&>(footBot.GetControllableEntity().GetController());

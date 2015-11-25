@@ -55,9 +55,13 @@ class DSA_loop_functions : public argos::CLoopFunctions {
 
         /* list variables for food & pheromones */
         std::vector<argos::CVector2> FoodList;
+
         std::vector<argos::CColor>   FoodColoringList;
         std::vector<argos::CVector2> FidelityList;
+
         std::vector<argos::CRay3>    TargetRayList;
+        std::vector<argos::CColor>   TargetRayColorList;
+
         argos::CRange<argos::Real>   ForageRangeX;
         argos::CRange<argos::Real>   ForageRangeY;
 
