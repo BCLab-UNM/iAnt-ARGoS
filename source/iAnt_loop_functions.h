@@ -16,7 +16,6 @@ using namespace argos;
 using namespace std;
 
 class iAnt_controller;
-class DSA_controller;
 class iAnt_pheromone;
 
 /*****
@@ -26,7 +25,6 @@ class iAnt_pheromone;
 class iAnt_loop_functions : public CLoopFunctions {
 
 	friend class iAnt_controller;
-    friend class DSA_controller;
 	friend class iAnt_qt_user_functions;
 
 	public:

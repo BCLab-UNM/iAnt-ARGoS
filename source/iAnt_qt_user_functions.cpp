@@ -17,7 +17,7 @@ iAnt_qt_user_functions::iAnt_qt_user_functions() :
  *****/
 void iAnt_qt_user_functions::DrawOnRobot(CFootBotEntity& entity) {
     //iAnt_controller& c = dynamic_cast<iAnt_controller&>(entity.GetControllableEntity().GetController());
-    DSA_controller& c = dynamic_cast<DSA_controller&>(entity.GetControllableEntity().GetController());
+    iAnt_controller& c = dynamic_cast<iAnt_controller&>(entity.GetControllableEntity().GetController());
 
     if(c.IsHoldingFood() == true) {
         DrawCylinder(CVector3(0.0, 0.0, 0.3), CQuaternion(), loopFunctions.FoodRadius, 0.025, CColor::BLACK);
@@ -161,18 +161,19 @@ void iAnt_qt_user_functions::DrawTargetRays() {
 
     for(size_t j = 0; j < loopFunctions.TargetRayList.size(); j++) {
 
-        for(size_t i = 0; i < loopFunctions.TargetRayList[j].size(); i++) {
+        //for(size_t i = 0; i < loopFunctions.TargetRayList[j].size(); i++) {
             //if(j == 0) c = CColor::RED;
             //else if(j == 1) c = CColor::YELLOW;
 
-            DrawRay(loopFunctions.TargetRayList[j][i], c);
-        }
+            //DrawRay(loopFunctions.TargetRayList[j][i], c);
+            DrawRay(loopFunctions.TargetRayList[j], c);
+        //}
 
     }
 
     //if(loopFunctions.SimTime % (loopFunctions.TicksPerSecond * 10) == 0) {
         // comment out for DSA, uncomment for CPFA
-        //loopFunctions.TargetRayList.clear();
+        loopFunctions.TargetRayList.clear();
     //}
 }
 

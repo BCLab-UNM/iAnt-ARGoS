@@ -107,21 +107,19 @@ void iAnt_loop_functions::Init(TConfigurationNode& node) {
     ForageRangeY.Set(rangeY.GetX() + (2.0 * FoodRadius), rangeY.GetY() - (2.0 * FoodRadius));
 
 // until dsa loop functions is written; disable this
-/*
     // Send a pointer to this loop functions object to each controller.
-    CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
-    CSpace::TMapPerType::iterator it;
+    //CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
+    //CSpace::TMapPerType::iterator it;
 
-    for(it = footbots.begin(); it != footbots.end(); it++) {
-        CFootBotEntity& footBot = *any_cast<CFootBotEntity*>(it->second);
-        iAnt_controller& c = dynamic_cast<iAnt_controller&>(footBot.GetControllableEntity().GetController());
+    //for(it = footbots.begin(); it != footbots.end(); it++) {
+        //CFootBotEntity& footBot = *any_cast<CFootBotEntity*>(it->second);
+        //iAnt_controller& c = dynamic_cast<iAnt_controller&>(footBot.GetControllableEntity().GetController());
 
         // c.SetLoopFunctions(&this);
         // set robot pattern vector, etc.
         // MoveEntity(footBot.GetEmbodiedEntity(), c.GetStartPosition(), CQuaternion(), false);
 
-    }
-*/
+    //}
 
 /*
     // Send a pointer to this loop functions object to each controller.
@@ -232,8 +230,10 @@ void iAnt_loop_functions::Reset() {
         RNG->Reset();
     }
 
-    GetSpace().Reset();
-    GetSpace().GetFloorEntity().Reset();
+    //GetSpace().Reset();
+    //GetSpace().GetFloorEntity().Reset();
+    // don't use... GetSimulator().Reset();
+
     SimTime = 0;
     ResourceDensityDelay = 0;
     MaxSimCounter = SimCounter;
@@ -248,7 +248,6 @@ void iAnt_loop_functions::Reset() {
     SetFoodDistribution();
 
     /* disable placement reset... for now (it currently does not work with the addition of dsa controllers */
-    /*
     CSpace::TMapPerType& footbots = GetSpace().GetEntitiesByType("foot-bot");
     CSpace::TMapPerType::iterator it;
 
@@ -258,7 +257,6 @@ void iAnt_loop_functions::Reset() {
 
         MoveEntity(footBot.GetEmbodiedEntity(), c.GetStartPosition(), CQuaternion(), false);
     }
-    */
 }
 
 /*****
@@ -516,4 +514,4 @@ bool iAnt_loop_functions::IsCollidingWithFood(CVector2 p) {
     return false;
 }
 
-REGISTER_LOOP_FUNCTIONS(iAnt_loop_functions, "iAnt_loop_functions");
+REGISTER_LOOP_FUNCTIONS(iAnt_loop_functions, "iAnt_loop_functions")

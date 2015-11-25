@@ -243,18 +243,12 @@ void iAnt_controller::Departing() {
         if(isInformed == false && randomNumber < loopFunctions.ProbabilityOfSwitchingToSearching) {
             searchTime = 0;
             CPFA = SEARCHING;
-
             Real USV = loopFunctions.UninformedSearchVariation.GetValue();
-
             Real rand = RNG->Gaussian(USV);
-
             CRadians rotation(rand);
-
             CRadians angle1(rotation.UnsignedNormalize());     /* standard deviation */
             CRadians angle2(GetHeading().UnsignedNormalize()); /* theta t-1 */
-
             CRadians turn_angle(angle1 + angle2);
-
             CVector2 turn_vector(searchStepSize, turn_angle);
 
             SetTargetInBounds(turn_vector + GetPosition());
@@ -552,7 +546,7 @@ void iAnt_controller::SetLocalResourceDensity() {
 
 		if(distance.SquareLength() < loopFunctions.SearchRadius) {
 			resourceDensity++;
-            loopFunctions.FoodColoringList[i] = CColor::BLUE;
+            loopFunctions.FoodColoringList[i] = CColor::ORANGE;
             loopFunctions.ResourceDensityDelay = loopFunctions.SimTime + loopFunctions.TicksPerSecond * 10;
 		} else {
             loopFunctions.FoodColoringList[i] = CColor::BLACK;

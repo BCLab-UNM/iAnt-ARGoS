@@ -37,6 +37,7 @@ class iAnt_qt_user_functions : public CQTOpenGLUserFunctions {
         void DrawTargetRays();
 
         iAnt_loop_functions& loopFunctions;
+
 };
 
 #endif /* IANT_QT_USER_FUNCTIONS_H_ */
