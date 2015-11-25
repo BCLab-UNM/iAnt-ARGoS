@@ -1,0 +1,96 @@
+<?xml version="1.0" ?>
+<argos-configuration>
+
+  <!-- ************************* -->
+  <!-- * General configuration * -->
+  <!-- ************************* -->
+  <framework>
+    <system     threads="10" />
+    <experiment length="0"
+                ticks_per_second="16"
+                random_seed="124" />
+  </framework>
+
+  <!-- *************** -->
+  <!-- * Controllers * -->
+  <!-- *************** -->
+  <controllers>
+
+    <DSA_controller id="DSA"
+                     library="build/source/DSA/libDSA_controller">
+      <actuators>
+        <differential_steering implementation = "default"/>
+      </actuators>
+
+      <sensors>
+        <footbot_proximity    implementation = "default" show_rays = "false"/>
+        <positioning          implementation = "default"/>
+        <footbot_motor_ground implementation = "rot_z_only"/>
+      </sensors>
+
+      <params>
+
+        <settings NumberOfRobots          = "32"
+                  NumberOfSpirals         = "1"
+                  TargetDistanceTolerance = "0.03"
+                  FoodDistanceTolerance   = "0.13"
+                  SearcherGap             = "0.16"
+                  RobotForwardSpeed       = "16.0"
+                  RobotRotationSpeed      = "16.0"/>
+
+      </params>
+
+    </DSA_controller>
+
+  </controllers>
+
+  <loop_functions library = "build/source/DSA/libDSA_loop_functions"
+                  label   = "DSA_loop_functions"/>
+
+  <!-- *********************** -->
+  <!-- * Arena configuration * -->
+  <!-- *********************** -->
+  <arena size="10.0, 10.0, 1" center="0,0,0.5">
+
+    <floor id="floor" source="loop_functions" pixels_per_meter="10"/>
+
+    <distribute>
+      <position method="grid"
+                center="0.0, 0.0, 0.0"
+                distances="0.2, 0.2, 0.0"
+                layout="8, 4, 1" />
+      <orientation method="constant" values="0.0, 0.0, 0.0" />
+      <entity quantity="32" max_trials="100">
+        <foot-bot id="DSA_">
+          <controller config="DSA"/>
+        </foot-bot>
+      </entity>
+    </distribute>
+
+  </arena>
+
+  <!-- ******************* -->
+  <!-- * Physics engines * -->
+  <!-- ******************* -->
+  <physics_engines>
+    <dynamics2d id="dyn2d" />
+  </physics_engines>
+
+  <!-- ********* -->
+  <!-- * Media * -->
+  <!-- ********* -->
+  <media />
+
+  <!-- ****************** -->
+  <!-- * Visualization * -->
+  <!-- ****************** -->
+  <visualization>
+    <qt-opengl>
+      <camera>
+        <placement idx="0" position="  0, 0, 10" look_at="0, 0, 0" lens_focal_length="25"/>
+      </camera>
+      <user_functions label="DSA_qt_user_functions"/>
+    </qt-opengl>
+  </visualization>
+
+</argos-configuration>

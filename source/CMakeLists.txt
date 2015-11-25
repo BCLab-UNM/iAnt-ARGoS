@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ################################################################################
 # Compile each iAnt-ARGoS class into a shared object file.
 ################################################################################
@@ -35,3 +36,8 @@ target_link_libraries(iAnt_loop_functions
                       argos3plugin_simulator_genericrobot
                       argos3plugin_simulator_qtopengl
                       ${QT_LIBRARIES} ${GLUT_LIBRARY} ${OPENGL_LIBRARY})
+=======
+add_subdirectory(iAntBase)
+add_subdirectory(CPFA)
+add_subdirectory(DSA)
+>>>>>>> development
