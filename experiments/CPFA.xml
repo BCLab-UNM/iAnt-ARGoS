@@ -1,0 +1,104 @@
+<?xml version="1.0" ?>
+<argos-configuration>
+
+  <!-- ************************* -->
+  <!-- * General configuration * -->
+  <!-- ************************* -->
+  <framework>
+    <system threads="0" />
+    <experiment length="0"
+                ticks_per_second="16"
+                random_seed="124" />
+  </framework>
+
+  <!-- *************** -->
+  <!-- * Controllers * -->
+  <!-- *************** -->
+  <controllers>
+
+    <CPFA_controller id="CPFA"
+                     library="build/source/CPFA/libCPFA_controller">
+      <actuators>
+        <differential_steering implementation = "default"/>
+      </actuators>
+
+      <sensors>
+        <footbot_proximity    implementation = "default" show_rays = "false"/>
+        <positioning          implementation = "default"/>
+        <footbot_motor_ground implementation = "rot_z_only"/>
+      </sensors>
+
+      <params>
+
+        <settings TargetDistanceTolerance           = "0.03"
+                  SearchStepSize                    = "0.08"
+                  RobotForwardSpeed                 = "16.0"
+                  RobotRotationSpeed                = "16.0"/>
+
+      </params>
+
+    </CPFA_controller>
+
+  </controllers>
+
+  <loop_functions library = "build/source/CPFA/libCPFA_loop_functions"
+                  label   = "CPFA_loop_functions">
+
+    <!-- evolvable parameters -->
+        <CPFA       ProbabilityOfSwitchingToSearching = "0.5044407248497009"
+                    ProbabilityOfReturningToNest      = "0.0009318816591985524"
+                    UninformedSearchVariation         = "13.2744146"
+                    RateOfInformedSearchDecay         = "0.2838849127292633"
+                    RateOfSiteFidelity                = "4.26935863494873"
+                    RateOfLayingPheromone             = "3.74975037574768"
+                    RateOfPheromoneDecay              = "0.03360721096396446"/>
+
+  </loop_functions>
+
+  <!-- *********************** -->
+  <!-- * Arena configuration * -->
+  <!-- *********************** -->
+  <arena size="10.0, 10.0, 1" center="0,0,0.5">
+
+    <floor id="floor" source="loop_functions" pixels_per_meter="10"/>
+
+    <distribute>
+      <position method="grid"
+                center="0.0, 0.0, 0.0"
+                distances="0.2, 0.2, 0.0"
+                layout="3, 3, 1" />
+      <orientation method="constant" values="0.0, 0.0, 0.0" />
+      <entity quantity="9" max_trials="100">
+        <foot-bot id="CPFA_">
+          <controller config="CPFA"/>
+        </foot-bot>
+      </entity>
+    </distribute>
+
+  </arena>
+
+  <!-- ******************* -->
+  <!-- * Physics engines * -->
+  <!-- ******************* -->
+  <physics_engines>
+    <dynamics2d id="dyn2d" />
+  </physics_engines>
+
+  <!-- ********* -->
+  <!-- * Media * -->
+  <!-- ********* -->
+  <media />
+
+  <!-- ****************** -->
+  <!-- * Visualization * -->
+  <!-- ****************** -->
+  <visualization>
+    <qt-opengl>
+      <camera>
+        <placement idx="0" position="  0, 0, 10" look_at="0, 0, 0" lens_focal_length="25"/>
+      </camera>
+      <user_functions label="CPFA_qt_user_functions"/>
+    </qt-opengl>
+  </visualization>
+
+</argos-configuration>

@@ -1,0 +1,92 @@
+\hypertarget{classi_ant_base_controller}{}\section{i\+Ant\+Base\+Controller Class Reference}
+\label{classi_ant_base_controller}\index{i\+Ant\+Base\+Controller@{i\+Ant\+Base\+Controller}}
+
+
+{\ttfamily \#include $<$i\+Ant\+Base\+Controller.\+h$>$}
+
+Inheritance diagram for i\+Ant\+Base\+Controller\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classi_ant_base_controller}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classi_ant_base_controller_a39d8d48963c82c29e7c943e431782d9a}{i\+Ant\+Base\+Controller} ()
+\item 
+\hypertarget{classi_ant_base_controller_ad42ec34c309ab33a650b7f28defc490e}{}argos\+::\+C\+Radians {\bfseries Get\+Heading} ()\label{classi_ant_base_controller_ad42ec34c309ab33a650b7f28defc490e}
+
+\item 
+\hypertarget{classi_ant_base_controller_aadadf8a3f8fbc5844428ec000a61ea6b}{}argos\+::\+C\+Vector2 {\bfseries Get\+Position} ()\label{classi_ant_base_controller_aadadf8a3f8fbc5844428ec000a61ea6b}
+
+\item 
+\hypertarget{classi_ant_base_controller_a27f63778f8fce4febcab7624f768cb0c}{}void {\bfseries Push\+Movement} (char move\+Type, argos\+::\+Real move\+Size)\label{classi_ant_base_controller_a27f63778f8fce4febcab7624f768cb0c}
+
+\item 
+\hypertarget{classi_ant_base_controller_a6e787198db6760b91130e3ec34038e1d}{}void {\bfseries Stop} ()\label{classi_ant_base_controller_a6e787198db6760b91130e3ec34038e1d}
+
+\item 
+\hypertarget{classi_ant_base_controller_af56e1a91b585793bcc877ee8b8f86d09}{}void {\bfseries Move} ()\label{classi_ant_base_controller_af56e1a91b585793bcc877ee8b8f86d09}
+
+\item 
+\hypertarget{classi_ant_base_controller_ac30e46e9048ce888af15fde012f9ba4e}{}size\+\_\+t {\bfseries Simulation\+Tick} ()\label{classi_ant_base_controller_ac30e46e9048ce888af15fde012f9ba4e}
+
+\item 
+\hypertarget{classi_ant_base_controller_aef393e9abb3037572f68f8c6884cfab3}{}size\+\_\+t {\bfseries Simulation\+Ticks\+Per\+Second} ()\label{classi_ant_base_controller_aef393e9abb3037572f68f8c6884cfab3}
+
+\item 
+\hypertarget{classi_ant_base_controller_a6a5c40fe9e57d61a50ff58abda6cda48}{}argos\+::\+Real {\bfseries Simulation\+Seconds\+Per\+Tick} ()\label{classi_ant_base_controller_a6a5c40fe9e57d61a50ff58abda6cda48}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classi_ant_base_controller_aafc10e20b7821b436b531d6990b2a559}{}argos\+::\+Real {\bfseries Robot\+Forward\+Speed}\label{classi_ant_base_controller_aafc10e20b7821b436b531d6990b2a559}
+
+\item 
+\hypertarget{classi_ant_base_controller_a265916e97aa2ef53fdcc7ef55cc55392}{}argos\+::\+Real {\bfseries Robot\+Rotation\+Speed}\label{classi_ant_base_controller_a265916e97aa2ef53fdcc7ef55cc55392}
+
+\item 
+\hypertarget{classi_ant_base_controller_af7e0f181fc802153261874a2ac1215e8}{}argos\+::\+Real {\bfseries Target\+Travel\+Distance}\label{classi_ant_base_controller_af7e0f181fc802153261874a2ac1215e8}
+
+\item 
+\hypertarget{classi_ant_base_controller_abdc7a2a7dcc12dddc798ea7a0a4cdfb6}{}argos\+::\+Real {\bfseries Target\+Angle\+Distance}\label{classi_ant_base_controller_abdc7a2a7dcc12dddc798ea7a0a4cdfb6}
+
+\item 
+\hypertarget{classi_ant_base_controller_af501676396763245c6dfb72888b279f4}{}argos\+::\+Real {\bfseries Ticks\+To\+Wait}\label{classi_ant_base_controller_af501676396763245c6dfb72888b279f4}
+
+\item 
+\hypertarget{classi_ant_base_controller_a8de3da5a56a5bc97aa79999bab12ecdd}{}argos\+::\+C\+C\+I\+\_\+\+Positioning\+Sensor $\ast$ {\bfseries compass\+Sensor}\label{classi_ant_base_controller_a8de3da5a56a5bc97aa79999bab12ecdd}
+
+\item 
+\hypertarget{classi_ant_base_controller_a7491fc4f9773de742e874c5708395c7d}{}argos\+::\+C\+C\+I\+\_\+\+Differential\+Steering\+Actuator $\ast$ {\bfseries wheel\+Actuator}\label{classi_ant_base_controller_a7491fc4f9773de742e874c5708395c7d}
+
+\item 
+\hypertarget{classi_ant_base_controller_ab7f6d73f7a5e97a16a637e227a90806f}{}argos\+::\+C\+C\+I\+\_\+\+Foot\+Bot\+Proximity\+Sensor $\ast$ {\bfseries proximity\+Sensor}\label{classi_ant_base_controller_ab7f6d73f7a5e97a16a637e227a90806f}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\hyperlink{classi_ant_base_controller}{i\+Ant\+Base\+Controller} \begin{DoxyAuthor}{Author}
+Antonio Griego 
+\end{DoxyAuthor}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classi_ant_base_controller_a39d8d48963c82c29e7c943e431782d9a}{}\index{i\+Ant\+Base\+Controller@{i\+Ant\+Base\+Controller}!i\+Ant\+Base\+Controller@{i\+Ant\+Base\+Controller}}
+\index{i\+Ant\+Base\+Controller@{i\+Ant\+Base\+Controller}!i\+Ant\+Base\+Controller@{i\+Ant\+Base\+Controller}}
+\subsubsection[{i\+Ant\+Base\+Controller()}]{\setlength{\rightskip}{0pt plus 5cm}i\+Ant\+Base\+Controller\+::i\+Ant\+Base\+Controller (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classi_ant_base_controller_a39d8d48963c82c29e7c943e431782d9a}
+Constructor for the \hyperlink{classi_ant_base_controller}{i\+Ant\+Base\+Controller}. Several important variables are defined here. 
+
+T\+O\+D\+O\+: update xml configuration file to allow these to be adjusted from configuration without recompiling. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+source/i\+Ant\+Base/i\+Ant\+Base\+Controller.\+h\item 
+source/i\+Ant\+Base/i\+Ant\+Base\+Controller.\+cpp\end{DoxyCompactItemize}
