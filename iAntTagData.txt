@@ -1,0 +1,21 @@
+Algorithm                         = CFPA/DSA
+N_robots                          = 9
+N_circuits                        = ?
+SearcherGap                       = 0.0081
+FoodDistribution                  = PowerLaw
+FoodItemCount                     = 256
+NumberOfClusters                  = 4
+ClusterWidthX                     = 8
+ClusterLengthY                    = 8
+PowerRank                         = 4
+ProbabilityOfSwitchingToSearching = 0.204146
+ProbabilityOfReturningToNest      = 0.000940596
+UninformedSearchVariation         = CRadians(0.226831 -> 12.9964 degrees)
+RateOfInformedSearchDecay         = 0.249788
+RateOfSiteFidelity                = 2.51175
+RateOfLayingPheromone             = 2.24421
+RateOfPheromoneDecay              = 0.0382181
+
+tags_collected, time_in_minutes, random_seed, experiment_number
+40,     6,     1,     1
+0,     0,     1,     1
