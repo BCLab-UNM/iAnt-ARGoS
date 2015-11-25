@@ -28,14 +28,9 @@ class DSA_qt_user_functions : public CQTOpenGLUserFunctions {
         /* private helper drawing functions */
         void DrawNest();
         void DrawFood();
-        void DrawFidelity();
         void DrawTargetRays();
 
-<<<<<<< HEAD:source/iAnt_qt_user_functions.h
-        iAnt_loop_functions& loopFunctions;
-=======
         DSA_loop_functions& loopFunctions;
->>>>>>> development:source/DSA/DSA_qt_user_functions.h
 
 };
 

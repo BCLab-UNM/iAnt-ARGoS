@@ -1,123 +1,5 @@
 #include "DSA_controller.h"
 
-size_t DSA_controller::generatePattern(int N_circuits, int N_robots)
-{
-	string ID = GetId();
-	string ID_number;
-
-	for(size_t i = 0; i < ID.size(); i++) {
-		if(ID[i] >= '0' && ID[i] <= '9') {
-			ID_number += ID[i];
-		}
-	}
-
-	size_t RobotNumber = stoi(ID_number);
-	vector<string> paths;
-	string ith_robot_path;
-
-	for (int i_robot = 1; i_robot <= N_robots; i_robot++)
-	{
-		// cout << "inside for 1" << endl;
-		for (int i_circuit = 0; i_circuit < N_circuits; i_circuit++)
-		{
-			int n_steps_north = calcDistanceToTravel(i_robot, i_circuit, N_robots, 'N');
-			for (int j = 0; j < n_steps_north; j++)
-			{
-				//ith_robot_path.push_back('N');
-				ith_robot_path += 'N';
-			}
-			
-			int n_steps_east = calcDistanceToTravel(i_robot, i_circuit, N_robots, 'E');
-			for (int j = 0; j < n_steps_east; j++)
-			{
-				//ith_robot_path.push_back('E');
-				ith_robot_path += 'E';
-			}
-
-			int n_steps_south = calcDistanceToTravel(i_robot, i_circuit, N_robots, 'S');
-			for (int j = 0; j < n_steps_south; j++)
-			{
-				//ith_robot_path.push_back('S');
-				ith_robot_path += 'S';
-			}
-
-			int n_steps_west = calcDistanceToTravel(i_robot, i_circuit, N_robots, 'W');
-			for (int j = 0; j < n_steps_west; j++)
-			{
-				//ith_robot_path.push_back('W');
-				ith_robot_path += 'W';
-			}
-
-		}
-
-		paths.push_back(ith_robot_path);
-		ith_robot_path.clear();
-	}
-
-	//pattern = ith_robot_path;
-	GetPattern(paths[RobotNumber]);
-
-	return RobotNumber;
-}
-
-int DSA_controller::calcDistanceToTravel(int i_robot, int i_circuit, int N_robots, char direction)
-{
-	int i = i_robot;
-	int j = i_circuit;
-	int N = N_robots;
-	int n_steps  = 0;
-
-	if (direction == 'N' || direction == 'E')
-	{
-		if (j == 0)
-		{
-			n_steps = i;
-			return n_steps;
-		}
-		else if (j == 1)
-		{
-			n_steps = calcDistanceToTravel(i, j-1, N, direction) + i + N;
-			return n_steps;
-		}
-		else 
-		{
-			n_steps = calcDistanceToTravel(i, j-1, N, direction) + 2*N;
-			return n_steps;
-		}
-	}
-
-	else if (direction == 'S' || direction == 'W')
-	{
-		if (j == 0)
-		{
-			n_steps = calcDistanceToTravel(i, j , N, 'N') + i;
-			return n_steps;
-		}
-
-		else if (j > 0)
-		{
-			n_steps = calcDistanceToTravel(i, j, N, 'N') + N;
-			return n_steps;
-		}
-
-		else
-		{
-			cout << "Error direction" << direction << "is invalid" << endl;
-		}
-
-	}
-	return 0;
-}
-
-void DSA_controller::printPath(vector<char>& path)
-{
-	cout << path.size() << endl;
-	for(int i = 0; i<path.size(); i++)
-	{ 
-		cout << path.at(i) << endl;
-	}
-}
-
 /*****
  * Initialize most basic variables and objects here. Most of the setup should
  * be done in the Init(...) function instead of here where possible.
@@ -163,6 +45,123 @@ void DSA_controller::Init(TConfigurationNode& node) {
     TrailColor = CColor(std::rand()%255, std::rand()%255, std::rand()%255, 255);
 }
 
+size_t DSA_controller::generatePattern(int N_circuits, int N_robots)
+{
+    string ID = GetId();
+    string ID_number;
+
+    for(size_t i = 0; i < ID.size(); i++) {
+        if(ID[i] >= '0' && ID[i] <= '9') {
+            ID_number += ID[i];
+        }
+    }
+
+    size_t RobotNumber = stoi(ID_number);
+    vector<string> paths;
+    string ith_robot_path;
+
+    for (int i_robot = 1; i_robot <= N_robots; i_robot++)
+    {
+        // cout << "inside for 1" << endl;
+        for (int i_circuit = 0; i_circuit < N_circuits; i_circuit++)
+        {
+            int n_steps_north = calcDistanceToTravel(i_robot, i_circuit, N_robots, 'N');
+            for (int j = 0; j < n_steps_north; j++)
+            {
+                //ith_robot_path.push_back('N');
+                ith_robot_path += 'N';
+            }
+            
+            int n_steps_east = calcDistanceToTravel(i_robot, i_circuit, N_robots, 'E');
+            for (int j = 0; j < n_steps_east; j++)
+            {
+                //ith_robot_path.push_back('E');
+                ith_robot_path += 'E';
+            }
+
+            int n_steps_south = calcDistanceToTravel(i_robot, i_circuit, N_robots, 'S');
+            for (int j = 0; j < n_steps_south; j++)
+            {
+                //ith_robot_path.push_back('S');
+                ith_robot_path += 'S';
+            }
+
+            int n_steps_west = calcDistanceToTravel(i_robot, i_circuit, N_robots, 'W');
+            for (int j = 0; j < n_steps_west; j++)
+            {
+                //ith_robot_path.push_back('W');
+                ith_robot_path += 'W';
+            }
+
+        }
+
+        paths.push_back(ith_robot_path);
+        ith_robot_path.clear();
+    }
+
+    //pattern = ith_robot_path;
+    GetPattern(paths[RobotNumber]);
+
+    return RobotNumber;
+}
+
+int DSA_controller::calcDistanceToTravel(int i_robot, int i_circuit, int N_robots, char direction)
+{
+    int i = i_robot;
+    int j = i_circuit;
+    int N = N_robots;
+    int n_steps  = 0;
+
+    if (direction == 'N' || direction == 'E')
+    {
+        if (j == 0)
+        {
+            n_steps = i;
+            return n_steps;
+        }
+        else if (j == 1)
+        {
+            n_steps = calcDistanceToTravel(i, j-1, N, direction) + i + N;
+            return n_steps;
+        }
+        else 
+        {
+            n_steps = calcDistanceToTravel(i, j-1, N, direction) + 2*N;
+            return n_steps;
+        }
+    }
+
+    else if (direction == 'S' || direction == 'W')
+    {
+        if (j == 0)
+        {
+            n_steps = calcDistanceToTravel(i, j , N, 'N') + i;
+            return n_steps;
+        }
+
+        else if (j > 0)
+        {
+            n_steps = calcDistanceToTravel(i, j, N, 'N') + N;
+            return n_steps;
+        }
+
+        else
+        {
+            cout << "Error direction" << direction << "is invalid" << endl;
+        }
+
+    }
+    return 0;
+}
+
+void DSA_controller::printPath(vector<char>& path)
+{
+    cout << path.size() << endl;
+    for(int i = 0; i<path.size(); i++)
+    { 
+        cout << path.at(i) << endl;
+    }
+}
 
 void DSA_controller::GetPattern(string ith_Pattern)
 {
@@ -295,9 +294,10 @@ void DSA_controller::SetTargetW(char x){
     }
     /* If the robot is down traversing the tempPattern, then return home */
     else if(tempPattern.size() == 0) {
-    	DSA = RETURN_TO_NEST;
-        SetTarget(loopFunctions->NestPosition);
-        Reset();
+    	Stop();
+        // DSA = RETURN_TO_NEST;
+        // SetTarget(loopFunctions->NestPosition);
+        // Reset();
 	}
 }
 

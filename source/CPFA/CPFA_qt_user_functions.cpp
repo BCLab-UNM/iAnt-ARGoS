@@ -14,15 +14,8 @@ CPFA_qt_user_functions::CPFA_qt_user_functions() :
 /*****
  *
  *****/
-<<<<<<< HEAD:source/iAnt_qt_user_functions.cpp
-void iAnt_qt_user_functions::DrawOnRobot(CFootBotEntity& entity) {
-    //Bad cast error change the name of the controller 
-    //iAnt_controller& c = dynamic_cast<iAnt_controller&>(entity.GetControllableEntity().GetController());
-    iAnt_controller& c = dynamic_cast<iAnt_controller&>(entity.GetControllableEntity().GetController());
-=======
 void CPFA_qt_user_functions::DrawOnRobot(CFootBotEntity& entity) {
     CPFA_controller& c = dynamic_cast<CPFA_controller&>(entity.GetControllableEntity().GetController());
->>>>>>> development:source/CPFA/CPFA_qt_user_functions.cpp
 
     if(c.IsHoldingFood() == true) {
         DrawCylinder(CVector3(0.0, 0.0, 0.3), CQuaternion(), loopFunctions.FoodRadius, 0.025, CColor::BLACK);
@@ -160,33 +153,12 @@ void CPFA_qt_user_functions::DrawPheromones() {
     }
 }
 
-<<<<<<< HEAD:source/iAnt_qt_user_functions.cpp
-void iAnt_qt_user_functions::DrawTargetRays() {
-=======
 void CPFA_qt_user_functions::DrawTargetRays() {
->>>>>>> development:source/CPFA/CPFA_qt_user_functions.cpp
 
     CColor c = CColor::BLUE;
 
     for(size_t j = 0; j < loopFunctions.TargetRayList.size(); j++) {
-
-<<<<<<< HEAD:source/CPFA/CPFA_qt_user_functions.cpp
-        //for(size_t i = 0; i < loopFunctions.TargetRayList[j].size(); i++) {
-            //if(j == 0) c = CColor::RED;
-            //else if(j == 1) c = CColor::YELLOW;
-
-            //DrawRay(loopFunctions.TargetRayList[j][i], c);
-            DrawRay(loopFunctions.TargetRayList[j], c);
-        //}
-=======
-        // for(size_t i = 0; i < loopFunctions.TargetRayList[j].size(); i++) {
-        //     //if(j == 0) c = CColor::RED;
-        //     //else if(j == 1) c = CColor::YELLOW;
-
             DrawRay(loopFunctions.TargetRayList[j],c);
-        // }
->>>>>>> fd0a10999ace0ff7e1cc0042f66b032afc4e1fa9:source/iAnt_qt_user_functions.cpp
-
     }
 
     //if(loopFunctions.SimTime % (loopFunctions.TicksPerSecond * 10) == 0) {

@@ -50,11 +50,8 @@ void DSA_qt_user_functions::DrawOnRobot(CFootBotEntity& entity) {
  *****/
 void DSA_qt_user_functions::DrawOnArena(CFloorEntity& entity) {
     DrawFood();
-    DrawFidelity();
     DrawNest();
-
-    //if(loopFunctions.DrawTargetRays == 1)
-    	DrawTargetRays();
+    DrawTargetRays();
 }
 
 /*****
@@ -91,47 +88,20 @@ void DSA_qt_user_functions::DrawFood() {
     }
 }
 
-/*****
- *
- *****/
-void DSA_qt_user_functions::DrawFidelity() {
-
-    Real x, y;
-
-    for(size_t i = 0; i < loopFunctions.FidelityList.size(); i++) {
-        x = loopFunctions.FidelityList[i].GetX();
-        y = loopFunctions.FidelityList[i].GetY();
-        DrawCylinder(CVector3(x, y, 0.0), CQuaternion(), loopFunctions.FoodRadius, 0.025, CColor::CYAN);
-    }
-}
-
 void DSA_qt_user_functions::DrawTargetRays() {
 
-/*
-	size_t tick = loopFunctions.GetSpace().GetSimulationClock();
-	size_t tock = loopFunctions.GetSimulator().GetPhysicsEngine("default").GetInverseSimulationClockTick() / 4;
+	//size_t tick = loopFunctions.GetSpace().GetSimulationClock();
+	//size_t tock = loopFunctions.GetSimulator().GetPhysicsEngine("default").GetInverseSimulationClockTick() / 8;
 
-	if(tick % tock != 0) {
-		return;
-	}
-*/
+    //if(tock == 0) tock = 1;
 
+    //if(tick % tock == 0) {
 
-    for(size_t j = 0; j < loopFunctions.TargetRayList.size(); j++) {
+        for(size_t j = 0; j < loopFunctions.TargetRayList.size(); j++) {
 
-        //for(size_t i = 0; i < loopFunctions.TargetRayList[j].size(); i++) {
-            //if(j == 0) c = CColor::RED;
-            //else if(j == 1) c = CColor::YELLOW;
-
-            //DrawRay(loopFunctions.TargetRayList[j][i], c);
             DrawRay(loopFunctions.TargetRayList[j], loopFunctions.TargetRayColorList[j]);
-        //}
-
-    }
-
-    //if(loopFunctions.SimTime % (loopFunctions.TicksPerSecond * 10) == 0) {
-        // comment out for DSA, uncomment for CPFA
-        //loopFunctions.TargetRayList.clear();
+      
+        }
     //}
 }
 

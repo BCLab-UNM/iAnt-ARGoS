@@ -3,4 +3,4 @@ cmake ..
 make clean
 make
 cd ..
-time argos3 -c experiments/iAnt.xml
+time argos3 -c experiments/DSA.xml
