@@ -153,7 +153,7 @@ void DSA_controller::Init(TConfigurationNode& node) {
     argos::CVector2 p(GetPosition());
     SetStartPosition(argos::CVector3(p.GetX(), p.GetY(), 0.0));
     
-    stepSize = 0.1; /* Assigns the robot's stepSize */
+    stepSize = 0.05; /* Assigns the robot's stepSize */
     startPosition = CVector3(0.0, 0.0, 0.0);
 
     RNG = CRandom::CreateRNG("argos");
@@ -187,24 +187,19 @@ void DSA_controller::ControlStep() {
 	/* Checks if the robot found a food */
 	SetHoldingFood();
 
-	if(IsHoldingFood() == false && DSA == SEARCHING) {
-	    /* draws target rays every 2 seconds */
-	    if((SimulationTick() % (SimulationTicksPerSecond() * 2)) == 0) {
-	        CVector3 position3d(GetPosition().GetX(), GetPosition().GetY(), 0.02);
-        	CVector3 target3d(GetTarget().GetX(), GetTarget().GetY(), 0.02);
-        	CRay3 targetRay(target3d, position3d);
-        	myTrail.push_back(targetRay);
-        	//LOG << myTrail.size() << endl;
-        	loopFunctions->TargetRayList.push_back(targetRay);
-	        //loopFunctions->TargetRayList.insert(loopFunctions->TargetRayList.end(), myTrail.begin(), myTrail.end());
-	    }
-	}
-
-    /* Checks if the robot found a food */
-    SetHoldingFood();
-
     /* If it didn't continue in a sprial */
     if(IsHoldingFood() == false && DSA == SEARCHING){
+
+        /* draws target rays every 2 seconds */
+        if((SimulationTick() % (SimulationTicksPerSecond() * 2)) == 0) {
+            CVector3 position3d(GetPosition().GetX(), GetPosition().GetY(), 0.02);
+            CVector3 target3d(GetTarget().GetX(), GetTarget().GetY(), 0.02);
+            CRay3 targetRay(target3d, position3d);
+            myTrail.push_back(targetRay);
+            //LOG << myTrail.size() << endl;
+            loopFunctions->TargetRayList.push_back(targetRay);
+            //loopFunctions->TargetRayList.insert(loopFunctions->TargetRayList.end(), myTrail.begin(), myTrail.end());
+        }
 
         // DSA = SEARCHING;
         GetTargets(); /* Initializes targets positions. */
@@ -212,11 +207,11 @@ void DSA_controller::ControlStep() {
     } else if(IsHoldingFood() == true && DSA == RETURN_TO_NEST) { /* Check if it is near the nest then set isHoldingFood to false */
 
         if((GetPosition() - loopFunctions->NestPosition).SquareLength() < loopFunctions->NestRadiusSquared) {
-            isHoldingFood = false;
+            // isHoldingFood = false;
             DSA = RETURN_TO_SEARCH;
         }
 
-    } else {
+    } else if(IsHoldingFood() == false && DSA == RETURN_TO_SEARCH) {
 
         if((GetPosition() - ReturnPosition).SquareLength() < loopFunctions->NestRadiusSquared) {
             DSA = SEARCHING;
@@ -329,10 +324,12 @@ void DSA_controller::SetHoldingFood(){
         for (i = 0; i < loopFunctions->FoodList.size(); i++){
             if ((GetPosition()-loopFunctions->FoodList[i]).SquareLength() < loopFunctions->FoodRadiusSquared){
                 isHoldingFood = true;
+                ResetReturnPosition = false;
+                ReturnPosition = GetTarget();
                 SetTarget(loopFunctions->NestPosition);
-                if(ResetReturnPosition == true) {
-                    ReturnPosition = GetTarget();
-                }
+                //if(ResetReturnPosition == true) {
+                //    ReturnPosition = GetTarget();
+                //}
                 DSA = RETURN_TO_NEST;
             } else {
                 newFoodList.push_back(loopFunctions->FoodList[i]);
