@@ -9,8 +9,10 @@ add_library(iAnt_controller         MODULE     iAnt_controller.h
                                                iAnt_pheromone.cpp)
 
 add_library(DSA_controller          MODULE     DSA_controller.h
-                                               DSA_controller.cpp                                               iAnt_loop_functions.h
-                                               iAnt_loop_functions.cpp                                               iAnt_pheromone.h
+                                               DSA_controller.cpp
+                                               iAnt_loop_functions.h
+                                               iAnt_loop_functions.cpp
+                                               iAnt_pheromone.h
                                                iAnt_pheromone.cpp)
 
 add_library(iAnt_loop_functions     MODULE     iAnt_loop_functions.h

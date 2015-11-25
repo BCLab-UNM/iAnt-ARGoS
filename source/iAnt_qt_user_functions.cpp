@@ -16,6 +16,7 @@ iAnt_qt_user_functions::iAnt_qt_user_functions() :
  *
  *****/
 void iAnt_qt_user_functions::DrawOnRobot(CFootBotEntity& entity) {
+    //Bad cast error change the name of the controller 
     //iAnt_controller& c = dynamic_cast<iAnt_controller&>(entity.GetControllableEntity().GetController());
     DSA_controller& c = dynamic_cast<DSA_controller&>(entity.GetControllableEntity().GetController());
 
@@ -157,16 +158,16 @@ void iAnt_qt_user_functions::DrawPheromones() {
 
 void iAnt_qt_user_functions::DrawTargetRays() {
 
-    CColor c = CColor::BLACK;
+    CColor c = CColor::BLUE;
 
     for(size_t j = 0; j < loopFunctions.TargetRayList.size(); j++) {
 
-        for(size_t i = 0; i < loopFunctions.TargetRayList[j].size(); i++) {
-            //if(j == 0) c = CColor::RED;
-            //else if(j == 1) c = CColor::YELLOW;
+        // for(size_t i = 0; i < loopFunctions.TargetRayList[j].size(); i++) {
+        //     //if(j == 0) c = CColor::RED;
+        //     //else if(j == 1) c = CColor::YELLOW;
 
-            DrawRay(loopFunctions.TargetRayList[j][i], c);
-        }
+            DrawRay(loopFunctions.TargetRayList[j],c);
+        // }
 
     }
 

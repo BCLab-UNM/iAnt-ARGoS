@@ -109,6 +109,11 @@ int DSA_controller::calcDistanceToTravel(int i_robot, int i_circuit, int N_robot
 	return 0;
 }
 
+int DSA_controller::getNumberOfSpirals()
+{
+    return NumberOfSpirals;
+}
+
 void DSA_controller::printPath(vector<char>& path)
 {
 	cout << path.size() << endl;
@@ -215,8 +220,8 @@ void DSA_controller::ControlStep() {
         	CVector3 target3d(GetTarget().GetX(), GetTarget().GetY(), 0.02);
         	CRay3 targetRay(target3d, position3d);
         	myTrail.push_back(targetRay);
-        	// loopFunctions.TargetRayList.push_back(myTrail);
-	        loopFunctions.TargetRayList.insert(loopFunctions.TargetRayList.end(), myTrail.begin(), myTrail.end());
+        	loopFunctions.TargetRayList.push_back(targetRay);
+	        //loopFunctions.TargetRayList.insert(loopFunctions.TargetRayList.end(), myTrail.begin(), myTrail.end());
 	    }
 	}
 

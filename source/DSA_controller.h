@@ -78,6 +78,8 @@ class DSA_controller : public CCI_Controller, public CLoopFunctions {
 		void   addDirectionToPattern(char direction);
 		void   printPath(vector<char>&);
 
+        int getNumberOfSpirals();
+
     private:
 
         /* foot-bot components: sensors and actuators */
