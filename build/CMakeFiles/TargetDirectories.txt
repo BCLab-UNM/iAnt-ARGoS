@@ -1,0 +1,7 @@
+/Users/antonio/Documents/ARGoS/iAnt-ARGoS/build/source/DSA/CMakeFiles/DSA_controller.dir
+/Users/antonio/Documents/ARGoS/iAnt-ARGoS/build/source/DSA/CMakeFiles/DSA_loop_functions.dir
+/Users/antonio/Documents/ARGoS/iAnt-ARGoS/build/source/CPFA/CMakeFiles/CPFA_loop_functions.dir
+/Users/antonio/Documents/ARGoS/iAnt-ARGoS/build/source/iAntBase/CMakeFiles/iAntPheromone.dir
+/Users/antonio/Documents/ARGoS/iAnt-ARGoS/build/source/iAntBase/CMakeFiles/iAntFood.dir
+/Users/antonio/Documents/ARGoS/iAnt-ARGoS/build/source/CPFA/CMakeFiles/CPFA_controller.dir
+/Users/antonio/Documents/ARGoS/iAnt-ARGoS/build/source/iAntBase/CMakeFiles/iAntBaseController.dir
