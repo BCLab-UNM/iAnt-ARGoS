@@ -1,2 +1,5 @@
-# ...silly Macs
-.DS_Store
+.DS_Store # ...silly Macs
+*~ # Emacs
+\#*\# # Emacs
+build
+*.swp
