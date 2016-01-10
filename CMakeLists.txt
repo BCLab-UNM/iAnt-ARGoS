@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 2.8.12)
 project(iAnt-ARGoS)
 
+# Use C+11
+set(CMAKE_CXX_FLAGS "-std=c++0x")
+
 # Deactivate RPATH for MacOSX.
 set(CMAKE_MACOSX_RPATH 0)
 
