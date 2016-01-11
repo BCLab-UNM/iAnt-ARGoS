@@ -30,9 +30,9 @@
 
       <params>
 
-        <settings NumberOfRobots          = "32"
-                  NumberOfSpirals         = "1"
-                  TargetDistanceTolerance = "0.03"
+        <settings NumberOfRobots          = "1"
+                  NumberOfSpirals         = "20"
+                  TargetDistanceTolerance = "0.01"
                   FoodDistanceTolerance   = "0.13"
                   SearcherGap             = "0.16"
                   RobotForwardSpeed       = "16.0"
@@ -58,9 +58,9 @@
       <position method="grid"
                 center="0.0, 0.0, 0.0"
                 distances="0.2, 0.2, 0.0"
-                layout="8, 4, 1" />
+                layout="1, 1, 1" />
       <orientation method="constant" values="0.0, 0.0, 0.0" />
-      <entity quantity="32" max_trials="100">
+      <entity quantity="1" max_trials="100">
         <foot-bot id="DSA_">
           <controller config="DSA"/>
         </foot-bot>

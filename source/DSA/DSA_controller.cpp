@@ -292,12 +292,14 @@ void DSA_controller::SetTargetW(char x){
         }
 
         DSA = SEARCHING;
+        ReturnPosition = GetTarget();
     }
     /* If the robot is down traversing the tempPattern, then return home */
     else if(tempPattern.size() == 0) {
-    	DSA = RETURN_TO_NEST;
-        SetTarget(loopFunctions->NestPosition);
-        Reset();
+        Stop();
+    	//DSA = RETURN_TO_NEST;
+        //SetTarget(loopFunctions->NestPosition);
+        //Reset();
 	}
 }
 
@@ -329,7 +331,7 @@ void DSA_controller::SetHoldingFood(){
             if ((GetPosition()-loopFunctions->FoodList[i]).SquareLength() < FoodDistanceTolerance){
                 isHoldingFood = true;
                 ResetReturnPosition = false;
-                ReturnPosition = GetTarget();
+                //ReturnPosition = GetTarget();
                 SetTarget(loopFunctions->NestPosition);
                 //if(ResetReturnPosition == true) {
                 //    ReturnPosition = GetTarget();
