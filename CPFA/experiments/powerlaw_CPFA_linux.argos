@@ -1,0 +1,93 @@
+<?xml version="1.0" ?><argos-configuration>
+    <!-- FRAMEWORK -->
+    <framework>
+        <experiment length="720" random_seed="396773" ticks_per_second="16"/>
+    </framework>
+    
+    <!-- CONTROLLERS -->
+    <controllers>
+        <iAnt_controller id="iAnt_c" library="build/source/libiAnt_controller.so">
+            
+            <actuators>
+                <differential_steering implementation="default"/>
+                <leds implementation="default" medium="leds"/>
+            </actuators>
+            
+            <sensors>
+                <footbot_proximity implementation="default" show_rays="false"/>
+                <positioning implementation="default"/>
+            </sensors>
+            
+            <!-- un-evolvable parameters -->
+            <!-- remember: a footbot's radius = 8.5 cm / 0.085 m -->
+            <!-- remember: an iAnt's radius   = 4.0 cm / 0.040 m -->
+            <params>
+                <iAnt_params AngleToleranceInDegrees="15.0" DistanceTolerance="0.01" RobotForwardSpeed="16.0" RobotRotationSpeed="13.3" SearchStepSize="0.175"/>
+            </params>
+        </iAnt_controller>
+    </controllers>
+    
+    <!-- LOOP FUNCTIONS -->
+    <loop_functions label="iAnt_loop_functions" library="build/source/libiAnt_loop_functions.so">
+        
+        <!-- evolvable parameters -->
+        <!-- power law distribution-->
+        <CPFA ProbabilityOfReturningToNest="0" ProbabilityOfSwitchingToSearching="0.199859805001" RateOfInformedSearchDecay="0.528790943737" RateOfLayingPheromone="2.6293970451" RateOfPheromoneDecay="3.65029789908" RateOfSiteFidelity="0" UninformedSearchVariation="13.7664502329"/>
+        
+        <!-- un-evolvable environment variables -->
+        <simulation FoodDistribution="2" FoodRadius="0.02" MaxSimCounter="1" NestPosition="0.0, 0.0" NestRadius="0.5" OutputData="1" VariableSeed="1"/>
+        
+        <!-- un-evolvable food distribution parameters -->
+        <_0_FoodDistribution_Random FoodItemCount="256"/>
+        <_1_FoodDistribution_Cluster ClusterLengthY="8" ClusterWidthX="8" NumberOfClusters="4"/>
+        <_2_FoodDistribution_PowerLaw PowerLawCopies="1" PowerRank="4"/>
+        
+    </loop_functions>
+    
+    <!-- ARENA -->
+    <arena center="0.0, 0.0, 0.0" size="10, 10, 1.0">
+        
+        <floor id="floor" pixels_per_meter="1" source="loop_functions"/>
+        
+        <distribute>
+            <position max="1.0, 1.0, 0.0" method="uniform" min="-1.0, -1.0, 0.0"/>
+            <orientation mean="0, 0, 0" method="gaussian" std_dev="360, 0, 0"/>
+            <entity max_trials="100" quantity="24">
+                <foot-bot id="fb_0"><controller config="iAnt_c"/></foot-bot>
+            </entity>
+        </distribute>
+        <box id="wall_north" movable="false" size="10,0.1,0.5">
+            <body orientation="0,0,0" position="0,5,0"/>
+        </box>
+        <box id="wall_south" movable="false" size="10,0.1,0.5">
+            <body orientation="0,0,0" position="0,-5,0"/>
+        </box>
+        <box id="wall_east" movable="false" size="0.1,10,0.5">
+            <body orientation="0,0,0" position="5,0,0"/>
+        </box>
+        <box id="wall_west" movable="false" size="0.1,10,0.5">
+            <body orientation="0,0,0" position="-5,0,0"/>
+        </box>
+    </arena>
+    
+    <!-- PHYSICS ENGINE(S) -->
+    <physics_engines><dynamics2d id="dyn2d"/></physics_engines>
+    
+    <!-- MEDIA -->
+    <media><led id="leds"/></media>
+    <!--
+     <visualization>
+     <qt-opengl>
+     <camera>
+     <placement idx="0" lens_focal_length="25" look_at="0, 0, 0" position="  0, 0, 10"/>
+     <placement idx="1" lens_focal_length="45" look_at="0, 0, 0" position="  0, 0, 10"/>
+     <placement idx="2" lens_focal_length="120" look_at="0, 0, 0" position="  0, 0, 10"/>
+     <placement idx="3" lens_focal_length="180" look_at="0, 0, 0" position="-30, 0, 10"/>
+     <placement idx="4" lens_focal_length="240" look_at="0, 0, 0" position="-30, 0, 10"/>
+     <placement idx="5" lens_focal_length="13" look_at="0, 0, 0" position="0, 0, 10"/>
+     </camera>
+     <user_functions label="iAnt_qt_user_functions"/>
+     </qt-opengl>
+     </visualization>
+     -->
+</argos-configuration>
