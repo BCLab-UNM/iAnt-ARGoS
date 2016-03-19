@@ -1,0 +1,87 @@
+Determining if the Q_WS_X11 exist failed with the following output:
+Change Dir: /Users/qilu/Documents/UNM/S8/Research/GA/2016_02_14_GA_code/8nests_MPFA_GA/build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_5f7e4/fast"
+/Applications/Xcode.app/Contents/Developer/usr/bin/make -f CMakeFiles/cmTC_5f7e4.dir/build.make CMakeFiles/cmTC_5f7e4.dir/build
+Building CXX object CMakeFiles/cmTC_5f7e4.dir/CheckSymbolExists.cxx.o
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++    -I/usr/local/Cellar/qt/4.8.7_1/include -F/usr/local/Cellar/qt/4.8.7_1/lib   -o CMakeFiles/cmTC_5f7e4.dir/CheckSymbolExists.cxx.o -c /Users/qilu/Documents/UNM/S8/Research/GA/2016_02_14_GA_code/8nests_MPFA_GA/build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+/Users/qilu/Documents/UNM/S8/Research/GA/2016_02_14_GA_code/8nests_MPFA_GA/build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:8:19: error: use of undeclared identifier 'Q_WS_X11'
+  return ((int*)(&Q_WS_X11))[argc];
+                  ^
+1 error generated.
+make[1]: *** [CMakeFiles/cmTC_5f7e4.dir/CheckSymbolExists.cxx.o] Error 1
+make: *** [cmTC_5f7e4/fast] Error 2
+
+File /Users/qilu/Documents/UNM/S8/Research/GA/2016_02_14_GA_code/8nests_MPFA_GA/build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
+#include <QtCore/qglobal.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef Q_WS_X11
+  return ((int*)(&Q_WS_X11))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the Q_WS_WIN exist failed with the following output:
+Change Dir: /Users/qilu/Documents/UNM/S8/Research/GA/2016_02_14_GA_code/8nests_MPFA_GA/build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_ea072/fast"
+/Applications/Xcode.app/Contents/Developer/usr/bin/make -f CMakeFiles/cmTC_ea072.dir/build.make CMakeFiles/cmTC_ea072.dir/build
+Building CXX object CMakeFiles/cmTC_ea072.dir/CheckSymbolExists.cxx.o
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++    -I/usr/local/Cellar/qt/4.8.7_1/include -F/usr/local/Cellar/qt/4.8.7_1/lib   -o CMakeFiles/cmTC_ea072.dir/CheckSymbolExists.cxx.o -c /Users/qilu/Documents/UNM/S8/Research/GA/2016_02_14_GA_code/8nests_MPFA_GA/build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+/Users/qilu/Documents/UNM/S8/Research/GA/2016_02_14_GA_code/8nests_MPFA_GA/build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:8:19: error: use of undeclared identifier 'Q_WS_WIN'
+  return ((int*)(&Q_WS_WIN))[argc];
+                  ^
+1 error generated.
+make[1]: *** [CMakeFiles/cmTC_ea072.dir/CheckSymbolExists.cxx.o] Error 1
+make: *** [cmTC_ea072/fast] Error 2
+
+File /Users/qilu/Documents/UNM/S8/Research/GA/2016_02_14_GA_code/8nests_MPFA_GA/build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
+#include <QtCore/qglobal.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef Q_WS_WIN
+  return ((int*)(&Q_WS_WIN))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the Q_WS_QWS exist failed with the following output:
+Change Dir: /Users/qilu/Documents/UNM/S8/Research/GA/2016_02_14_GA_code/8nests_MPFA_GA/build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_e70e8/fast"
+/Applications/Xcode.app/Contents/Developer/usr/bin/make -f CMakeFiles/cmTC_e70e8.dir/build.make CMakeFiles/cmTC_e70e8.dir/build
+Building CXX object CMakeFiles/cmTC_e70e8.dir/CheckSymbolExists.cxx.o
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++    -I/usr/local/Cellar/qt/4.8.7_1/include -F/usr/local/Cellar/qt/4.8.7_1/lib   -o CMakeFiles/cmTC_e70e8.dir/CheckSymbolExists.cxx.o -c /Users/qilu/Documents/UNM/S8/Research/GA/2016_02_14_GA_code/8nests_MPFA_GA/build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+/Users/qilu/Documents/UNM/S8/Research/GA/2016_02_14_GA_code/8nests_MPFA_GA/build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:8:19: error: use of undeclared identifier 'Q_WS_QWS'
+  return ((int*)(&Q_WS_QWS))[argc];
+                  ^
+1 error generated.
+make[1]: *** [CMakeFiles/cmTC_e70e8.dir/CheckSymbolExists.cxx.o] Error 1
+make: *** [cmTC_e70e8/fast] Error 2
+
+File /Users/qilu/Documents/UNM/S8/Research/GA/2016_02_14_GA_code/8nests_MPFA_GA/build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
+#include <QtCore/qglobal.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef Q_WS_QWS
+  return ((int*)(&Q_WS_QWS))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
