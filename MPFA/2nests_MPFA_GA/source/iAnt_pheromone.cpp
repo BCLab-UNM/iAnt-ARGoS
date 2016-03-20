@@ -32,8 +32,7 @@ iAnt_pheromone::iAnt_pheromone(CVector2         newLocation,
  *****/
 void iAnt_pheromone::Update(Real time) {//qilu time in each 5 seconds
     /* pheromones experience exponential decay with time */
-    //weight *= exp(-decayRate * (time - lastUpdated)); //qilu 03/13/2016 the exponential decay is based on the initial  
-    weight = exp(-decayRate * (time - lastUpdated));
+    weight *= exp(-decayRate * (time - lastUpdated)); //qilu 03/13/2016 the exponential decay is based on the initial. This is correct, since 'lastUpdated' is updated every time, and (time - lastUpdated) is a unit time.  
     lastUpdated = time;
 }
 
