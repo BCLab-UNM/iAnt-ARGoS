@@ -30,14 +30,6 @@ void DSA_qt_user_functions::DrawOnRobot(CFootBotEntity& entity) {
         /* Set the text color */
         CColor cColor(CColor::BLACK);
         glColor3ub(cColor.GetRed(), cColor.GetGreen(), cColor.GetBlue());
-
-        /* The position of the text is expressed wrt the reference point of the footbot
-         * For a foot-bot, the reference point is the center of its base.
-         * See also the description in
-         * $ argos3 -q foot-bot
-         */
-        GetOpenGLWidget().renderText(0.0, 0.0, 0.5,             // position
-                                    entity.GetId().c_str()); // text
         /* Restore face culling */
         glEnable(GL_CULL_FACE);
         /* Restore lighting */
